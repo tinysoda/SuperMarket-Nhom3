@@ -1,62 +1,71 @@
-Table User {
-  id int [pk, increment]
-  name varchar(255)
-  phone varchar(20)
-  email varchar(255)
-  password varchar(255)
-  role ENUM('manager','employee')
+-- Create the database
+CREATE DATABASE IF NOT EXISTS supermarket;
+USE supermarket;
 
-}
+-- Create User table
+CREATE TABLE User (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  email VARCHAR(255),
+  password VARCHAR(255),
+  role ENUM('manager', 'employee')
+);
 
-Table Product {
-  id int [pk, increment] // Mã sản phẩm
-  name varchar(255) // Tên sản phẩm
-  description text // Mô tả sản phẩm
-  price decimal(10, 2) // Giá sản phẩm
-  quantity int // Số lượng tồn kho
-  category_id int // Mã danh mục sản phẩm
-  is_deleted int [default: 0] // Trạng thái xóa mềm (0: tồn tại, 1: không tồn tại) // Ngày tạo
- // Ngày cập nhật
-}
+-- Create Product table
+CREATE TABLE Product (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  price DECIMAL(10, 2),
+  quantity INT,
+  category_id INT,
+  is_deleted INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
-Table Category {
-  id int [pk, increment]
-  name varchar(255)
-  description text
+-- Create Category table
+CREATE TABLE Category (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  description TEXT
+);
 
-}
+-- Create Customer table
+CREATE TABLE Customer (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  email VARCHAR(255),
+  address VARCHAR(255),
+  points INT DEFAULT 0
+);
 
-Table Customer {
-  id int [pk, increment]
-  name varchar(255)
-  phone varchar(20)
-  email varchar(255)
-  address varchar(255)
-  points int
+-- Create Bill table
+CREATE TABLE Bill (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  customer_id INT,
+  user_id INT,
+  total_amount DECIMAL(10, 2),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (customer_id) REFERENCES Customer(id),
+  FOREIGN KEY (user_id) REFERENCES User(id)
+);
 
-}
+-- Create BillDetail table
+CREATE TABLE BillDetail (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  product_id INT,
+  bill_id INT,
+  quantity INT,
+  price DECIMAL(10, 2),
+  FOREIGN KEY (product_id) REFERENCES Product(id),
+  FOREIGN KEY (bill_id) REFERENCES Bill(id)
+);
 
-Table Bill {
-  id int [pk, increment]
-  customer_id int
-  user_id int
-  total_amount decimal(10, 2)
-  created_at timestamp
+-- Add foreign key constraints
+ALTER TABLE Product ADD CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES Category(id);
 
-}
-
-Table BillDetail {
-  id int [pk, increment]
-  product_id int
-  bill_id int
-  quantity int
-  price decimal(10, 2)
-
-}
-
-// Relationships
-Ref: Product.category_id > Category.id
-Ref: Bill.customer_id > Customer.id
-Ref: Bill.user_id > User.id
-Ref: BillDetail.bill_id > Bill.id
-Ref: BillDetail.product_id > Product.id
+-- This should be added to ensure that the script can be run in one go without errors.
+SET FOREIGN_KEY_CHECKS = 0;
