@@ -25,10 +25,10 @@
             </AnchorPane>
             <AnchorPane layoutX="271.0" prefHeight="297.0" prefWidth="331.0" styleClass="right-form" stylesheets="@styles/LoginForm.css">
                <children>
-                  <Label layoutX="23.0" layoutY="153.0" text="Tên đăng nhập:" />
+                  <Label layoutX="23.0" layoutY="153.0" text="Tên đăng nhập:" textFill="WHITE" />
                   <FontAwesomeIconView fill="#ee242b" glyphName="USER" layoutX="166.0" layoutY="78.0" size="60" />
                   <TextField layoutX="119.0" layoutY="149.0" prefHeight="24.0" prefWidth="140.0" />
-                  <Label layoutX="53.0" layoutY="196.0" text="Mật khẩu:" />
+                  <Label layoutX="53.0" layoutY="196.0" text="Mật khẩu:" textFill="WHITE" />
                   <TextField layoutX="119.0" layoutY="192.0" prefHeight="24.0" prefWidth="140.0" />
                   <Button layoutX="119.0" layoutY="234.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="140.0" styleClass="login-button" stylesheets="@styles/LoginForm.css" text="Đăng nhập" />
                   <Button layoutX="274.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="52.0" styleClass="close-button" stylesheets="@styles/LoginForm.css">

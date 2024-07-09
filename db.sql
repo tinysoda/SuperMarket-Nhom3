@@ -21,8 +21,6 @@ CREATE TABLE Product (
   quantity INT,
   category_id INT,
   is_deleted INT DEFAULT 0,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Create Category table
