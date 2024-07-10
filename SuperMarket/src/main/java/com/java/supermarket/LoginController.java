@@ -43,7 +43,7 @@ public class LoginController {
     private ResultSet rs;
 
     public void Login(){
-        String loginQuery = "select * from user where name=? and password=?";
+        String loginQuery = "select * from user where username=? and password=?";
         con=DBUtils.getConnection();
             Alert alert;
         String username = login_username.getText();
@@ -70,6 +70,12 @@ public class LoginController {
 
                 if (username.equals("admin")){
                     Parent root=FXMLLoader.load(getClass().getResource("adminDashboard.fxml"));
+                    Stage stage=new Stage();
+                    Scene scene=new Scene(root);
+                    stage.setScene(scene);
+                    stage.show();
+                }else {
+                    Parent root=FXMLLoader.load(getClass().getResource("employeeDashboard.fxml"));
                     Stage stage=new Stage();
                     Scene scene=new Scene(root);
                     stage.setScene(scene);
