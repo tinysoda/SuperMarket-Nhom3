@@ -1,10 +1,10 @@
 .right-form{
-    -fx-background-color: linear-gradient(to bottom, #8AE308, #4CAF50);
+    -fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);
     -fx-border-color: #000;
     -fx-border-width: .4px .4px .4px 0px;
 }
 
-.text-field{
+.text-field,password-field{
     -fx-border-color: linear-gradient(to bottom,#efefef,#eee);
     -fx-background-radius: 8px;
     -fx-border-width: 0px 0px 0px 0px;
@@ -12,7 +12,7 @@
     -fx-font-family: Tahoma;
     -fx-font-size: 13px;
 }
-.text-field:focused{
+.text-field:focused,password-field:focused{
     -fx-border-color: #fff;
 }
 
