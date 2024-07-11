@@ -23,6 +23,10 @@
 .shadow{
     -fx-effect: dropshadow(three-pass-box,rgba(0,0,0,0.4),5,0,0,0);
 }
+.white-bg{
+    -fx-background-color: #fff;
+    -fx-background-radius: 5px;
+}
 .close-button,.minimize-button{
     -fx-background-color: transparent;
     -fx-cursor: hand;
@@ -32,5 +36,13 @@
 }
 .minimize-button:hover{
     -fx-background-color: #FFDD00;
-
+}
+.card1{
+    -fx-background-color: linear-gradient(to bottom, #2e4d6e, #276a99);
+}
+.card2{
+    -fx-background-color: linear-gradient(to bottom, #542c63, #8825a1);
+}
+.card3{
+    -fx-background-color: linear-gradient(to bottom, #752131, #ae243f);
 }
