@@ -7,6 +7,9 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -16,11 +19,11 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.AdminDashboardController">
+<BorderPane prefHeight="580.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.AdminDashboardController">
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
          <children>
-            <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="ViewAdminStat" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <styleClass>
                   <String fx:value="white-bg" />
                   <String fx:value="shadow" />
@@ -104,6 +107,53 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
+            <HBox layoutX="14.0" layoutY="14.0" prefHeight="100.0" prefWidth="200.0" spacing="14.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+               <children>
+                  <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="white-bg" />
+                     </styleClass>
+                     <children>
+                        <Label layoutX="14.0" layoutY="42.0" text="Tên sản phẩm:" />
+                        <Label layoutX="14.0" layoutY="87.0" text="Chi tiết:" />
+                        <Label layoutX="14.0" layoutY="135.0" text="Danh mục:" />
+                        <Label layoutX="14.0" layoutY="179.0" text="Đơn giá:" />
+                        <Label layoutX="14.0" layoutY="222.0" text="Số lượng:" />
+                        <TextField layoutX="96.0" layoutY="38.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <TextField layoutX="96.0" layoutY="83.0" promptText="Mô tả" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <TextField layoutX="96.0" layoutY="131.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <TextField layoutX="96.0" layoutY="175.0" promptText="VND" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <TextField layoutX="96.0" layoutY="218.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <Button layoutX="30.0" layoutY="300.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="84.0" styleClass="add-btn" stylesheets="@styles/Dashboard.css" text="Thêm mới" />
+                        <Button layoutX="144.0" layoutY="300.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="84.0" styleClass="update-btn" stylesheets="@styles/Dashboard.css" text="Cập nhật" />
+                        <Button layoutX="31.0" layoutY="384.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="84.0" text="Clear" />
+                        <Button layoutX="145.0" layoutY="384.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="84.0" text="Xoá" />
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="522.0" prefWidth="633.0" stylesheets="@styles/Dashboard.css">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="white-bg" />
+                     </styleClass>
+                     <children>
+                        <TextField layoutX="14.0" layoutY="14.0" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm sản phẩm" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <FontAwesomeIconView fill="#a19797" glyphName="SEARCH" layoutX="179.0" layoutY="35.0" size="15" />
+                        <TableView layoutX="14.0" layoutY="61.0" prefHeight="449.0" prefWidth="572.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+                          <columns>
+                            <TableColumn prefWidth="51.0" text="STT" />
+                            <TableColumn prefWidth="99.0" text="Tên sản phẩm" />
+                              <TableColumn prefWidth="84.0" text="Danh mục" />
+                              <TableColumn prefWidth="114.0" text="Mô tả" />
+                              <TableColumn prefWidth="83.0" text="Đơn giá" />
+                              <TableColumn text="Số lượng" />
+                              <TableColumn text="Trạng thái" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </HBox>
          </children>
       </AnchorPane>
    </center>

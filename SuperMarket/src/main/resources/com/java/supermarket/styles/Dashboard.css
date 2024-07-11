@@ -46,3 +46,75 @@
 .card3{
     -fx-background-color: linear-gradient(to bottom, #752131, #ae243f);
 }
+.textfield {
+    -fx-background-color:transparent;
+    -fx-border-color:linear-gradient(to top right, #f45622, #fa8962);
+    -fx-border-width:0px 0px 1px 0px;
+    -fx-font-family:"Tahoma";
+    -fx-font-size:13px;
+}
+
+.textfield:focused{
+    -fx-border-width:0px 0px 2px 0px;
+}
+.add-btn {
+    -fx-background-color: #81DB13;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.add-btn:hover {
+    -fx-background-color: #55B745;
+}
+.update-btn {
+    -fx-background-color: #275578;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.update-btn:hover {
+    -fx-background-color: #2975ab;
+}
+.delete-btn {
+    -fx-background-color: #ED1D24;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.delete-btn:hover {
+    -fx-background-color: #822730;
+}
+.clear-btn {
+    -fx-background-color: #FFA500;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.clear-btn:hover {
+    -fx-background-color: #FF7F00;
+}
+
+
+/*.combobox {*/
+/*    -fx-background-color: transparent;*/
+/*    -fx-border-color:linear-gradient(to top right, #64522c, #a8962b);*/
+/*    -fx-border-width: 1px;*/
+/*    -fx-font-family: "Tahoma";*/
+/*    -fx-font-size:13px;*/
+/*}*/
+
+/*.combobox:focused{*/
+/*    -fx-border-width: 2px;*/
+/*}*/

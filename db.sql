@@ -22,14 +22,14 @@ USE `supermarket`;
 -- Dumping structure for table supermarket.bill
 CREATE TABLE IF NOT EXISTS `bill` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `customer_id` int DEFAULT NULL,
-  `user_id` int DEFAULT NULL,
-  `total_amount` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `customer_phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `user_id` int NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `customer_id` (`customer_id`),
+  KEY `customer_phone` (`customer_phone`),
   KEY `user_id` (`user_id`),
-  CONSTRAINT `bill_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`id`),
+  CONSTRAINT `bill_ibfk_1` FOREIGN KEY (`customer_phone`) REFERENCES `customer` (`phone`),
   CONSTRAINT `bill_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -38,10 +38,11 @@ CREATE TABLE IF NOT EXISTS `bill` (
 -- Dumping structure for table supermarket.billdetail
 CREATE TABLE IF NOT EXISTS `billdetail` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `product_id` int DEFAULT NULL,
-  `bill_id` int DEFAULT NULL,
-  `quantity` int DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
+  `bill_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `product_name` varchar(255) NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `price` float NOT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   KEY `bill_id` (`bill_id`),
@@ -51,23 +52,12 @@ CREATE TABLE IF NOT EXISTS `billdetail` (
 
 -- Dumping data for table supermarket.billdetail: ~0 rows (approximately)
 
--- Dumping structure for table supermarket.category
-CREATE TABLE IF NOT EXISTS `category` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `description` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- Dumping data for table supermarket.category: ~0 rows (approximately)
-
 -- Dumping structure for table supermarket.customer
 CREATE TABLE IF NOT EXISTS `customer` (
-  `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
+  `phone` varchar(20) NOT NULL,
   `points` int DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table supermarket.customer: ~0 rows (approximately)
@@ -76,14 +66,12 @@ CREATE TABLE IF NOT EXISTS `customer` (
 CREATE TABLE IF NOT EXISTS `product` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `description` text,
-  `price` decimal(10,2) DEFAULT NULL,
-  `quantity` int DEFAULT NULL,
-  `category_id` int DEFAULT NULL,
-  `is_deleted` int DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `fk_product_category` (`category_id`),
-  CONSTRAINT `fk_product_category` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `category` varchar(255) DEFAULT NULL,
+  `price` float NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `status` enum('còn hàng','đã xoá') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'còn hàng',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table supermarket.product: ~0 rows (approximately)
@@ -92,7 +80,7 @@ CREATE TABLE IF NOT EXISTS `product` (
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
+  `phone` varchar(20) NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `role` enum('manager','employee') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'employee',
   PRIMARY KEY (`id`)
@@ -100,8 +88,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 -- Dumping data for table supermarket.user: ~2 rows (approximately)
 INSERT INTO `user` (`id`, `username`, `phone`, `password`, `role`) VALUES
-	(1, 'admin', NULL, 'admin123', 'manager'),
-	(2, 'employee1', NULL, 'employee', 'employee');
+	(1, 'admin', '123456781', 'admin123', 'manager'),
+	(2, 'employee1', '123456782', 'employee', 'employee');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
