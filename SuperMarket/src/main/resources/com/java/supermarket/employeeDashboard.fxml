@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
-<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -16,24 +19,43 @@
 <BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.EmployeeDashboardController">
     <center>
         <AnchorPane prefHeight="550.0" prefWidth="900.0">
-            <children>
-            <HBox layoutX="14.0" layoutY="27.0" prefHeight="550.0" prefWidth="900.0" spacing="14.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+         <children>
+            <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
-                  <AnchorPane prefHeight="522.0" prefWidth="245.0" stylesheets="@styles/Dashboard.css">
-                     <styleClass>
-                        <String fx:value="shadow" />
-                        <String fx:value="white-bg" />
-                     </styleClass>
-                  </AnchorPane>
-                  <AnchorPane prefHeight="522.0" prefWidth="613.0" stylesheets="@styles/Dashboard.css">
-                     <styleClass>
-                        <String fx:value="shadow" />
-                        <String fx:value="white-bg" />
-                     </styleClass>
-                  </AnchorPane>
-               </children>
-            </HBox>
-            </children>
+                   <VBox layoutX="20.0" layoutY="20.0" spacing="10.0">
+                       <Label text="Tạo hoá đơn">
+                        <font>
+                           <Font name="Tahoma" size="15.0" />
+                        </font></Label>
+                       <HBox spacing="10.0">
+                           <Label text="Tên khách hàng" />
+                           <TextField fx:id="customerNameField" />
+                        <Label layoutX="10.0" layoutY="10.0" text="Sdt" />
+                        <TextField fx:id="customerNameField1" layoutX="109.0" layoutY="10.0" />
+                       </HBox>
+                       <HBox spacing="10.0">
+                           <Label text="Tên sản phẩm" />
+                        <ComboBox prefWidth="150.0" />
+                           <Label text="Số lượng" />
+                           <TextField fx:id="quantityField" prefWidth="50.0" />
+                           <Button prefHeight="25.0" prefWidth="57.0" text="Thêm" />
+                       </HBox>
+                       <TableView fx:id="billItemsTable" prefHeight="400.0" prefWidth="760.0">
+                           <columns>
+                               <TableColumn prefWidth="95.0" text="Tên sãn phẩm" />
+                               <TableColumn prefWidth="65.0" text="Số lượng" />
+                               <TableColumn text="Đơn giá" />
+                               <TableColumn text="Tổng" />
+                           </columns>
+                       </TableView>
+                       <HBox spacing="10.0">
+                           <Label text="Tổng:" />
+                           <Label fx:id="totalAmountLabel" />
+                       </HBox>
+                       <Button text="Lưu hoá đơn" />
+                   </VBox>
+               </children></AnchorPane>
+         </children>
         </AnchorPane>
     </center>
     <left>

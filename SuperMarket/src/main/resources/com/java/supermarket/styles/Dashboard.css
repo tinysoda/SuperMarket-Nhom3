@@ -53,6 +53,18 @@
     -fx-font-family:"Tahoma";
     -fx-font-size:13px;
 }
+.combobox {
+    -fx-background-color: transparent;
+    -fx-border-color: linear-gradient(to top right, #6452C2, #a8962b);
+    -fx-border-width: 1px;
+    -fx-font-family: 'Tahoma';
+    -fx-font-size: 13px;
+}
+
+.combobox:focused {
+    -fx-border-width: 2px;
+}
+
 
 .textfield:focused{
     -fx-border-width:0px 0px 2px 0px;
@@ -105,6 +117,30 @@
 .clear-btn:hover {
     -fx-background-color: #FF7F00;
 }
+
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: linear-gradient(to top right, #64522c, #a8962b);
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-padding: 0px;
+}
+
+.table-view .table-column {
+    -fx-alignment: CENTER;
+}
+.table-view .column-header-background{
+    -fx-background-color: linear-gradient(to top right, #8AE308, #4CAF50);
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0;
+    -fx-background-radius: 5px 5px 0px 0px;
+}
+.table-view .column-header,.filter{
+    -fx-background-color: linear-gradient(to top right, #8AE308, #4CAF50);
+    /*-fx-background-color: transparent;*/
+    -fx-text-fill: white;
+}
+
 
 
 /*.combobox {*/

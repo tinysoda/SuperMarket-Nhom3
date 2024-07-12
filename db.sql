@@ -80,16 +80,18 @@ CREATE TABLE IF NOT EXISTS `product` (
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `phone` varchar(20) NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `role` enum('manager','employee') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'employee',
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table supermarket.user: ~2 rows (approximately)
-INSERT INTO `user` (`id`, `username`, `phone`, `password`, `role`) VALUES
-	(1, 'admin', '123456781', 'admin123', 'manager'),
-	(2, 'employee1', '123456782', 'employee', 'employee');
+INSERT INTO `user` (`id`, `username`, `password`, `role`, `first_name`, `last_name`, `phone`) VALUES
+	(1, 'admin', 'admin123', 'manager', 'manager', 'admin', '123456781'),
+	(2, 'employee1', 'employee', 'employee', 'john', 'nguyen', '123456782');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
