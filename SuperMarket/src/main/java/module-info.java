@@ -7,4 +7,6 @@ module com.java.supermarket {
 
     opens com.java.supermarket to javafx.fxml;
     exports com.java.supermarket;
+    exports com.java.supermarket.controller;
+    opens com.java.supermarket.controller to javafx.fxml;
 }

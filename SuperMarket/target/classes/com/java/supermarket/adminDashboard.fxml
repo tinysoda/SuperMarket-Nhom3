@@ -20,7 +20,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="adminForm" prefHeight="580.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.AdminDashboardController">
+<BorderPane fx:id="adminForm" prefHeight="580.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.AdminDashboardController">
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
          <children>
@@ -179,7 +179,7 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <HBox fx:id="adminProManForm" layoutX="14.0" layoutY="14.0" prefHeight="100.0" prefWidth="200.0" spacing="14.0" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <HBox fx:id="adminProManForm" layoutX="14.0" layoutY="14.0" prefHeight="100.0" prefWidth="200.0" spacing="14.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
                   <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
                      <styleClass>
@@ -255,11 +255,11 @@
                <children>
                   <TableView fx:id="adminBillTable" layoutX="7.0" layoutY="7.0" prefHeight="482.0" prefWidth="446.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="40.0">
                     <columns>
-                      <TableColumn fx:id="col_bill_bill_id" prefWidth="72.0" text="Mã hoá đơn" />
-                      <TableColumn fx:id="col_billing_staff_id" prefWidth="82.0" text="Mã nhân viên" />
-                        <TableColumn fx:id="col_bill_customer_phone" prefWidth="104.0" text="SDT Khách hàng" />
-                        <TableColumn fx:id="col_bill_total_amount" prefWidth="95.0" text="Tổng hoá đơn" />
-                        <TableColumn fx:id="col_bill_created_at" prefWidth="90.0" text="Ngày tạo" />
+                      <TableColumn fx:id="col_bill_bill_id" prefWidth="84.0" text="Mã hoá đơn" />
+                      <TableColumn fx:id="col_billing_staff_id" prefWidth="92.0" text="Mã nhân viên" />
+                        <TableColumn fx:id="col_bill_customer_phone" prefWidth="102.0" text="SDT Khách hàng" />
+                        <TableColumn fx:id="col_bill_total_amount" prefWidth="87.0" text="Tổng hoá đơn" />
+                        <TableColumn fx:id="col_bill_created_at" prefWidth="78.0" text="Ngày tạo" />
                     </columns>
                   </TableView>
                   <TextField fx:id="adminBillLookUpTF" layoutX="8.0" layoutY="5.0" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm hoá đơn" styleClass="textfield" stylesheets="@styles/Dashboard.css" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="5.0" />
