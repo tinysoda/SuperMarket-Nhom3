@@ -82,7 +82,7 @@ public class LoginController {
 
                     Parent root;
                     if (username.equals("admin")) {
-                        root = FXMLLoader.load(getClass().getResource("adminDashboard.fxml"));
+                        root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/adminDashboard.fxml"));
                     } else {
                         root = FXMLLoader.load(getClass().getResource("employeeDashboard.fxml"));
                     }

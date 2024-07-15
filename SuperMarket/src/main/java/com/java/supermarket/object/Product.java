@@ -1,5 +1,9 @@
 package com.java.supermarket.object;
 
+
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Product {
     private int id;
     private String name;
@@ -8,6 +12,11 @@ public class Product {
     private Float price;
     private int quantity;
     private ProductStatus status;
+
+    public StringProperty statusProperty() {
+        String statusStr = (this.status == ProductStatus.AVAILABLE) ? "còn hàng" : "đã xoá";
+        return new SimpleStringProperty(statusStr);
+    }
 
     public Product() {
     }
@@ -29,6 +38,13 @@ public class Product {
         this.price = price;
         this.quantity = quantity;
         this.status = status;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public ProductStatus getStatus() {

@@ -241,8 +241,8 @@
                             <TableColumn fx:id="col_pro_stt" prefWidth="51.0" text="STT" />
                             <TableColumn fx:id="col_pro_name" prefWidth="99.0" text="Tên sản phẩm" />
                               <TableColumn fx:id="col_pro_cat" prefWidth="84.0" text="Danh mục" />
-                              <TableColumn fx:id="col_pro_desc" prefWidth="75.0" text="Mô tả" />
-                              <TableColumn fx:id="col_pro_price" prefWidth="109.0" text="Đơn giá" />
+                              <TableColumn fx:id="col_pro_desc" prefWidth="103.0" text="Mô tả" />
+                              <TableColumn fx:id="col_pro_price" prefWidth="81.0" text="Đơn giá" />
                               <TableColumn fx:id="col_pro_quantity" prefWidth="73.0" text="Số lượng" />
                               <TableColumn fx:id="col_pro_status" prefWidth="100.0" text="Trạng thái" />
                           </columns>

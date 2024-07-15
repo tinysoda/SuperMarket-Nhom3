@@ -326,7 +326,7 @@ public class AdminDashboardController implements Initializable {
                      String category=rs.getString("category");
                      Float price=rs.getFloat("price");
                      int quantity=rs.getInt("quantity");
-                     String productStat=rs.getString("product_status");
+                     String productStat=rs.getString("status");
                      ProductStatus productStatus=ProductStatus.valueOf(productStat);
                      product=new Product(id,name,desc,category,price,quantity,productStatus);
              productsList.add(product);
@@ -348,7 +348,8 @@ public class AdminDashboardController implements Initializable {
         col_pro_desc.setCellValueFactory(new PropertyValueFactory<Product,String>("description"));
         col_pro_price.setCellValueFactory(new PropertyValueFactory<Product,String>("price"));
         col_pro_quantity.setCellValueFactory(new PropertyValueFactory<Product,String>("quantity"));
-        col_pro_status.setCellValueFactory(new PropertyValueFactory<Product,String>("status"));
+        col_pro_status.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+
 
         adminProTable.setItems(adminProductList2);
     }
@@ -356,7 +357,7 @@ public class AdminDashboardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         hideAllForm();
-        adminProManForm.setVisible(true);
-        adminProManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
+        adminStatForm.setVisible(true);
+        adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
     }
 }
