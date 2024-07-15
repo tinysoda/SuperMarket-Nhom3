@@ -1,14 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.java.supermarket.EmployeeDashboardController"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.EmployeeDashboardController">
+    <center>
+        <AnchorPane prefHeight="550.0" prefWidth="900.0">
+         <children>
+            <AnchorPane layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+               <children>
+                   <VBox layoutX="20.0" layoutY="20.0" spacing="10.0">
+                       <Label text="Tạo hoá đơn">
+                        <font>
+                           <Font name="Tahoma" size="15.0" />
+                        </font></Label>
+                       <HBox spacing="10.0">
+                           <Label text="Tên khách hàng" />
+                           <TextField fx:id="customerNameField" />
+                        <Label layoutX="10.0" layoutY="10.0" text="Sdt" />
+                        <TextField fx:id="customerNameField1" layoutX="109.0" layoutY="10.0" />
+                       </HBox>
+                       <HBox spacing="10.0">
+                           <Label text="Tên sản phẩm" />
+                        <ComboBox prefWidth="150.0" />
+                           <Label text="Số lượng" />
+                           <TextField fx:id="quantityField" prefWidth="50.0" />
+                           <Button prefHeight="25.0" prefWidth="57.0" text="Thêm" />
+                        <Button layoutX="373.0" layoutY="10.0" prefHeight="25.0" prefWidth="57.0" text="Xoá" />
+                       </HBox>
+                       <TableView fx:id="billItemsTable" prefHeight="400.0" prefWidth="760.0">
+                           <columns>
+                               <TableColumn prefWidth="95.0" text="Tên sản phẩm" />
+                               <TableColumn prefWidth="65.0" text="Số lượng" />
+                               <TableColumn text="Đơn giá" />
+                               <TableColumn text="Tổng" />
+                           </columns>
+                       </TableView>
+                       <HBox spacing="10.0">
+                           <Label text="Tổng:" />
+                           <Label fx:id="totalAmountLabel" />
+                       </HBox>
+                       <Button text="Lưu hoá đơn" />
+                   </VBox>
+               </children></AnchorPane>
+         </children>
+        </AnchorPane>
+    </center>
+    <left>
+        <AnchorPane prefHeight="550.0" prefWidth="190.0" styleClass="left-nav" stylesheets="@styles/Dashboard.css" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="220.0" fitWidth="190.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <image>
+                        <Image url="@images/bigclogo.png" />
+                    </image>
+                </ImageView>
+                <Line endX="42.5" layoutX="124.0" layoutY="222.0" startX="-100.0" stroke="WHITE" />
+                <VBox layoutX="12.0" layoutY="246.0" prefHeight="105.0" prefWidth="172.0" AnchorPane.rightAnchor="6.0">
+                    <children>
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="33.0" prefWidth="172.0" styleClass="nav-button" stylesheets="@styles/Dashboard.css" text="Hoá đơn bán hàng">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="MONEY" size="20" />
+                            </graphic>
+                        </Button>
+                    </children>
+                </VBox>
+                <Button layoutX="24.0" layoutY="486.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="116.0" styleClass="nav-button" stylesheets="@styles/Dashboard.css" text="Đăng xuất" AnchorPane.bottomAnchor="15.0">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="SIGN_OUT" size="20" />
+                    </graphic>
+                </Button>
+            </children>
+        </AnchorPane>
+    </left>
+    <top>
+        <AnchorPane prefHeight="30.0" prefWidth="1090.0" styleClass="top-nav" stylesheets="@styles/Dashboard.css" BorderPane.alignment="CENTER">
+            <children>
+                <Button layoutX="1038.0" layoutY="2.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="50.0" styleClass="close-button" AnchorPane.rightAnchor="0.0">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="CLOSE" />
+                    </graphic></Button>
+                <Button layoutX="986.0" layoutY="2.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="50.0" styleClass="minimize-button" stylesheets="@styles/Dashboard.css" AnchorPane.rightAnchor="50.0">
+                    <graphic>
+                        <FontAwesomeIconView glyphName="MINUS" />
+                    </graphic></Button>
+                <Label layoutX="14.0" layoutY="6.0" text="Siêu thị BigC | Nhân viên">
+                    <font>
+                        <Font name="Tahoma" size="15.0" />
+                    </font>
+                </Label>
+            </children>
+        </AnchorPane>
+    </top>
+</BorderPane>

@@ -39,10 +39,11 @@
                            <Label text="Số lượng" />
                            <TextField fx:id="quantityField" prefWidth="50.0" />
                            <Button prefHeight="25.0" prefWidth="57.0" text="Thêm" />
+                        <Button layoutX="373.0" layoutY="10.0" prefHeight="25.0" prefWidth="57.0" text="Xoá" />
                        </HBox>
                        <TableView fx:id="billItemsTable" prefHeight="400.0" prefWidth="760.0">
                            <columns>
-                               <TableColumn prefWidth="95.0" text="Tên sãn phẩm" />
+                               <TableColumn prefWidth="95.0" text="Tên sản phẩm" />
                                <TableColumn prefWidth="65.0" text="Số lượng" />
                                <TableColumn text="Đơn giá" />
                                <TableColumn text="Tổng" />
