@@ -5,6 +5,9 @@ import com.java.supermarket.object.Product;
 import com.java.supermarket.object.ProductStatus;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +17,8 @@ import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -222,7 +227,8 @@ public class AdminDashboardController implements Initializable {
 
     private Double x;
     private Double y;
-    private void hideAllForm(){
+
+    private void hideAllForm() {
         adminStatForm.setVisible(false);
         adminStatBtn.setStyle("-fx-background-color: TRANSPARENT");
 
@@ -235,75 +241,77 @@ public class AdminDashboardController implements Initializable {
         adminBillManForm.setVisible(false);
         adminBillManBtn.setStyle("-fx-background-color: TRANSPARENT");
     }
-    public void switchForm(ActionEvent event){
+
+    public void switchForm(ActionEvent event) {
         hideAllForm();
-        if(event.getSource() == adminStatBtn){
+        if (event.getSource() == adminStatBtn) {
             adminTitleLabel.setText("Quản lý - Thống kê");
             adminStatForm.setVisible(true);
             adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
-        }
-        else if(event.getSource() == adminStaffManBtn){
+        } else if (event.getSource() == adminStaffManBtn) {
             adminTitleLabel.setText("Quản lý - Nhân viên");
             adminStaffManForm.setVisible(true);
             adminStaffManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
-        }
-        else if(event.getSource() == adminProManBtn){
+        } else if (event.getSource() == adminProManBtn) {
             adminTitleLabel.setText("Quản lý - Sản phẩm");
             adminProManForm.setVisible(true);
-            showProduct();
+            adminShowProduct();
+            adminProLookUp();
             adminProManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
-        }
-        else if(event.getSource() == adminBillManBtn){
+        } else if (event.getSource() == adminBillManBtn) {
             adminTitleLabel.setText("Quản lý - Hoá đơn");
             adminBillManForm.setVisible(true);
             adminBillManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
         }
     }
 
-    public void close(){
+    public void close() {
         System.exit(0);
     }
-    public void minimize(){
-        Stage stage=(Stage)adminForm.getScene().getWindow();
+
+    public void minimize() {
+        Stage stage = (Stage) adminForm.getScene().getWindow();
         stage.setIconified(true);
     }
 
-    public void logout(){
+    public void logout() {
         try {
-            Alert alert=new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Đăng xuất?");
             alert.setHeaderText(null);
             alert.setContentText("Bạn có chắc chắn muốn đăng xuất?");
 
-            Optional<ButtonType> option=alert.showAndWait();
+            Optional<ButtonType> option = alert.showAndWait();
 
-            if (option.get().equals(ButtonType.OK)){
+            if (option.get().equals(ButtonType.OK)) {
                 adminLogoutBtn.getScene().getWindow().hide();
 
-                Parent root= FXMLLoader.load(getClass().getResource("login.fxml"));
-                Stage stage=new Stage();
-                Scene scene=new Scene(root);
+                Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+                Stage stage = new Stage();
+                Scene scene = new Scene(root);
 
                 stage.initStyle(StageStyle.TRANSPARENT);
-                root.setOnMousePressed((MouseEvent event)->{
-                    x=event.getSceneX();
-                    y=event.getSceneY();
+                root.setOnMousePressed((MouseEvent event) -> {
+                    x = event.getSceneX();
+                    y = event.getSceneY();
                 });
-                root.setOnMouseDragged((MouseEvent event)->{
-                    stage.setX(event.getScreenX()-x);
-                    stage.setY(event.getScreenY()-y);
+                root.setOnMouseDragged((MouseEvent event) -> {
+                    stage.setX(event.getScreenX() - x);
+                    stage.setY(event.getScreenY() - y);
 
                     stage.setOpacity(.8);
                 });
-                root.setOnMouseReleased((MouseEvent event)->{
+                root.setOnMouseReleased((MouseEvent event) -> {
                     stage.setOpacity(1);
                 });
                 stage.setScene(scene);
                 stage.show();
 
-            }else return;
+            } else return;
 
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private Connection con;
@@ -311,53 +319,253 @@ public class AdminDashboardController implements Initializable {
     private Statement st;
     private ResultSet rs;
 
-    ObservableList<Product> adminProductList(){
-     ObservableList<Product> productsList= FXCollections.observableArrayList();
-     String sql="select * from product";
-     con = DBUtils.getConnection();
-     try{
-         Product product;
-         ps = con.prepareStatement(sql);
-         rs = ps.executeQuery();
-         while(rs.next()){
-                     int id=rs.getInt("id");
-                     String name=rs.getString("name");
-                     String desc=rs.getString("description");
-                     String category=rs.getString("category");
-                     Float price=rs.getFloat("price");
-                     int quantity=rs.getInt("quantity");
-                     String productStat=rs.getString("status");
-                     ProductStatus productStatus=ProductStatus.valueOf(productStat);
-                     product=new Product(id,name,desc,category,price,quantity,productStatus);
-             productsList.add(product);
-         }
-     }catch (Exception e){
-         e.printStackTrace();
-         return null;
-     }
-     return productsList;
+    public ObservableList<Product> adminProductList() {
+        ObservableList<Product> productsList = FXCollections.observableArrayList();
+        String sql = "select * from product";
+        con = DBUtils.getConnection();
+        try {
+            Product product;
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String desc = rs.getString("description");
+                String category = rs.getString("category");
+                Float price = rs.getFloat("price");
+                int quantity = rs.getInt("quantity");
+                String productStat = rs.getString("status");
+                ProductStatus productStatus = ProductStatus.valueOf(productStat);
+                product = new Product(id, name, desc, category, price, quantity, productStatus);
+                productsList.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return productsList;
     }
 
-    ObservableList<Product> adminProductList2;
+    private ObservableList<Product> adminProductList2;
 
-    public void showProduct(){
-        adminProductList2=adminProductList();
-        col_pro_stt.setCellValueFactory(new PropertyValueFactory<Product,String>("id"));
-        col_pro_name.setCellValueFactory(new PropertyValueFactory<Product,String>("name"));
-        col_pro_cat.setCellValueFactory(new PropertyValueFactory<Product,String>("category"));
-        col_pro_desc.setCellValueFactory(new PropertyValueFactory<Product,String>("description"));
-        col_pro_price.setCellValueFactory(new PropertyValueFactory<Product,String>("price"));
-        col_pro_quantity.setCellValueFactory(new PropertyValueFactory<Product,String>("quantity"));
+    public void adminShowProduct() {
+        adminProductList2 = adminProductList();
+        col_pro_stt.setCellValueFactory(new PropertyValueFactory<Product, String>("id"));
+        col_pro_name.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
+        col_pro_cat.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
+        col_pro_desc.setCellValueFactory(new PropertyValueFactory<Product, String>("description"));
+        col_pro_price.setCellValueFactory(new PropertyValueFactory<Product, String>("price"));
+        col_pro_quantity.setCellValueFactory(new PropertyValueFactory<Product, String>("quantity"));
         col_pro_status.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
 
 
         adminProTable.setItems(adminProductList2);
     }
 
+    public void adminProSelect() {
+        Product product = adminProTable.getSelectionModel().getSelectedItem();
+        int index = adminProTable.getSelectionModel().getSelectedIndex();
+
+        if (index == -1) {
+            return;
+        }
+        adminProNameTF.setText(product.getName());
+        adminProDescTF.setText(product.getDescription());
+        adminProCatTF.setText(product.getCategory());
+        adminProPriceTF.setText(product.getPrice().toString());
+        adminProQuanityTF.setText(String.valueOf(product.getQuantity()));
+
+    }
+
+    public void adminProAdd() {
+        String insertQuery = "insert into product (name,description,category,price,quantity) values(?,?,?,?,?)";
+        con = DBUtils.getConnection();
+        try {
+            Alert alert;
+            if (adminProNameTF.getText().isEmpty() || adminProPriceTF.getText().isEmpty() || adminProQuanityTF.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Điền đầy đủ thông tin sản phẩm");
+                alert.showAndWait();
+            } else {
+                ps = con.prepareStatement(insertQuery);
+                ps.setString(1, adminProNameTF.getText());
+                ps.setString(2, adminProDescTF.getText());
+                ps.setString(3, adminProCatTF.getText());
+                ps.setFloat(4, Float.parseFloat(adminProPriceTF.getText()));
+                ps.setInt(5, Integer.parseInt(adminProQuanityTF.getText()));
+                ps.executeUpdate();
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Thêm sản phẩm "+adminProNameTF.getText()+" thành công");
+                alert.showAndWait();
+
+                adminShowProduct();
+                adminProClear();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void adminProClear(){
+        adminProNameTF.clear();
+        adminProDescTF.clear();
+        adminProCatTF.clear();
+        adminProPriceTF.clear();
+        adminProQuanityTF.clear();
+    }
+
+    public void adminProUpdate() {
+        String updateQuery = "UPDATE product SET name = ?, description = ?, category = ?, price = ?, quantity = ? WHERE id = ?";
+        con = DBUtils.getConnection();
+
+        Product selectedProduct = adminProTable.getSelectionModel().getSelectedItem();
+        int selectedIndex = adminProTable.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex == -1 || selectedProduct == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Chọn sản phẩm cần cập nhật");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            Alert alert;
+            if (adminProNameTF.getText().isEmpty() || adminProPriceTF.getText().isEmpty() || adminProQuanityTF.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Điền đầy đủ thông tin sản phẩm");
+                alert.showAndWait();
+            } else {
+                ps = con.prepareStatement(updateQuery);
+                ps.setString(1, adminProNameTF.getText());
+                ps.setString(2, adminProDescTF.getText());
+                ps.setString(3, adminProCatTF.getText());
+                ps.setFloat(4, Float.parseFloat(adminProPriceTF.getText()));
+                ps.setInt(5, Integer.parseInt(adminProQuanityTF.getText()));
+                ps.setInt(6, selectedProduct.getId());
+                ps.executeUpdate();
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Cập nhật sản phẩm " + adminProNameTF.getText() + " thành công");
+                alert.showAndWait();
+
+                // Update the selected product in the list with the new values
+                selectedProduct.setName(adminProNameTF.getText());
+                selectedProduct.setDescription(adminProDescTF.getText());
+                selectedProduct.setCategory(adminProCatTF.getText());
+                selectedProduct.setPrice(Float.parseFloat(adminProPriceTF.getText()));
+                selectedProduct.setQuantity(Integer.parseInt(adminProQuanityTF.getText()));
+
+                // Refresh the table with the updated list
+                adminShowProduct();
+                adminProTable.getSelectionModel().select(selectedIndex); // Reselect the previously selected item
+                adminProClear();
+                adminProLookUp();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public void adminProLookUp() {
+        adminProLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
+            String searchKey = newValue != null ? newValue.toLowerCase() : "";
+            ObservableList<Product> productList = FXCollections.observableArrayList();
+
+            try (Connection con = DBUtils.getConnection()) {
+                String query;
+                if (searchKey.isEmpty()) {
+                    query = "SELECT * FROM product";
+                } else {
+                    query = "SELECT * FROM product WHERE LOWER(name) LIKE ? OR LOWER(description) LIKE ? OR LOWER(category) LIKE ?";
+                }
+
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    if (!searchKey.isEmpty()) {
+                        ps.setString(1, "%" + searchKey + "%");
+                        ps.setString(2, "%" + searchKey + "%");
+                        ps.setString(3, "%" + searchKey + "%");
+                    }
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            Product product = new Product();
+                            product.setId(rs.getInt("id"));
+                            product.setName(rs.getString("name"));
+                            product.setDescription(rs.getString("description"));
+                            product.setCategory(rs.getString("category"));
+                            product.setPrice(rs.getFloat("price"));
+                            product.setQuantity(rs.getInt("quantity"));
+                            productList.add(product);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Update the table items without clearing the selection
+            adminProTable.setItems(productList);
+        });
+    }
+
+
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         hideAllForm();
         adminStatForm.setVisible(true);
         adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
+        adminProNameTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+        adminProDescTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+        adminProCatTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+        adminProPriceTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+        adminProQuanityTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
     }
+
+    //Focus change on Enter
+    private void handleTextFieldEnterPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            TextField sourceTextField = (TextField) event.getSource();
+            switch (sourceTextField.getId()) {
+                case "adminProNameTF":
+                    adminProDescTF.requestFocus();
+                    break;
+                case "adminProDescTF":
+                    adminProCatTF.requestFocus();
+                    break;
+                case "adminProCatTF":
+                    adminProPriceTF.requestFocus();
+                    break;
+                case "adminProPriceTF":
+                    adminProQuanityTF.requestFocus();
+                    break;
+                case "adminProQuanityTF":
+                    // Move focus back to the first field or any other desired behavior
+                    adminProNameTF.requestFocus();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    // Your other methods like adminProLookUp, adminProUpdate, etc. go here
+    // ...
+
 }

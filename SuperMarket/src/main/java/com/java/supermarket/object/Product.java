@@ -14,7 +14,7 @@ public class Product {
     private ProductStatus status;
 
     public StringProperty statusProperty() {
-        String statusStr = (this.status == ProductStatus.AVAILABLE) ? "còn hàng" : "đã xoá";
+        String statusStr = (this.status == ProductStatus.AVAILABLE) ? "Còn hàng" : "Đã xoá";
         return new SimpleStringProperty(statusStr);
     }
 
