@@ -18,6 +18,7 @@ public class Product {
         return new SimpleStringProperty(statusStr);
     }
 
+
     public Product() {
     }
 

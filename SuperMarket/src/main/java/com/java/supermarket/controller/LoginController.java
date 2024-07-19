@@ -84,7 +84,7 @@ public class LoginController {
                     if (username.equals("admin")) {
                         root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/adminDashboard.fxml"));
                     } else {
-                        root = FXMLLoader.load(getClass().getResource("employeeDashboard.fxml"));
+                        root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/employeeDashboard.fxml"));
                     }
 
                     Stage stage = new Stage();

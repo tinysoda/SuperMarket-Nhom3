@@ -6,6 +6,7 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -19,7 +20,6 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.ComboBox?>
 <BorderPane fx:id="adminForm" prefHeight="580.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.AdminDashboardController">
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
@@ -108,7 +108,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <HBox fx:id="adminStaffManForm" layoutX="24.0" layoutY="24.0" prefHeight="482.0" prefWidth="891.0" spacing="14.0" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="14.0">
+            <HBox fx:id="adminStaffManForm" layoutX="24.0" layoutY="24.0" prefHeight="482.0" prefWidth="891.0" spacing="14.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="14.0">
                <children>
                   <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
                      <styleClass>
@@ -144,7 +144,7 @@
                         <TextField fx:id="adminFnameTF" layoutX="92.0" layoutY="92.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <TextField fx:id="adminLnameTF" layoutX="99.0" layoutY="136.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <TextField fx:id="adminPhoneTF" layoutX="99.0" layoutY="176.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
-                        <ComboBox fx:id="adminRoleCB" layoutX="50" layoutY="50" />
+                        <ComboBox fx:id="adminRoleCB" layoutX="97.0" layoutY="279.0" prefHeight="26.0" prefWidth="158.0" styleClass="combobox" stylesheets="@styles/Dashboard.css" />
 
                         <TextField fx:id="adminUsernameTF" layoutX="99.0" layoutY="221.0" promptText="Tên đăng nhập" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <Button fx:id="adminAddUserBtn" layoutX="37.0" layoutY="337.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="84.0" styleClass="add-btn" stylesheets="@styles/Dashboard.css" text="Thêm mới" />
@@ -154,6 +154,11 @@
                         <Label layoutX="30.0" layoutY="33.0" text="QUẢN LÝ NHÂN VIÊN">
                            <font>
                               <Font name="Tahoma Bold" size="20.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="16.0" layoutY="282.0" prefHeight="19.0" prefWidth="76.0" text="Chức vụ">
+                           <font>
+                              <Font size="13.0" />
                            </font>
                         </Label>
 <!--                        <ComboBox fx:id="adminRoleCB" layoutX="99.0" layoutY="238.0" prefHeight="25.0" prefWidth="158.0" styleClass="combobox" stylesheets="@styles/Dashboard.css" />-->
@@ -173,7 +178,7 @@
                               <TableColumn fx:id="col_staff_fname" prefWidth="99.0" text="Tên" />
                               <TableColumn fx:id="col_staff_lname" prefWidth="99.0" text="Họ" />
                               <TableColumn fx:id="col_staff_phone" prefWidth="91.0" text="SDT" />
-                              <TableColumn fx:id="col_staff_role" prefWidth="100.0" text="Vị trí" />
+                              <TableColumn fx:id="col_staff_role" prefWidth="100.0" text="Chức vụ" />
                               <TableColumn fx:id="col_staff_username" prefWidth="144.0" text="Tên đăng nhập" />
                            </columns>
                         </TableView>
@@ -181,7 +186,7 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <HBox fx:id="adminProManForm" layoutX="14.0" layoutY="14.0" prefHeight="100.0" prefWidth="200.0" spacing="14.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <HBox fx:id="adminProManForm" layoutX="14.0" layoutY="14.0" prefHeight="100.0" prefWidth="200.0" spacing="14.0" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
                   <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
                      <styleClass>

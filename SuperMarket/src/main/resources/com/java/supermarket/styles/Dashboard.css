@@ -140,8 +140,31 @@
     /*-fx-background-color: transparent;*/
     -fx-text-fill: white;
 }
+.pay-btn {
+    -fx-background-color: #1c7679;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
 
+.pay-btn:hover {
+    -fx-background-color: #33a2b8;
+}
 
+.reception-btn {
+    -fx-background-color: #396dd3;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+.reception-btn:hover {
+    -fx-background-color: #1669bd;
+}
 
 /*.combobox {*/
 /*    -fx-background-color: transparent;*/
