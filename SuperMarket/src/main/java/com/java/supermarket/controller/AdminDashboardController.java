@@ -162,7 +162,7 @@ public class AdminDashboardController implements Initializable {
     private TextField adminUsernameTF;
 
     @FXML
-    private TableView<Employee> admin_StaffTable; // Ensure this is typed correctly
+    private TableView<Employee> admin_StaffTable;
 
     @FXML
     private AnchorPane admin_card2;
@@ -360,7 +360,7 @@ public class AdminDashboardController implements Initializable {
 
             admin_StaffTable.setItems(employeeList);
         } catch (Exception e) {
-            e.printStackTrace();  // In ra lỗi để dễ dàng kiểm tra
+            e.printStackTrace();
         }
     }
 
@@ -398,7 +398,7 @@ public class AdminDashboardController implements Initializable {
             sortList.comparatorProperty().bind(admin_StaffTable.comparatorProperty());
             admin_StaffTable.setItems(sortList);
         } catch (Exception e) {
-            e.printStackTrace();  // In ra lỗi để dễ dàng kiểm tra
+            e.printStackTrace();
         }
     }
 
@@ -513,16 +513,14 @@ public class AdminDashboardController implements Initializable {
                 alert.setContentText("Cập nhật nhân viên " + firstName + " thành công");
                 alert.showAndWait();
 
-                // Cập nhật thông tin nhân viên trong danh sách
                 selectedEmployee.setFirst_name(firstName);
                 selectedEmployee.setLast_name(lastName);
                 selectedEmployee.setPhone(phone);
                 selectedEmployee.setRole(role);
                 selectedEmployee.setUsername(username);
 
-                // Làm mới bảng với danh sách cập nhật
                 adminShowEmployee();
-                admin_StaffTable.getSelectionModel().select(selectedIndex); // Chọn lại mục đã chọn trước đó
+                admin_StaffTable.getSelectionModel().select(selectedIndex);
                 adminEmployeeClear();
             }
 

@@ -1,5 +1,4 @@
 package com.java.supermarket.object;
-
 public class Employee {
 
     private int id;
