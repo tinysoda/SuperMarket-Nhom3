@@ -31,6 +31,8 @@ import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.java.supermarket.object.Employee;
+
 public class AdminDashboardController implements Initializable {
 
     @FXML
@@ -127,7 +129,7 @@ public class AdminDashboardController implements Initializable {
     private Button adminProUpdateBtn;
 
     @FXML
-    private ComboBox<?> adminRoleCB;
+    private ComboBox<String> adminRoleCB;
 
     @FXML
     private TextField adminStaffLookUpTF;
@@ -160,7 +162,7 @@ public class AdminDashboardController implements Initializable {
     private TextField adminUsernameTF;
 
     @FXML
-    private TableView<?> admin_StaffTable;
+    private TableView<Employee> admin_StaffTable; // Ensure this is typed correctly
 
     @FXML
     private AnchorPane admin_card2;
@@ -205,22 +207,22 @@ public class AdminDashboardController implements Initializable {
     private TableColumn<?, ?> col_pro_total;
 
     @FXML
-    private TableColumn<?, ?> col_staff_fname;
+    private TableColumn<Employee, String> col_staff_fname;
 
     @FXML
-    private TableColumn<?, ?> col_staff_id;
+    private TableColumn<Employee, Integer> col_staff_id;
 
     @FXML
-    private TableColumn<?, ?> col_staff_lname;
+    private TableColumn<Employee, String> col_staff_lname;
 
     @FXML
-    private TableColumn<?, ?> col_staff_phone;
+    private TableColumn<Employee, String> col_staff_phone;
 
     @FXML
-    private TableColumn<?, ?> col_staff_role;
+    private TableColumn<Employee, String> col_staff_role;
 
     @FXML
-    private TableColumn<?, ?> col_staff_username;
+    private TableColumn<Employee, String> col_staff_username;
 
     @FXML
     private TableColumn<?, ?> col_total_amount;
@@ -319,6 +321,87 @@ public class AdminDashboardController implements Initializable {
     private Statement st;
     private ResultSet rs;
 
+    public ObservableList<Employee> adminEmployeeList() {
+        ObservableList<Employee> employeeList = FXCollections.observableArrayList();
+        String sql = "select * from user";
+        con = DBUtils.getConnection();
+        try {
+            Employee employee;
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                employee = new Employee(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone"),
+                        rs.getString("role"),
+                        rs.getString("username"),
+                        rs.getString("password"));
+                employeeList.add(employee);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return employeeList;
+    }
+
+
+    public void adminShowEmployee() {
+        try {
+            ObservableList<Employee> employeeList = adminEmployeeList();
+
+            col_staff_id.setCellValueFactory(new PropertyValueFactory<>("id"));
+            col_staff_fname.setCellValueFactory(new PropertyValueFactory<>("first_name"));
+            col_staff_lname.setCellValueFactory(new PropertyValueFactory<>("last_name"));
+            col_staff_phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+            col_staff_role.setCellValueFactory(new PropertyValueFactory<>("role"));
+            col_staff_username.setCellValueFactory(new PropertyValueFactory<>("username"));
+
+            admin_StaffTable.setItems(employeeList);
+        } catch (Exception e) {
+            e.printStackTrace();  // In ra lỗi để dễ dàng kiểm tra
+        }
+    }
+
+    public void adminEmployeeSelect() {
+        Employee employee = admin_StaffTable.getSelectionModel().getSelectedItem();
+        if (employee != null) {
+            adminFnameTF.setText(employee.getFirst_name());
+            adminLnameTF.setText(employee.getLast_name());
+            adminPhoneTF.setText(employee.getPhone());
+            adminRoleCB.setValue(employee.getRole());
+            adminUsernameTF.setText(employee.getUsername());
+        }
+    }
+
+    public void adminStaffLookUp() {
+        try {
+            ObservableList<Employee> employeeList = adminEmployeeList();
+            FilteredList<Employee> filter = new FilteredList<>(employeeList, e -> true);
+
+            adminStaffLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
+                filter.setPredicate(predicateEmployee -> {
+                    if (newValue.isEmpty() || newValue == null) {
+                        return true;
+                    }
+                    String searchKey = newValue.toLowerCase();
+                    return predicateEmployee.getFirst_name().toLowerCase().contains(searchKey) ||
+                            predicateEmployee.getLast_name().toLowerCase().contains(searchKey) ||
+                            predicateEmployee.getPhone().toLowerCase().contains(searchKey) ||
+                            predicateEmployee.getRole().toLowerCase().contains(searchKey) ||
+                            predicateEmployee.getUsername().toLowerCase().contains(searchKey);
+                });
+            });
+
+            SortedList<Employee> sortList = new SortedList<>(filter);
+            sortList.comparatorProperty().bind(admin_StaffTable.comparatorProperty());
+            admin_StaffTable.setItems(sortList);
+        } catch (Exception e) {
+            e.printStackTrace();  // In ra lỗi để dễ dàng kiểm tra
+        }
+    }
+
     public ObservableList<Product> adminProductList() {
         ObservableList<Product> productsList = FXCollections.observableArrayList();
         String sql = "select * from product";
@@ -346,6 +429,163 @@ public class AdminDashboardController implements Initializable {
         return productsList;
     }
 
+    public void adminEmployeeAdd() {
+        String insertQuery = "INSERT INTO user (first_name, last_name, phone, role, username, password) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(insertQuery)) {
+
+            if (adminFnameTF.getText().isEmpty() || adminLnameTF.getText().isEmpty() ||
+                    adminPhoneTF.getText().isEmpty() || adminUsernameTF.getText().isEmpty() ||
+                    adminRoleCB.getSelectionModel().isEmpty()) {
+
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Điền đầy đủ thông tin nhân viên");
+                alert.showAndWait();
+            } else {
+                ps.setString(1, adminFnameTF.getText());
+                ps.setString(2, adminLnameTF.getText());
+                ps.setString(3, adminPhoneTF.getText());
+                ps.setString(4, adminRoleCB.getValue());
+                ps.setString(5, adminUsernameTF.getText());
+                ps.setString(6, "default_password"); // Bạn có thể thay đổi hoặc mã hóa mật khẩu sau
+                ps.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Thêm nhân viên " + adminFnameTF.getText() + " thành công");
+                alert.showAndWait();
+
+                adminShowEmployee();
+                adminEmployeeClear();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void adminEmployeeUpdate() {
+        String updateQuery = "UPDATE user SET first_name = ?, last_name = ?, phone = ?, role = ?, username = ? WHERE id = ?";
+
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(updateQuery)) {
+
+            Employee selectedEmployee = admin_StaffTable.getSelectionModel().getSelectedItem();
+            int selectedIndex = admin_StaffTable.getSelectionModel().getSelectedIndex();
+
+            if (selectedIndex == -1 || selectedEmployee == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Chọn nhân viên cần cập nhật");
+                alert.showAndWait();
+                return;
+            }
+
+            String firstName = adminFnameTF.getText();
+            String lastName = adminLnameTF.getText();
+            String phone = adminPhoneTF.getText();
+            String role = adminRoleCB.getValue();
+            String username = adminUsernameTF.getText();
+
+            if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() || role == null || username.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Điền đầy đủ thông tin nhân viên");
+                alert.showAndWait();
+            } else {
+                ps.setString(1, firstName);
+                ps.setString(2, lastName);
+                ps.setString(3, phone);
+                ps.setString(4, role);
+                ps.setString(5, username);
+                ps.setInt(6, selectedEmployee.getId());
+                ps.executeUpdate();
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Cập nhật nhân viên " + firstName + " thành công");
+                alert.showAndWait();
+
+                // Cập nhật thông tin nhân viên trong danh sách
+                selectedEmployee.setFirst_name(firstName);
+                selectedEmployee.setLast_name(lastName);
+                selectedEmployee.setPhone(phone);
+                selectedEmployee.setRole(role);
+                selectedEmployee.setUsername(username);
+
+                // Làm mới bảng với danh sách cập nhật
+                adminShowEmployee();
+                admin_StaffTable.getSelectionModel().select(selectedIndex); // Chọn lại mục đã chọn trước đó
+                adminEmployeeClear();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void adminEmployeeDelete() {
+        String deleteQuery = "DELETE FROM user WHERE id = ?";
+
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(deleteQuery)) {
+
+            Employee selectedEmployee = admin_StaffTable.getSelectionModel().getSelectedItem();
+            int selectedIndex = admin_StaffTable.getSelectionModel().getSelectedIndex();
+
+            if (selectedIndex == -1 || selectedEmployee == null) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Chọn nhân viên cần xóa");
+                alert.showAndWait();
+                return;
+            }
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Xóa Nhân Viên");
+            alert.setHeaderText(null);
+            alert.setContentText("Bạn có chắc chắn muốn xóa nhân viên " + selectedEmployee.getFirst_name() + " ?");
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if (option.get().equals(ButtonType.OK)) {
+                ps.setInt(1, selectedEmployee.getId());
+                ps.executeUpdate();
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Xóa nhân viên thành công");
+                alert.showAndWait();
+
+                adminShowEmployee();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void adminEmployeeClear() {
+        adminFnameTF.clear();
+        adminLnameTF.clear();
+        adminPhoneTF.clear();
+        adminUsernameTF.clear();
+        adminRoleCB.getSelectionModel().clearSelection();
+    }
+
+
+
+
+    //Product start
     private ObservableList<Product> adminProductList2;
 
     public void adminShowProduct() {
@@ -528,6 +768,7 @@ public class AdminDashboardController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        adminRoleCB.setItems(FXCollections.observableArrayList("Manager", "Employee"));
         hideAllForm();
         adminStatForm.setVisible(true);
         adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
@@ -536,6 +777,9 @@ public class AdminDashboardController implements Initializable {
         adminProCatTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
         adminProPriceTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
         adminProQuanityTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+        admin_StaffTable.setOnMouseClicked(event -> adminEmployeeSelect());
+        adminShowEmployee();
+        adminStaffLookUp();
     }
 
     //Focus change on Enter
