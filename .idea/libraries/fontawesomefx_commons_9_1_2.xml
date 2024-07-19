@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="fontawesomefx-commons-9.1.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/SuperMarket/lib/fontawesomefx-commons-9.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/SuperMarket/lib/fontawesomefx-fontawesome-4.7.0-9.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/SuperMarket/lib/mysql-connector-java-8.0.30.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
