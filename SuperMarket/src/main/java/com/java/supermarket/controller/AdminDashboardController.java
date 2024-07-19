@@ -162,7 +162,7 @@ public class AdminDashboardController implements Initializable {
     private TextField adminUsernameTF;
 
     @FXML
-    private TableView<Employee> admin_StaffTable;
+    private TableView<Employee> admin_StaffTable; // Ensure this is typed correctly
 
     @FXML
     private AnchorPane admin_card2;
@@ -360,7 +360,7 @@ public class AdminDashboardController implements Initializable {
 
             admin_StaffTable.setItems(employeeList);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace();  // In ra lỗi để dễ dàng kiểm tra
         }
     }
 
@@ -376,31 +376,49 @@ public class AdminDashboardController implements Initializable {
     }
 
     public void adminStaffLookUp() {
-        try {
-            ObservableList<Employee> employeeList = adminEmployeeList();
-            FilteredList<Employee> filter = new FilteredList<>(employeeList, e -> true);
+        // Lắng nghe thay đổi trong trường tìm kiếm
+        adminStaffLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
+            String searchKey = newValue != null ? newValue.toLowerCase() : "";
+            ObservableList<Employee> employeeList = FXCollections.observableArrayList();
 
-            adminStaffLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
-                filter.setPredicate(predicateEmployee -> {
-                    if (newValue.isEmpty() || newValue == null) {
-                        return true;
+            try (Connection con = DBUtils.getConnection()) {
+                String query;
+                if (searchKey.isEmpty()) {
+                    query = "SELECT * FROM user";
+                } else {
+                    query = "SELECT * FROM user WHERE LOWER(first_name) LIKE ? OR LOWER(last_name) LIKE ?";
+                }
+
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    if (!searchKey.isEmpty()) {
+                        ps.setString(1, "%" + searchKey + "%");
+                        ps.setString(2, "%" + searchKey + "%");
                     }
-                    String searchKey = newValue.toLowerCase();
-                    return predicateEmployee.getFirst_name().toLowerCase().contains(searchKey) ||
-                            predicateEmployee.getLast_name().toLowerCase().contains(searchKey) ||
-                            predicateEmployee.getPhone().toLowerCase().contains(searchKey) ||
-                            predicateEmployee.getRole().toLowerCase().contains(searchKey) ||
-                            predicateEmployee.getUsername().toLowerCase().contains(searchKey);
-                });
-            });
 
-            SortedList<Employee> sortList = new SortedList<>(filter);
-            sortList.comparatorProperty().bind(admin_StaffTable.comparatorProperty());
-            admin_StaffTable.setItems(sortList);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            Employee employee = new Employee(
+                                    rs.getInt("id"),
+                                    rs.getString("first_name"),
+                                    rs.getString("last_name"),
+                                    rs.getString("phone"),
+                                    rs.getString("role"),
+                                    rs.getString("username"),
+                                    rs.getString("password")
+                            );
+                            employeeList.add(employee);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            admin_StaffTable.setItems(employeeList);
+        });
     }
+
+
 
     public ObservableList<Product> adminProductList() {
         ObservableList<Product> productsList = FXCollections.observableArrayList();
@@ -519,8 +537,9 @@ public class AdminDashboardController implements Initializable {
                 selectedEmployee.setRole(role);
                 selectedEmployee.setUsername(username);
 
+
                 adminShowEmployee();
-                admin_StaffTable.getSelectionModel().select(selectedIndex);
+                admin_StaffTable.getSelectionModel().select(selectedIndex); // Chọn lại mục đã chọn trước đó
                 adminEmployeeClear();
             }
 
