@@ -420,33 +420,6 @@ public class AdminDashboardController implements Initializable {
 
 
 
-    public ObservableList<Product> adminProductList() {
-        ObservableList<Product> productsList = FXCollections.observableArrayList();
-        String sql = "select * from product";
-        con = DBUtils.getConnection();
-        try {
-            Product product;
-            ps = con.prepareStatement(sql);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                String desc = rs.getString("description");
-                String category = rs.getString("category");
-                Float price = rs.getFloat("price");
-                int quantity = rs.getInt("quantity");
-                String productStat = rs.getString("status");
-                ProductStatus productStatus = ProductStatus.valueOf(productStat);
-                product = new Product(id, name, desc, category, price, quantity, productStatus);
-                productsList.add(product);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return productsList;
-    }
-
     public void adminEmployeeAdd() {
         String insertQuery = "INSERT INTO user (first_name, last_name, phone, role, username, password) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -600,7 +573,32 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-
+    public ObservableList<Product> adminProductList() {
+        ObservableList<Product> productsList = FXCollections.observableArrayList();
+        String sql = "select * from product";
+        con = DBUtils.getConnection();
+        try {
+            Product product;
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String desc = rs.getString("description");
+                String category = rs.getString("category");
+                Double price = rs.getDouble("price");
+                int quantity = rs.getInt("quantity");
+                String productStat = rs.getString("status");
+                ProductStatus productStatus = ProductStatus.valueOf(productStat);
+                product = new Product(id, name, desc, category, price, quantity, productStatus);
+                productsList.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return productsList;
+    }
 
     //Product start
     private ObservableList<Product> adminProductList2;
@@ -629,7 +627,7 @@ public class AdminDashboardController implements Initializable {
         adminProNameTF.setText(product.getName());
         adminProDescTF.setText(product.getDescription());
         adminProCatTF.setText(product.getCategory());
-        adminProPriceTF.setText(product.getPrice().toString());
+        adminProPriceTF.setText(String.valueOf(product.getPrice()));
         adminProQuanityTF.setText(String.valueOf(product.getQuantity()));
 
     }
@@ -720,7 +718,7 @@ public class AdminDashboardController implements Initializable {
                 selectedProduct.setName(adminProNameTF.getText());
                 selectedProduct.setDescription(adminProDescTF.getText());
                 selectedProduct.setCategory(adminProCatTF.getText());
-                selectedProduct.setPrice(Float.parseFloat(adminProPriceTF.getText()));
+                selectedProduct.setPrice(Double.parseDouble(adminProPriceTF.getText()));
                 selectedProduct.setQuantity(Integer.parseInt(adminProQuanityTF.getText()));
 
                 // Refresh the table with the updated list
@@ -764,7 +762,7 @@ public class AdminDashboardController implements Initializable {
                             product.setName(rs.getString("name"));
                             product.setDescription(rs.getString("description"));
                             product.setCategory(rs.getString("category"));
-                            product.setPrice(rs.getFloat("price"));
+                            product.setPrice(rs.getDouble("price"));
                             product.setQuantity(rs.getInt("quantity"));
                             productList.add(product);
                         }

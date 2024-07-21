@@ -11,6 +11,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.17.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>13</version>
@@ -20,6 +25,7 @@
             <artifactId>javafx-fxml</artifactId>
             <version>13</version>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -29,6 +35,7 @@
                 <version>3.8.0</version>
                 <configuration>
                     <release>11</release>
+                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
             <plugin>

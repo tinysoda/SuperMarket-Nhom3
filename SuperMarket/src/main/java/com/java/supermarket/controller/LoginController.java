@@ -80,11 +80,18 @@ public class LoginController {
                     alert.setContentText("Đăng nhập thành công");
                     alert.showAndWait();
 
+                    FXMLLoader loader = new FXMLLoader();
                     Parent root;
                     if (username.equals("admin")) {
-                        root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/adminDashboard.fxml"));
+                        loader.setLocation(getClass().getResource("/com/java/supermarket/adminDashboard.fxml"));
                     } else {
-                        root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/employeeDashboard.fxml"));
+                        loader.setLocation(getClass().getResource("/com/java/supermarket/employeeDashboard.fxml"));
+                    }
+                    root = loader.load();
+
+                    if (!username.equals("admin")) {
+                        EmployeeDashboardController controller = loader.getController();
+                        controller.setEmployeeUsername(username);
                     }
 
                     Stage stage = new Stage();

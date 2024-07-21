@@ -5,6 +5,7 @@ module com.java.supermarket {
     requires de.jensd.fx.glyphs.fontawesome;
     requires de.jensd.fx.glyphs.commons;
     requires mysql.connector.java;
+    requires jasperreports;
 
     opens com.java.supermarket to javafx.fxml;
     exports com.java.supermarket;
