@@ -238,13 +238,6 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
-
-
-
-
-
-
-
     private void showInvoiceAlert(String filePath) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Hóa Đơn");
@@ -514,4 +507,11 @@ public class EmployeeDashboardController implements Initializable {
         return productsList;
     }
 
+public void close() {
+    System.exit(0);
+}
+    public void minimize() {
+        Stage stage = (Stage) employeeForm.getScene().getWindow();
+        stage.setIconified(true);
+    }
 }
