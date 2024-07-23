@@ -9,11 +9,21 @@
 }
 .button{
     -fx-cursor: hand;
-    -fx-background-color: transparent;
+    /*-fx-background-color: transparent;*/
     -fx-border-width: .8px;
     -fx-border-color: black;
     -fx-border-radius: 5px;
 }
 .saveOrderButton:hover{
 
+}
+.close-button,.minimize-button{
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.close-button:hover{
+    -fx-background-color: #dd2f4f;
+}
+.minimize-button:hover{
+    -fx-background-color: #FFDD00;
 }
