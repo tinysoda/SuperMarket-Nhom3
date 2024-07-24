@@ -32,10 +32,7 @@ import com.itextpdf.layout.font.FontProvider;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -65,6 +62,10 @@ public class EmployeeDashboardController implements Initializable {
     @FXML
     private ListView<String> suggestionListView;
 
+    @FXML
+    private Button staffCloseBtn;
+    @FXML
+    private Button staffMinimizeBtn;
 
     @FXML
     private TableView<Product> productTableView;
@@ -88,6 +89,9 @@ public class EmployeeDashboardController implements Initializable {
     private Label totalAmountLabel;
 
     @FXML
+    private Button saveOrderButton;
+
+    @FXML
     private TextField amountGivenField;
 
     @FXML
@@ -97,8 +101,6 @@ public class EmployeeDashboardController implements Initializable {
 
     private Button usePointDiscount;
 
-
-    private Button saveOrderButton;
     @FXML
     private Button staffLogoutBtn;
 
@@ -119,8 +121,8 @@ public class EmployeeDashboardController implements Initializable {
 
     @FXML
     void minimize(ActionEvent event) {
-        // Stage stage = (Stage) employeeForm.getScene().getWindow();
-        // stage.setIconified(true);
+         Stage stage = (Stage) employeeForm.getScene().getWindow();
+         stage.setIconified(true);
     }
 
     @FXML
@@ -658,13 +660,8 @@ public class EmployeeDashboardController implements Initializable {
             preparedStatement.setInt(3, customer.getPoints());
             preparedStatement.executeUpdate();
 
-            public void close () {
-                System.exit(0);
-            }
-            public void minimize () {
-                Stage stage = (Stage) employeeForm.getScene().getWindow();
-                stage.setIconified(true);
-            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
             double x;

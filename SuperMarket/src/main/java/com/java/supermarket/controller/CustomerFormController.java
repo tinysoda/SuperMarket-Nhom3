@@ -58,4 +58,5 @@ public class CustomerFormController {
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
     }
+
 }

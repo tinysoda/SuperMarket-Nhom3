@@ -8,7 +8,7 @@ module com.java.supermarket {
     requires kernel;
     requires layout;
     requires io;
-//    requires jasperreports;
+
 
     opens com.java.supermarket to javafx.fxml;
     exports com.java.supermarket;
