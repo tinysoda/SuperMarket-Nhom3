@@ -131,26 +131,42 @@ public class EmployeeDashboardController implements Initializable {
             double totalAmount = Double.parseDouble(totalAmountLabel.getText());
             int customerPoints = customer.getPoints();
 
-            // Giả sử 1 điểm = 1 đơn vị tiền
-            discountAmount = customerPoints;
+            if (!discountApplied) {
+                // Giả sử 1 điểm = 1 đơn vị tiền
+                discountAmount = customerPoints;
 
-            // Nếu số điểm lớn hơn số tiền tổng, chỉ dùng số điểm bằng số tiền tổng
-            if (discountAmount > totalAmount) {
-                discountAmount = totalAmount;
+                // Nếu số điểm lớn hơn số tiền tổng, chỉ dùng số điểm bằng số tiền tổng
+                if (discountAmount > totalAmount) {
+                    discountAmount = totalAmount;
+                }
+
+                // Tính lại tổng số tiền sau khi trừ điểm
+                double newTotalAmount = totalAmount - discountAmount;
+                totalAmountLabel.setText(String.valueOf(newTotalAmount));
+
+                // Đánh dấu là đã áp dụng điểm giảm giá
+                discountApplied = true;
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Đã áp dụng điểm giảm giá thành công!");
+                alert.showAndWait();
+            } else {
+                // Bỏ áp dụng điểm giảm giá
+                double originalTotalAmount = totalAmount + discountAmount;
+                totalAmountLabel.setText(String.valueOf(originalTotalAmount));
+
+                // Đánh dấu là chưa áp dụng điểm giảm giá
+                discountApplied = false;
+                discountAmount = 0.0;
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Không áp dụng mã giảm giá.");
+                alert.showAndWait();
             }
-
-            // Tính lại tổng số tiền sau khi trừ điểm
-            double newTotalAmount = totalAmount - discountAmount;
-            totalAmountLabel.setText(String.valueOf(newTotalAmount));
-
-            // Đánh dấu là đã áp dụng điểm giảm giá
-            discountApplied = true;
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Thành công");
-            alert.setHeaderText(null);
-            alert.setContentText("Đã áp dụng điểm giảm giá thành công!");
-            alert.showAndWait();
         } catch (NumberFormatException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -160,6 +176,8 @@ public class EmployeeDashboardController implements Initializable {
             alert.showAndWait();
         }
     }
+
+
 
     private void updateCustomerPointsInDatabase(String customerPhone, int newPoints) {
         try {
@@ -208,6 +226,7 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
+
     private void generateInvoice(int billId, Bill bill) {
         String filePath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\bill_" + billId + ".pdf";
         try (PdfWriter writer = new PdfWriter(filePath);
@@ -233,10 +252,12 @@ public class EmployeeDashboardController implements Initializable {
                     .setTextAlignment(TextAlignment.CENTER);
             document.add(title);
 
+            // Thêm thông tin vào tài liệu PDF
             document.add(new Paragraph("Mã Hóa Đơn: " + billId).setFont(font));
             document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
             document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
 
+            // Tạo bảng chứa thông tin sản phẩm
             Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2}))
                     .useAllAvailableWidth();
             table.addHeaderCell(new Cell().add(new Paragraph("STT").setFont(font)));
@@ -260,6 +281,7 @@ public class EmployeeDashboardController implements Initializable {
         }
         showInvoiceAlert(filePath);
     }
+
 
 
     private void showInvoiceAlert(String filePath) {
@@ -366,11 +388,6 @@ public class EmployeeDashboardController implements Initializable {
         int pointsEarned = (int) (amountGiven / 10);
         updateCustomerPoints(customer.getPhone(), pointsEarned);
 
-
-        amountGiven = Double.parseDouble(amountGivenField.getText());
-        pointsEarned = (int) (amountGiven / 10);
-        updateCustomerPoints(customer.getPhone(), pointsEarned);
-
         // Nếu đã áp dụng điểm giảm giá, cập nhật lại số điểm khách hàng
         if (discountApplied) {
             int newCustomerPoints = customer.getPoints() - (int) discountAmount;
@@ -393,7 +410,6 @@ public class EmployeeDashboardController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText("Tạo hóa đơn thành công");
         alert.showAndWait();
-
     }
 
     private void updateCustomerPoints(String customerPhone, int pointsEarned) {
