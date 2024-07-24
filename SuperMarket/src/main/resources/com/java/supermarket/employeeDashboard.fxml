@@ -68,7 +68,7 @@
             <Label fx:id="customerNameFiled" layoutX="527.0" layoutY="18.0" prefHeight="18.0" prefWidth="82.0" text="name" />
             <Label layoutX="613.0" layoutY="19.0" text="Cashier:" />
             <Label fx:id="employeeName" layoutX="678.0" layoutY="19.0" prefHeight="18.0" prefWidth="38.0" text="name" />
-            <Button fx:id="customerInfoButton1" layoutX="656.0" layoutY="502.0" mnemonicParsing="false" onAction="#showCustomerForm" prefHeight="39.0" prefWidth="121.0" text="Đăng xuất">
+            <Button fx:id="staffLogoutBtn" layoutX="656.0" layoutY="502.0" mnemonicParsing="false" onAction="#logout" prefHeight="39.0" prefWidth="121.0" text="Đăng xuất">
                <font>
                   <Font name="Tahoma" size="15.0" />
                </font>

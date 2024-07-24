@@ -32,6 +32,7 @@ import java.util.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import javafx.stage.StageStyle;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
@@ -83,21 +84,11 @@ public class EmployeeDashboardController implements Initializable {
 
     @FXML
     private Button saveOrderButton;
+    private Button staffLogoutBtn;
 
     private ObservableList<Product> productList;
 
     private Customer customer; // Biến lưu trữ thông tin khách hàng hiện tại
-
-    @FXML
-    void close(ActionEvent event) {
-        System.exit(0);
-    }
-
-    @FXML
-    void minimize(ActionEvent event) {
-        // Stage stage = (Stage) employeeForm.getScene().getWindow();
-        // stage.setIconified(true);
-    }
 
     private void saveBillToDatabase(Bill bill) {
         try {
@@ -428,12 +419,21 @@ public class EmployeeDashboardController implements Initializable {
         if (selectedSuggestion != null) {
             String productName = selectedSuggestion.split(" \\(")[0];
             for (Product product : adminProductList()) {
-                if (product.getName().equalsIgnoreCase(productName)) {
+                if (product.getName().equalsIgnoreCase(productName)&&product.getQuantity()>0) {
                     productList.add(product);
                     productTableView.setItems(productList);
                     suggestionListView.setVisible(false);
                     System.out.println("Product added: " + product.getName()); // Thêm dòng này
                     break;
+                }else {
+                    suggestionListView.setVisible(false);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Hết hàng");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Sản phẩm hết hàng");
+                    alert.showAndWait().ifPresent(response -> {});
+                    break;
+
                 }
             }
         }
@@ -514,4 +514,46 @@ public void close() {
         Stage stage = (Stage) employeeForm.getScene().getWindow();
         stage.setIconified(true);
     }
+    private double x;
+    private double y;
+    public void logout() {
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Đăng xuất?");
+            alert.setHeaderText(null);
+            alert.setContentText("Bạn có chắc chắn muốn đăng xuất?");
+
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if (option.get().equals(ButtonType.OK)) {
+                staffLogoutBtn.getScene().getWindow().hide();
+
+                Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+                Stage stage = new Stage();
+                Scene scene = new Scene(root);
+
+                stage.initStyle(StageStyle.TRANSPARENT);
+                root.setOnMousePressed((MouseEvent event) -> {
+                    x = event.getSceneX();
+                    y = event.getSceneY();
+                });
+                root.setOnMouseDragged((MouseEvent event) -> {
+                    stage.setX(event.getScreenX() - x);
+                    stage.setY(event.getScreenY() - y);
+
+                    stage.setOpacity(.8);
+                });
+                root.setOnMouseReleased((MouseEvent event) -> {
+                    stage.setOpacity(1);
+                });
+                stage.setScene(scene);
+                stage.show();
+
+            } else return;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
