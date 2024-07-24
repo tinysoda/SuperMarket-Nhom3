@@ -520,27 +520,27 @@ public class EmployeeDashboardController implements Initializable {
         if (selectedSuggestion != null) {
             String productName = selectedSuggestion.split(" \\(")[0];
             for (Product product : adminProductList()) {
-                if (product.getName().equalsIgnoreCase(productName) && product.getQuantity() > 0) {
-                    productList.add(product);
-                    productTableView.setItems(productList);
-                    suggestionListView.setVisible(false);
-                    System.out.println("Product added: " + product.getName()); // Thêm dòng này
+                if (product.getName().equalsIgnoreCase(productName)) {
+                    int currentStock = getProductStock(product.getId());
+                    if (currentStock == 0) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Lỗi");
+                        alert.setHeaderText(null);
+                        alert.setContentText("Sản phẩm này đã hết hàng");
+                        alert.showAndWait();
+                    } else {
+                        productList.add(product);
+                        productTableView.setItems(productList);
+                        suggestionListView.setVisible(false);
+                        System.out.println("Product added: " + product.getName()); // Log product addition
+                    }
                     break;
-                } else {
-                    suggestionListView.setVisible(false);
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Hết hàng");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Sản phẩm hết hàng");
-                    alert.showAndWait().ifPresent(response -> {
-                    });
-                    break;
-
                 }
             }
         }
         updateTotalAmount();
     }
+
 
 
     private int getProductStock(int productId) {
@@ -560,6 +560,7 @@ public class EmployeeDashboardController implements Initializable {
         }
         return stock;
     }
+
 
 
     private void updateProductStock(int productId, int newStock) {
