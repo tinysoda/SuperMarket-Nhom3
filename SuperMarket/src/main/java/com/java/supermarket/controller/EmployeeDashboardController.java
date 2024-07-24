@@ -172,7 +172,7 @@ public class EmployeeDashboardController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Lỗi");
             alert.setHeaderText(null);
-            alert.setContentText("Có lỗi xảy ra khi áp dụng điểm giảm giá.");
+            alert.setContentText("Ban chưa điền thông tin khách hàng");
             alert.showAndWait();
         }
     }
@@ -535,27 +535,45 @@ public class EmployeeDashboardController implements Initializable {
         String selectedSuggestion = suggestionListView.getSelectionModel().getSelectedItem();
         if (selectedSuggestion != null) {
             String productName = selectedSuggestion.split(" \\(")[0];
-            for (Product product : adminProductList()) {
-                if (product.getName().equalsIgnoreCase(productName)) {
-                    int currentStock = getProductStock(product.getId());
-                    if (currentStock == 0) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR);
-                        alert.setTitle("Lỗi");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Sản phẩm này đã hết hàng");
-                        alert.showAndWait();
-                    } else {
-                        productList.add(product);
-                        productTableView.setItems(productList);
-                        suggestionListView.setVisible(false);
-                        System.out.println("Product added: " + product.getName()); // Log product addition
-                    }
+            boolean productExists = false;
+
+            for (Product existingProduct : productList) {
+                if (existingProduct.getName().equalsIgnoreCase(productName)) {
+                    productExists = true;
                     break;
+                }
+            }
+
+            if (productExists) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Cảnh báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Bạn đã thêm sản phẩm này");
+                alert.showAndWait();
+            } else {
+                for (Product product : adminProductList()) {
+                    if (product.getName().equalsIgnoreCase(productName)) {
+                        int currentStock = getProductStock(product.getId());
+                        if (currentStock == 0) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR);
+                            alert.setTitle("Lỗi");
+                            alert.setHeaderText(null);
+                            alert.setContentText("Sản phẩm này đã hết hàng");
+                            alert.showAndWait();
+                        } else {
+                            productList.add(product);
+                            productTableView.setItems(productList);
+                            suggestionListView.setVisible(false);
+                            System.out.println("Product added: " + product.getName()); // Log product addition
+                        }
+                        break;
+                    }
                 }
             }
         }
         updateTotalAmount();
     }
+
 
 
 
