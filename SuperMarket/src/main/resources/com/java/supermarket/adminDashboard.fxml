@@ -20,11 +20,11 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="adminForm" prefHeight="580.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.AdminDashboardController">
+<BorderPane fx:id="adminForm" prefHeight="580.0" prefWidth="1117.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.AdminDashboardController">
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
          <children>
-            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <styleClass>
                   <String fx:value="white-bg" />
                   <String fx:value="shadow" />
@@ -32,7 +32,7 @@
                <children>
                   <HBox prefHeight="153.0" prefWidth="844.0" spacing="14.0" AnchorPane.bottomAnchor="355.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                      <children>
-                        <AnchorPane fx:id="card1" prefHeight="190.0" prefWidth="272.0" stylesheets="@styles/Dashboard.css">
+                        <AnchorPane fx:id="employeeCard" prefHeight="190.0" prefWidth="272.0" stylesheets="@styles/Dashboard.css">
                            <styleClass>
                               <String fx:value="card1" />
                               <String fx:value="shadow" />
@@ -258,7 +258,7 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
                   <TableView fx:id="adminBillTable" layoutX="7.0" layoutY="7.0" prefHeight="482.0" prefWidth="446.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="40.0">
                      <columns>
