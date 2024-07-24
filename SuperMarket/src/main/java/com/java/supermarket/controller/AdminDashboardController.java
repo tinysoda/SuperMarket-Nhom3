@@ -1,13 +1,11 @@
 package com.java.supermarket.controller;
 
 import com.java.supermarket.DBUtils;
-import com.java.supermarket.object.Product;
-import com.java.supermarket.object.ProductStatus;
+import com.java.supermarket.object.*;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,13 +23,12 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 
 import java.net.URL;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
-import com.java.supermarket.object.Employee;
 
 public class AdminDashboardController implements Initializable {
 
@@ -54,10 +51,30 @@ public class AdminDashboardController implements Initializable {
     private Button adminBillManBtn;
 
     @FXML
-    private TableView<?> adminBillProTable;
+    private TableView<BillDetail> adminBillProTable;
+    @FXML
+    private TableColumn<BillDetail, Integer>  col_bill_pro_id;
+    @FXML
+    private TableColumn<BillDetail, String>  col_bill_pro_name;
+    @FXML
+    private TableColumn<BillDetail, Double>  col_bill_pro_price;
+    @FXML
+    private TableColumn<BillDetail, Integer>  col_bill_pro_quantity;
+    @FXML
+    private TableColumn<BillDetail, Double>  col_bill_pro_total;
 
     @FXML
-    private TableView<?> adminBillTable;
+    private TableView<Bill> adminBillTable;
+    @FXML
+    private TableColumn<Bill, Integer>  col_bill_bill_id;
+    @FXML
+    private TableColumn<Bill, Integer>  col_billing_staff_id;
+    @FXML
+    private TableColumn<Bill, String>  col_bill_customer_phone;
+    @FXML
+    private TableColumn<Bill, Double>  col_bill_total_amount;
+    @FXML
+    private TableColumn<Bill, Timestamp>  col_bill_created_at;
 
     @FXML
     private Button adminClearUserBtn;
@@ -264,6 +281,8 @@ public class AdminDashboardController implements Initializable {
             adminTitleLabel.setText("Quản lý - Hoá đơn");
             adminBillManForm.setVisible(true);
             adminBillManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
+            adminShowBill();
+            adminBillLookUp();
         }
     }
 
@@ -375,6 +394,139 @@ public class AdminDashboardController implements Initializable {
         }
     }
 
+    //bill
+    public ObservableList<Bill> adminBillList() {
+        ObservableList<Bill> billList = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM bill";
+        con = DBUtils.getConnection();
+        try {
+            Bill bill = null;
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                bill = new Bill(null, 0, 0, null);
+                bill.setId(rs.getInt("id"));
+                bill.setUserId(rs.getInt("user_id"));
+                bill.setCustomerPhone(rs.getString("customer_phone"));
+                bill.setTotalAmount(rs.getDouble("total_amount"));
+                bill.setCreatedAt(rs.getTimestamp("created_at"));
+                billList.add(bill);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return billList;
+    }
+
+    public void adminShowBill() {
+        try {
+            ObservableList<Bill> billList = adminBillList();
+            col_bill_bill_id.setCellValueFactory(new PropertyValueFactory<>("id"));
+            col_billing_staff_id.setCellValueFactory(new PropertyValueFactory<>("userId"));
+            col_bill_customer_phone.setCellValueFactory(new PropertyValueFactory<>("customerPhone"));
+            col_bill_total_amount.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
+            col_bill_created_at.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
+
+            adminBillTable.setItems(billList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public ObservableList<BillDetail> adminProductsOfBill(int billId) {
+        ObservableList<BillDetail> billDetailList = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM billdetail WHERE bill_id = ?";
+        con = DBUtils.getConnection();
+        try {
+            BillDetail billDetail = null;
+            ps = con.prepareStatement(sql);
+            ps.setInt(1, billId);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                billDetail = new BillDetail(
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        rs.getInt("quantity"),
+                        rs.getDouble("price")
+                );
+                billDetailList.add(billDetail);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return billDetailList;
+    }
+    public void adminShowProBill(int billId) {
+        try {
+            ObservableList<BillDetail> billDetailList = adminProductsOfBill(billId);
+            col_bill_pro_id.setCellValueFactory(new PropertyValueFactory<>("productId"));
+            col_bill_pro_name.setCellValueFactory(new PropertyValueFactory<>("productName"));
+            col_bill_pro_price.setCellValueFactory(new PropertyValueFactory<>("price"));
+            col_bill_pro_quantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+            col_bill_pro_total.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<BillDetail, Double>, ObservableValue<Double>>() {
+                @Override
+                public ObservableValue<Double> call(TableColumn.CellDataFeatures<BillDetail, Double> param) {
+                    BillDetail billDetail = param.getValue();
+                    if (billDetail != null) {
+                        Double total = billDetail.getPrice() * billDetail.getQuantity();
+                        return new SimpleDoubleProperty(total).asObject();
+                    }
+                    return new SimpleDoubleProperty(0.0).asObject();
+                }
+            });
+            adminBillProTable.setItems(billDetailList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void adminBillSelect() {
+        Bill bill = adminBillTable.getSelectionModel().getSelectedItem();
+        if (bill != null) {
+            adminShowProBill(bill.getId());
+        }
+    }
+    public void adminBillLookUp() {
+        adminBillLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
+            String searchKey = newValue != null ? newValue.toLowerCase() : "";
+            ObservableList<Bill> billList = FXCollections.observableArrayList();
+
+            try (Connection con = DBUtils.getConnection()) {
+                String query;
+                if (searchKey.isEmpty()) {
+                    query = "SELECT * FROM bill";
+                } else {
+                    query = "SELECT * FROM bill WHERE id LIKE ? OR customer_phone LIKE ? OR user_id LIKE ? OR total_amount LIKE ? OR (CAST(created_at AS CHAR) LIKE ? )";
+                }
+
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    if (!searchKey.isEmpty()) {
+                        ps.setString(1, "%" + searchKey + "%");
+                        ps.setString(2, "%" + searchKey + "%");
+                        ps.setString(3, "%" + searchKey + "%");
+                        ps.setString(4, "%" + searchKey + "%");
+                        ps.setString(5, "%" + searchKey + "%");
+
+                    }
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            Bill bill = new Bill(null, 0, 0, null);
+                            bill.setId(rs.getInt("id"));
+                            bill.setUserId(rs.getInt("user_id"));
+                            bill.setCustomerPhone(rs.getString("customer_phone"));
+                            bill.setTotalAmount(rs.getDouble("total_amount"));
+                            bill.setCreatedAt(rs.getTimestamp("created_at"));
+                            billList.add(bill);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            adminBillTable.setItems(billList);
+        });
+    }
+    //staff
     public void adminStaffLookUp() {
         // Lắng nghe thay đổi trong trường tìm kiếm
         adminStaffLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -419,7 +571,6 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-
     public void adminEmployeeAdd() {
         String insertQuery = "INSERT INTO user (first_name, last_name, phone, role, username, password) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -461,7 +612,6 @@ public class AdminDashboardController implements Initializable {
 
     public void adminEmployeeUpdate() {
         String updateQuery = "UPDATE user SET first_name = ?, last_name = ?, phone = ?, role = ?, username = ? WHERE id = ?";
-
         try (Connection con = DBUtils.getConnection();
              PreparedStatement ps = con.prepareStatement(updateQuery)) {
 
@@ -655,7 +805,7 @@ public class AdminDashboardController implements Initializable {
                 alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
                 alert.setHeaderText(null);
-                alert.setContentText("Thêm sản phẩm "+adminProNameTF.getText()+" thành công");
+                alert.setContentText("Thêm sản phẩm " + adminProNameTF.getText() + " thành công");
                 alert.showAndWait();
 
                 adminShowProduct();
@@ -666,7 +816,8 @@ public class AdminDashboardController implements Initializable {
             e.printStackTrace();
         }
     }
-    public void adminProClear(){
+
+    public void adminProClear() {
         adminProNameTF.clear();
         adminProDescTF.clear();
         adminProCatTF.clear();
@@ -734,7 +885,6 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-
     public void adminProLookUp() {
         adminProLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchKey = newValue != null ? newValue.toLowerCase() : "";
@@ -778,14 +928,11 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         adminRoleCB.setItems(FXCollections.observableArrayList("Manager", "Employee"));
         hideAllForm();
-        adminStatForm.setVisible(true);
+        adminStaffManForm.setVisible(true);
         adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
         adminProNameTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
         adminProDescTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
@@ -793,6 +940,9 @@ public class AdminDashboardController implements Initializable {
         adminProPriceTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
         adminProQuanityTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
         admin_StaffTable.setOnMouseClicked(event -> adminEmployeeSelect());
+        adminBillTable.setOnMouseClicked(event -> adminBillSelect());
+//        adminShowBill();
+//        adminBillLookUp();
         adminShowEmployee();
         adminStaffLookUp();
     }
