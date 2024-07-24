@@ -1,5 +1,10 @@
 package com.java.supermarket.controller;
 
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.property.HorizontalAlignment;
+import com.itextpdf.layout.property.TextAlignment;
 import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.*;
 import javafx.application.Platform;
@@ -19,6 +24,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.layout.font.FontProvider;
 
 
 import java.io.InputStream;
@@ -28,12 +37,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.UnitValue;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 
-import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+
 
 public class EmployeeDashboardController implements Initializable {
     @FXML
@@ -51,8 +64,6 @@ public class EmployeeDashboardController implements Initializable {
     @FXML
     private ListView<String> suggestionListView;
 
-    @FXML
-    private Button customerInfoButton;
 
     @FXML
     private TableView<Product> productTableView;
@@ -82,11 +93,16 @@ public class EmployeeDashboardController implements Initializable {
     private Label changeAmountLabel;
 
     @FXML
-    private Button saveOrderButton;
+    private Button usePointDiscount;
+
 
     private ObservableList<Product> productList;
 
     private Customer customer; // Biến lưu trữ thông tin khách hàng hiện tại
+
+    private boolean discountApplied = false;
+    private double discountAmount = 0.0;
+
 
     @FXML
     void close(ActionEvent event) {
@@ -98,6 +114,56 @@ public class EmployeeDashboardController implements Initializable {
         // Stage stage = (Stage) employeeForm.getScene().getWindow();
         // stage.setIconified(true);
     }
+
+    @FXML
+    private void handleUsePointDiscount(ActionEvent event) {
+        try {
+            double totalAmount = Double.parseDouble(totalAmountLabel.getText());
+            int customerPoints = customer.getPoints();
+
+            // Giả sử 1 điểm = 1 đơn vị tiền
+            discountAmount = customerPoints;
+
+            // Nếu số điểm lớn hơn số tiền tổng, chỉ dùng số điểm bằng số tiền tổng
+            if (discountAmount > totalAmount) {
+                discountAmount = totalAmount;
+            }
+
+            // Tính lại tổng số tiền sau khi trừ điểm
+            double newTotalAmount = totalAmount - discountAmount;
+            totalAmountLabel.setText(String.valueOf(newTotalAmount));
+
+            // Đánh dấu là đã áp dụng điểm giảm giá
+            discountApplied = true;
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Thành công");
+            alert.setHeaderText(null);
+            alert.setContentText("Đã áp dụng điểm giảm giá thành công!");
+            alert.showAndWait();
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Có lỗi xảy ra khi áp dụng điểm giảm giá.");
+            alert.showAndWait();
+        }
+    }
+
+    private void updateCustomerPointsInDatabase(String customerPhone, int newPoints) {
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "UPDATE customer SET points = ? WHERE phone = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, newPoints);
+            preparedStatement.setString(2, customerPhone);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void saveBillToDatabase(Bill bill) {
         try {
@@ -118,18 +184,82 @@ public class EmployeeDashboardController implements Initializable {
                 for (BillDetail detail : bill.getBillDetails()) {
                     billDetailStatement.setInt(1, billId);
                     billDetailStatement.setInt(2, detail.getProductId());
-                    billDetailStatement.setString(3, detail.getProductName()); // Cập nhật productName
+                    billDetailStatement.setString(3, detail.getProductName());
                     billDetailStatement.setInt(4, detail.getQuantity());
                     billDetailStatement.setDouble(5, detail.getPrice());
                     billDetailStatement.addBatch();
                 }
                 billDetailStatement.executeBatch();
+
+                generateInvoice(billId, bill);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void generateInvoice(int billId, Bill bill) {
+        String filePath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\bill_" + billId + ".pdf";
+        try (PdfWriter writer = new PdfWriter(filePath);
+             PdfDocument pdf = new PdfDocument(writer);
+             Document document = new Document(pdf)) {
+
+            // Nhúng phông chữ tiếng Việt
+            PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
+            document.setFont(font);
+
+            // Thêm logo của công ty
+            ImageData imageData = ImageDataFactory.create("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png");
+            Image logo = new Image(imageData);
+            logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+            logo.scaleToFit(100, 50);
+            document.add(logo);
+
+            // Thêm tiêu đề "Hóa Đơn Bán Hàng"
+            Paragraph title = new Paragraph("Hóa Đơn Bán Hàng")
+                    .setFont(font)
+                    .setFontSize(18)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(title);
+
+            document.add(new Paragraph("Mã Hóa Đơn: " + billId).setFont(font));
+            document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
+            document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
+
+            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2}))
+                    .useAllAvailableWidth();
+            table.addHeaderCell(new Cell().add(new Paragraph("STT").setFont(font)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Tên sản phẩm").setFont(font)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Số lượng").setFont(font)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Giá tiền").setFont(font)));
+
+            int stt = 1;
+            for (BillDetail detail : bill.getBillDetails()) {
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(stt++)).setFont(font)));
+                table.addCell(new Cell().add(new Paragraph(detail.getProductName()).setFont(font)));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(detail.getQuantity())).setFont(font)));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(detail.getPrice())).setFont(font)));
+            }
+
+            document.add(table);
+            document.add(new Paragraph("Tổng tiền: " + bill.getTotalAmount()).setFont(font));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        showInvoiceAlert(filePath);
+    }
+
+
+
+    private void showInvoiceAlert(String filePath) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Hóa Đơn");
+        alert.setHeaderText("Hóa Đơn Bán Hàng");
+        alert.setContentText("Hóa đơn đã được tạo tại: " + filePath);
+        alert.showAndWait();
+    }
 
 
     private String employeeUsername; // Tên đăng nhập của nhân viên
@@ -163,41 +293,6 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
-    @FXML
-    void showCustomerForm(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/CustomerForm.fxml"));
-            Parent root = loader.load();
-
-            CustomerFormController controller = loader.getController();
-            controller.setEmployeeDashboardController(this);
-            controller.setCustomer(this.customer); // Truyền thông tin khách hàng hiện tại cho form
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle("Thông tin khách hàng");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void saveCustomer(Customer customer) {
-        this.customer = customer; // Lưu thông tin khách hàng vào biến
-        try {
-            Connection connection = DBUtils.getConnection();
-            String query = "INSERT INTO customer (name, phone, points) VALUES (?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, customer.getName());
-            preparedStatement.setString(2, customer.getPhone());
-            preparedStatement.setInt(3, customer.getPoints());
-            preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @FXML
     void calculateChange(KeyEvent event) {
@@ -207,51 +302,6 @@ public class EmployeeDashboardController implements Initializable {
         changeAmountLabel.setText(String.valueOf(changeAmount));
     }
 
-    public void generateInvoiceWithJasper() {
-        try {
-            // Tải tệp .jrxml
-            InputStream inputStream = getClass().getResourceAsStream("/path/to/hoadon.jrxml");
-            JasperReport jasperReport = JasperCompileManager.compileReport(inputStream);
-
-            // Tạo datasource từ danh sách sản phẩm
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(productList);
-
-            // Tạo các tham số cần thiết cho báo cáo
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("customerName", customerNameFiled.getText());
-            parameters.put("employeeName", employeeName.getText());
-            parameters.put("totalAmount", Double.parseDouble(totalAmountLabel.getText()));
-            parameters.put("amountGiven", Double.parseDouble(amountGivenField.getText()));
-            parameters.put("changeAmount", Double.parseDouble(changeAmountLabel.getText()));
-
-            // Điền dữ liệu vào báo cáo
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-            // Xuất báo cáo ra tệp PDF
-            String filePath = "hoadon.pdf";
-            JasperExportManager.exportReportToPdfFile(jasperPrint, filePath);
-
-            showInvoiceAlert(filePath);
-            System.out.println("PDF generated successfully. File saved at: " + filePath);
-        } catch (JRException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-
-
-
-
-    private void showInvoiceAlert(String filePath) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Hóa Đơn");
-        alert.setHeaderText("Hóa Đơn Bán Hàng");
-        alert.setContentText("Hóa đơn đã được tạo tại: " + filePath);
-        alert.showAndWait();
-    }
 
 
     @FXML
@@ -295,7 +345,7 @@ public class EmployeeDashboardController implements Initializable {
                 return;
             } else {
                 updateProductStock(product.getId(), currentStock - product.getQuantity());
-                billDetails.add(new BillDetail(product.getId(), product.getName(), product.getQuantity(), product.getPrice())); // Cập nhật productName
+                billDetails.add(new BillDetail(product.getId(), product.getName(), product.getQuantity(), product.getTotal()));
             }
         }
 
@@ -303,12 +353,32 @@ public class EmployeeDashboardController implements Initializable {
         Bill bill = new Bill(customer.getPhone(), getEmployeeId(employeeUsername), totalAmount, billDetails);
         saveBillToDatabase(bill);
 
-        productList.clear();
-        productTableView.setItems(productList);
+        // Calculate and update customer points
+        double amountGiven = Double.parseDouble(amountGivenField.getText());
+        int pointsEarned = (int) (amountGiven / 10);
+        updateCustomerPoints(customer.getPhone(), pointsEarned);
+
+
+        amountGiven = Double.parseDouble(amountGivenField.getText());
+        pointsEarned = (int) (amountGiven / 10);
+        updateCustomerPoints(customer.getPhone(), pointsEarned);
+
+        // Nếu đã áp dụng điểm giảm giá, cập nhật lại số điểm khách hàng
+        if (discountApplied) {
+            int newCustomerPoints = customer.getPoints() - (int) discountAmount;
+            updateCustomerPointsInDatabase(customer.getPhone(), newCustomerPoints);
+            customer.setPoints(newCustomerPoints);
+            discountApplied = false; // Reset trạng thái
+            discountAmount = 0.0;
+        }
+
         customer = null;
-        totalAmountLabel.setText("");
+        productList.clear();
+        productTableView.refresh();
+        totalAmountLabel.setText("0");
         amountGivenField.clear();
-        changeAmountLabel.setText("");
+        changeAmountLabel.setText("0");
+        customerNameFiled.setText("0");
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Thành công");
@@ -316,11 +386,20 @@ public class EmployeeDashboardController implements Initializable {
         alert.setContentText("Tạo hóa đơn thành công");
         alert.showAndWait();
 
-        System.out.println("Generating invoice...");
-        generateInvoiceWithJasper();
     }
 
-
+    private void updateCustomerPoints(String customerPhone, int pointsEarned) {
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "UPDATE customer SET points = points + ? WHERE phone = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, pointsEarned);
+            preparedStatement.setString(2, customerPhone);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private int getEmployeeId(String username) {
@@ -416,6 +495,7 @@ public class EmployeeDashboardController implements Initializable {
         });
 
         suggestionListView.setOnMouseClicked(event -> addSelectedProduct(event));
+        usePointDiscount.setOnAction(this::handleUsePointDiscount);
     }
 
 
@@ -512,6 +592,62 @@ public class EmployeeDashboardController implements Initializable {
             e.printStackTrace();
         }
         return productsList;
+    }
+
+    public Customer getCustomerByPhone(String phone) {
+        Customer customer = null;
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "SELECT * FROM customer WHERE phone = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, phone);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                int points = resultSet.getInt("points");
+                customer = new Customer(name, phone, points);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customer;
+    }
+
+    @FXML
+    void showCustomerForm(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/CustomerForm.fxml"));
+            Parent root = loader.load();
+
+            CustomerFormController controller = loader.getController();
+            controller.setEmployeeDashboardController(this);
+            controller.setCustomer(this.customer); // Truyền thông tin khách hàng hiện tại cho form
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Thông tin khách hàng");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void saveCustomer(Customer customer) {
+        this.customer = customer; // Lưu thông tin khách hàng vào biến
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "INSERT INTO customer (name, phone, points) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, customer.getName());
+            preparedStatement.setString(2, customer.getPhone());
+            preparedStatement.setInt(3, customer.getPoints());
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.java.supermarket.controller;
 
+import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.Customer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,6 +33,16 @@ public class CustomerFormController {
             phoneField.setText(customer.getPhone());
             pointsField.setText(String.valueOf(customer.getPoints()));
         }
+    }
+
+    @FXML
+    private void initialize() {
+        phoneField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null && !newValue.isEmpty()) {
+                Customer customer = employeeDashboardController.getCustomerByPhone(newValue);
+                setCustomer(customer);
+            }
+        });
     }
 
     @FXML

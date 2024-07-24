@@ -18,7 +18,7 @@
         <HBox spacing="10">
             <children>
                 <Label text="Số điện thoại:" />
-                <TextField fx:id="phoneField" />
+                <TextField fx:id="phoneField" onKeyReleased="#initialize"/>
             </children>
         </HBox>
         <HBox spacing="10">
