@@ -46,6 +46,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.UnitValue;
 
 
+import javafx.stage.StageStyle;
 
 
 public class EmployeeDashboardController implements Initializable {
@@ -93,12 +94,19 @@ public class EmployeeDashboardController implements Initializable {
     private Label changeAmountLabel;
 
     @FXML
+
     private Button usePointDiscount;
+
+
+    private Button saveOrderButton;
+    @FXML
+    private Button staffLogoutBtn;
 
 
     private ObservableList<Product> productList;
 
     private Customer customer; // Biến lưu trữ thông tin khách hàng hiện tại
+
 
     private boolean discountApplied = false;
     private double discountAmount = 0.0;
@@ -252,7 +260,6 @@ public class EmployeeDashboardController implements Initializable {
     }
 
 
-
     private void showInvoiceAlert(String filePath) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Hóa Đơn");
@@ -301,7 +308,6 @@ public class EmployeeDashboardController implements Initializable {
         double changeAmount = amountGiven - totalAmount;
         changeAmountLabel.setText(String.valueOf(changeAmount));
     }
-
 
 
     @FXML
@@ -421,8 +427,6 @@ public class EmployeeDashboardController implements Initializable {
     }
 
 
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         productList = FXCollections.observableArrayList();
@@ -499,7 +503,6 @@ public class EmployeeDashboardController implements Initializable {
     }
 
 
-
     private ObservableList<String> getSuggestions(String searchText) {
         ObservableList<String> suggestions = FXCollections.observableArrayList();
         for (Product product : adminProductList()) {
@@ -515,18 +518,27 @@ public class EmployeeDashboardController implements Initializable {
         if (selectedSuggestion != null) {
             String productName = selectedSuggestion.split(" \\(")[0];
             for (Product product : adminProductList()) {
-                if (product.getName().equalsIgnoreCase(productName)) {
+                if (product.getName().equalsIgnoreCase(productName) && product.getQuantity() > 0) {
                     productList.add(product);
                     productTableView.setItems(productList);
                     suggestionListView.setVisible(false);
                     System.out.println("Product added: " + product.getName()); // Thêm dòng này
                     break;
+                } else {
+                    suggestionListView.setVisible(false);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Hết hàng");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Sản phẩm hết hàng");
+                    alert.showAndWait().ifPresent(response -> {
+                    });
+                    break;
+
                 }
             }
         }
         updateTotalAmount();
     }
-
 
 
     private int getProductStock(int productId) {
@@ -645,9 +657,57 @@ public class EmployeeDashboardController implements Initializable {
             preparedStatement.setString(2, customer.getPhone());
             preparedStatement.setInt(3, customer.getPoints());
             preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
+
+            public void close () {
+                System.exit(0);
+            }
+            public void minimize () {
+                Stage stage = (Stage) employeeForm.getScene().getWindow();
+                stage.setIconified(true);
+            }
         }
     }
+            double x;
+            double y;
+            public void logout(){
+                try {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Đăng xuất?");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Bạn có chắc chắn muốn đăng xuất?");
 
+                    Optional<ButtonType> option = alert.showAndWait();
+
+                    if (option.get().equals(ButtonType.OK)) {
+                        staffLogoutBtn.getScene().getWindow().hide();
+
+                        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+                        Stage stage = new Stage();
+                        Scene scene = new Scene(root);
+
+                        stage.initStyle(StageStyle.TRANSPARENT);
+                        root.setOnMousePressed((MouseEvent event) -> {
+                            x = event.getSceneX();
+                            y = event.getSceneY();
+                        });
+                        root.setOnMouseDragged((MouseEvent event) -> {
+                            stage.setX(event.getScreenX() - x);
+                            stage.setY(event.getScreenY() - y);
+
+                            stage.setOpacity(.8);
+                        });
+                        root.setOnMouseReleased((MouseEvent event) -> {
+                            stage.setOpacity(1);
+                        });
+                        stage.setScene(scene);
+                        stage.show();
+
+                    } else return;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 }
+
+

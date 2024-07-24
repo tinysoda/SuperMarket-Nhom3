@@ -1,0 +1,29 @@
+.employee-form{
+    -fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);
+}
+.label{
+    /*-fx-text-fill: white;*/
+}
+.table-view{
+    -fx-text-fill: black;
+}
+.button{
+    -fx-cursor: hand;
+    /*-fx-background-color: transparent;*/
+    -fx-border-width: .8px;
+    -fx-border-color: black;
+    -fx-border-radius: 5px;
+}
+.saveOrderButton:hover{
+
+}
+.close-button,.minimize-button{
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.close-button:hover{
+    -fx-background-color: #dd2f4f;
+}
+.minimize-button:hover{
+    -fx-background-color: #FFDD00;
+}
