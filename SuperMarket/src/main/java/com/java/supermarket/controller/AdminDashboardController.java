@@ -33,6 +33,15 @@ import java.util.ResourceBundle;
 public class AdminDashboardController implements Initializable {
 
     @FXML
+    private AnchorPane employeeCard;
+
+    @FXML
+    private AnchorPane inComeInDayCard;
+
+    @FXML
+    private AnchorPane totalInComeCard;
+
+    @FXML
     private Button Close;
 
     @FXML
@@ -182,15 +191,6 @@ public class AdminDashboardController implements Initializable {
     private TableView<Employee> admin_StaffTable; // Ensure this is typed correctly
 
     @FXML
-    private AnchorPane admin_card2;
-
-    @FXML
-    private AnchorPane card1;
-
-    @FXML
-    private AnchorPane card3;
-
-    @FXML
     private TableColumn<?, ?> col_bill_id;
 
     @FXML
@@ -334,6 +334,7 @@ public class AdminDashboardController implements Initializable {
             e.printStackTrace();
         }
     }
+    //Employee
 
     private Connection con;
     private PreparedStatement ps;
@@ -392,6 +393,22 @@ public class AdminDashboardController implements Initializable {
             adminRoleCB.setValue(employee.getRole());
             adminUsernameTF.setText(employee.getUsername());
         }
+    }
+
+    public int countEmployees() {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM user";
+        con = DBUtils.getConnection();
+        try {
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return count;
     }
 
     //bill
@@ -941,6 +958,7 @@ public class AdminDashboardController implements Initializable {
         adminProQuanityTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
         admin_StaffTable.setOnMouseClicked(event -> adminEmployeeSelect());
         adminBillTable.setOnMouseClicked(event -> adminBillSelect());
+        adminStaffNoLabel.setText(String.valueOf(countEmployees()));
 //        adminShowBill();
 //        adminBillLookUp();
         adminShowEmployee();
