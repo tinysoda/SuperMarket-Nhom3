@@ -228,17 +228,17 @@ public class EmployeeDashboardController implements Initializable {
 
 
     private void generateInvoice(int billId, Bill bill) {
-        String filePath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\bill_" + billId + ".pdf";
+        String filePath = "SuperMarket/bills/bill_" + billId + ".pdf";
         try (PdfWriter writer = new PdfWriter(filePath);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
             // Nhúng phông chữ tiếng Việt
-            PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
+            PdfFont font = PdfFontFactory.createFont("fonts/ARIAL.TTF", "Identity-H", true);
             document.setFont(font);
 
             // Thêm logo của công ty
-            ImageData imageData = ImageDataFactory.create("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png");
+            ImageData imageData = ImageDataFactory.create("com/java/supermarket/images/bigclogo.png");
             Image logo = new Image(imageData);
             logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
             logo.scaleToFit(100, 50);
