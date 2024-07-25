@@ -258,13 +258,13 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
                   <TableView fx:id="adminBillTable" layoutX="7.0" layoutY="7.0" prefHeight="482.0" prefWidth="446.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="40.0">
                      <columns>
-                        <TableColumn fx:id="col_bill_bill_id" prefWidth="84.0" text="Mã hoá đơn" />
-                        <TableColumn fx:id="col_billing_staff_id" prefWidth="92.0" text="Mã nhân viên" />
-                        <TableColumn fx:id="col_bill_customer_phone" prefWidth="102.0" text="SDT Khách hàng" />
+                        <TableColumn fx:id="col_bill_bill_id" prefWidth="75.99998140335083" text="Mã hoá đơn" />
+                        <TableColumn fx:id="col_billing_staff_id" prefWidth="87.20002746582031" text="Mã nhân viên" />
+                        <TableColumn fx:id="col_bill_customer_phone" prefWidth="115.99993896484375" text="SDT Khách hàng" />
                         <TableColumn fx:id="col_bill_total_amount" prefWidth="87.0" text="Tổng hoá đơn" />
                         <TableColumn fx:id="col_bill_created_at" prefWidth="78.0" text="Ngày tạo" />
                      </columns>

@@ -123,3 +123,24 @@
 .saveCustomerFormBtn:hover {
     -fx-background-color: #228B22;
 }
+
+.colDelete .button{
+    -fx-background-color: #ff0000;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}
+
+.colDelete .button:hover {
+    -fx-background-color: #ff004d;
+}
+
+ListView{
+    -fx-background-color: red;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}

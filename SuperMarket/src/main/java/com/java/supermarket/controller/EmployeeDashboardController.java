@@ -28,8 +28,6 @@ import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.layout.font.FontProvider;
-
-
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.*;
@@ -41,8 +39,6 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.UnitValue;
-
-
 import javafx.stage.StageStyle;
 
 
@@ -228,17 +224,17 @@ public class EmployeeDashboardController implements Initializable {
 
 
     private void generateInvoice(int billId, Bill bill) {
-        String filePath = "SuperMarket/bills/bill_" + billId + ".pdf";
+        String filePath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\bill_" + billId + ".pdf";
         try (PdfWriter writer = new PdfWriter(filePath);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
 
             // Nhúng phông chữ tiếng Việt
-            PdfFont font = PdfFontFactory.createFont("fonts/ARIAL.TTF", "Identity-H", true);
+            PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
             document.setFont(font);
 
             // Thêm logo của công ty
-            ImageData imageData = ImageDataFactory.create("com/java/supermarket/images/bigclogo.png");
+            ImageData imageData = ImageDataFactory.create("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png");
             Image logo = new Image(imageData);
             logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
             logo.scaleToFit(100, 50);
@@ -276,11 +272,19 @@ public class EmployeeDashboardController implements Initializable {
             document.add(table);
             document.add(new Paragraph("Tổng tiền: " + bill.getTotalAmount()).setFont(font));
 
+            Paragraph thank = new Paragraph("Cảm ơn quý khách")
+                    .setFont(font)
+                    .setFontSize(18)
+                    .setItalic()
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(thank);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         showInvoiceAlert(filePath);
     }
+
 
 
 
@@ -444,6 +448,23 @@ public class EmployeeDashboardController implements Initializable {
         return employeeId;
     }
 
+    private Map<Integer, Integer> spinnerValues = new HashMap<>();
+
+    private void saveSpinnerValues() {
+        for (Product product : productList) {
+            spinnerValues.put(product.getId(), product.getQuantity());
+        }
+    }
+
+    private void restoreSpinnerValues() {
+        for (Product product : productList) {
+            if (spinnerValues.containsKey(product.getId())) {
+                product.setQuantity(spinnerValues.get(product.getId()));
+            }
+        }
+    }
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -455,8 +476,8 @@ public class EmployeeDashboardController implements Initializable {
 
         colQuantity.setCellValueFactory(cellData -> {
             Product product = cellData.getValue();
-            int currentStock = getProductStock(product.getId()); // Lấy số lượng hàng hiện tại từ cơ sở dữ liệu
-            Spinner<Integer> spinner = new Spinner<>(0, currentStock, product.getQuantity()); // Đặt giới hạn tối đa là currentStock
+            int currentStock = getProductStock(product.getId());
+            Spinner<Integer> spinner = new Spinner<>(0, currentStock, product.getQuantity()); // Khởi tạo spinner với giá trị hiện tại của sản phẩm
 
             spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
                 if (newValue > currentStock) {
@@ -464,23 +485,17 @@ public class EmployeeDashboardController implements Initializable {
                     alert.setTitle("Lỗi");
                     alert.setHeaderText(null);
                     alert.setContentText("Số lượng chọn vượt quá số lượng hàng hiện có");
-
-                    alert.showAndWait().ifPresent(response -> {
-                        if (response == ButtonType.OK) {
-                            // Đặt lại giá trị của Spinner về giá trị thực tế từ cơ sở dữ liệu
-                            Platform.runLater(() -> {
-                                spinner.getValueFactory().setValue(product.getQuantity());
-                            });
-                        }
-                    });
+                    alert.showAndWait();
                 } else {
-                    product.setQuantity(newValue.intValue()); // Cập nhật số lượng của sản phẩm
-                    updateTotalAmount(); // Cập nhật tổng số tiền
+                    product.setQuantity(newValue.intValue());
+                    updateTotalAmount();
                 }
             });
 
             return new SimpleObjectProperty<>(spinner);
         });
+
+
 
         colTotal.setCellValueFactory(cellData -> cellData.getValue().totalProperty().asObject());
 
@@ -525,13 +540,15 @@ public class EmployeeDashboardController implements Initializable {
         ObservableList<String> suggestions = FXCollections.observableArrayList();
         for (Product product : adminProductList()) {
             if (product.getName().toLowerCase().contains(searchText)) {
-                suggestions.add(product.getName() + " (" + product.getPrice() + ")");
+                suggestions.add(product.getName() + " - " + product.getCategory() + " - " + product.getPrice() );
             }
         }
         return suggestions;
     }
 
     private void addSelectedProduct(MouseEvent event) {
+        saveSpinnerValues(); // Lưu giá trị spinner hiện tại
+
         String selectedSuggestion = suggestionListView.getSelectionModel().getSelectedItem();
         if (selectedSuggestion != null) {
             String productName = selectedSuggestion.split(" \\(")[0];
@@ -561,18 +578,23 @@ public class EmployeeDashboardController implements Initializable {
                             alert.setContentText("Sản phẩm này đã hết hàng");
                             alert.showAndWait();
                         } else {
+                            product.setQuantity(0);
                             productList.add(product);
                             productTableView.setItems(productList);
                             suggestionListView.setVisible(false);
-                            System.out.println("Product added: " + product.getName()); // Log product addition
+                            updateTotalAmount();
+                            System.out.println("Product added: " + product.getName());
                         }
                         break;
                     }
                 }
             }
         }
+
+        restoreSpinnerValues(); // Khôi phục giá trị spinner sau khi cập nhật bảng
         updateTotalAmount();
     }
+
 
 
 
@@ -672,6 +694,18 @@ public class EmployeeDashboardController implements Initializable {
             CustomerFormController controller = loader.getController();
             controller.setEmployeeDashboardController(this);
             controller.setCustomer(this.customer); // Truyền thông tin khách hàng hiện tại cho form
+            controller.getPhoneField().setOnKeyReleased(e -> {
+                String phone = controller.getPhoneField().getText();
+                if (!phone.isEmpty()) {
+                    Customer customer = controller.getCustomerByPhone(phone);
+                    if (customer != null) {
+                        Platform.runLater(() -> {
+                            controller.getNameField().setText(customer.getName());
+                            setCustomerName(customer.getName());
+                        });
+                    }
+                }
+            });
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);

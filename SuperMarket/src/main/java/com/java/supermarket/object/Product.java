@@ -35,6 +35,7 @@ public class Product {
         this.quantity = new SimpleIntegerProperty(quantity);
         this.total = new SimpleDoubleProperty(price * quantity);
         this.status = status;
+        updateTotal();
     }
 
     // Getters and Setters

@@ -72,7 +72,7 @@
                         <TableColumn fx:id="colPrice" prefWidth="126.39996337890625" text="Đơn giá" />
                         <TableColumn fx:id="colQuantity" prefWidth="110.4000244140625" text="Số lượng" />
                         <TableColumn fx:id="colTotal" prefWidth="122.39999389648438" text="Thành tiền" />
-                        <TableColumn fx:id="colDelete" prefWidth="212.79998779296875" />
+                        <TableColumn fx:id="colDelete" prefWidth="245.59995117187498" styleClass="colDelete" />
                     </columns>
                 </TableView>
                 <Label layoutX="424.0" layoutY="67.0" text="Tổng tiền:">

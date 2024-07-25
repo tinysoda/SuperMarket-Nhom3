@@ -7,7 +7,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 public class CustomerFormController {
+
 
     @FXML
     private Button saveCustomerForm;
@@ -43,6 +48,34 @@ public class CustomerFormController {
                 setCustomer(customer);
             }
         });
+    }
+
+    public Customer getCustomerByPhone(String phone) {
+        Customer customer = null;
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "SELECT * FROM customer WHERE phone = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, phone);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                int points = resultSet.getInt("points");
+                customer = new Customer(name, phone, points);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customer;
+    }
+
+    public TextField getPhoneField() {
+        return phoneField;
+    }
+
+    public TextField getNameField() {
+        return nameField;
     }
 
     @FXML
