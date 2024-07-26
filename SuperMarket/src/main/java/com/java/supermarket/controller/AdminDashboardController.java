@@ -9,13 +9,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
@@ -105,7 +106,10 @@ public class AdminDashboardController implements Initializable {
     private BorderPane adminForm;
 
     @FXML
-    private AreaChart<?, ?> adminIncomeChart;
+    private AreaChart<String, Double> adminIncomeLineChart;
+
+    @FXML
+    private PieChart adminIncomePieChart;
 
     @FXML
     private TextField adminLnameTF;
@@ -1212,8 +1216,6 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-
-
     public void adminProLookUp() {
         adminProLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchKey = newValue != null ? newValue.toLowerCase() : "";
@@ -1222,9 +1224,9 @@ public class AdminDashboardController implements Initializable {
             try (Connection con = DBUtils.getConnection()) {
                 String query;
                 if (searchKey.isEmpty()) {
-                    query = "SELECT product.*, category.name as category_name FROM product LEFT JOIN category ON product.category_id = category.id";
+                    query = "SELECT product.*, category.name as category_name, category.description as category_description FROM product LEFT JOIN category ON product.category_id = category.id";
                 } else {
-                    query = "SELECT product.*, category.name as category_name FROM product LEFT JOIN category ON product.category_id = category.id WHERE LOWER(product.name) LIKE ? OR LOWER(product.description) LIKE ? OR LOWER(category.name) LIKE ?";
+                    query = "SELECT product.*, category.name as category_name, category.description as category_description FROM product LEFT JOIN category ON product.category_id = category.id WHERE LOWER(product.name) LIKE ? OR LOWER(product.description) LIKE ? OR LOWER(category.name) LIKE ?";
                 }
 
                 try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -1236,14 +1238,19 @@ public class AdminDashboardController implements Initializable {
 
                     try (ResultSet rs = ps.executeQuery()) {
                         while (rs.next()) {
-                            Product product = new Product();
-                            product.setId(rs.getInt("id"));
-                            product.setName(rs.getString("name"));
-                            product.setDescription(rs.getString("description"));
-                            Category category = getCategoryByName(rs.getString("category_name"));
-                            product.setCategory(category);
-                            product.setPrice(rs.getDouble("price"));
-                            product.setQuantity(rs.getInt("quantity"));
+                            int categoryId = rs.getInt("category_id");
+                            String categoryName = rs.getString("category_name");
+                            String categoryDescription = rs.getString("category_description");
+                            Category category = new Category(categoryId, categoryName, categoryDescription);
+
+                            int id = rs.getInt("id");
+                            String name = rs.getString("name");
+                            String description = rs.getString("description");
+                            double price = rs.getDouble("price");
+                            int quantity = rs.getInt("quantity");
+                            ProductStatus status = rs.getBoolean("is_deleted") ? ProductStatus.DELETED : ProductStatus.AVAILABLE;
+
+                            Product product = new Product(id, name, description, category, price, quantity, status);
                             productList.add(product);
                         }
                     }
@@ -1257,14 +1264,6 @@ public class AdminDashboardController implements Initializable {
         });
     }
 
-    private Category getCategoryByName(String categoryName) {
-        for (Category category : getCategoryList()) {
-            if (category.getName().equals(categoryName)) {
-                return category;
-            }
-        }
-        return null; // or handle the case when the category is not found
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -1298,6 +1297,12 @@ public class AdminDashboardController implements Initializable {
                     return null; // No need to implement
                 }
             });
+
+            updateIncomeLabels(); // Add this line to update the income labels and chart
+            updateIncomeLineChart();
+            updateIncomePieChart();
+
+
         } catch (Exception e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -1307,6 +1312,7 @@ public class AdminDashboardController implements Initializable {
             alert.showAndWait();
         }
     }
+
 
 
     //Focus change on Enter
@@ -1337,7 +1343,96 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-    // Your other methods like adminProLookUp, adminProUpdate, etc. go here
-    // ...
+    public void updateIncomeLabels() {
+        updateDailyIncome();
+        updateTotalIncome();
+        updateIncomeLineChart();
+    }
+
+    public void updateDailyIncome() {
+        String sql = "SELECT SUM(total_amount) AS daily_income FROM bill WHERE DATE(created_at) = CURDATE()";
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                double dailyIncome = rs.getDouble("daily_income");
+                adminDailyIncomeLabel.setText(String.format("%.1f", dailyIncome));
+            } else {
+                adminDailyIncomeLabel.setText("0.0");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateTotalIncome() {
+        String sql = "SELECT SUM(total_amount) AS total_income FROM bill";
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                double totalIncome = rs.getDouble("total_income");
+                adminTotalIncomLabel.setText(String.format("%.1f", totalIncome));
+            } else {
+                adminTotalIncomLabel.setText("0.0");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateIncomeLineChart() {
+        String sql = "SELECT DATE(created_at) AS date, SUM(total_amount) AS daily_income FROM bill GROUP BY DATE(created_at)";
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            XYChart.Series<String, Double> series = new XYChart.Series<>();
+            while (rs.next()) {
+                String date = rs.getString("date");
+                double dailyIncome = rs.getDouble("daily_income");
+                series.getData().add(new XYChart.Data<>(date, dailyIncome));
+            }
+
+            // Clear existing data and add new series
+            adminIncomeLineChart.getData().clear();
+            adminIncomeLineChart.getData().add(series);
+
+            // Optionally set a title for the chart
+            adminIncomeLineChart.setTitle("Income Over Time");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateIncomePieChart() {
+        String sql = "SELECT c.name, SUM(b.total_amount) AS category_income " +
+                "FROM bill b " +
+                "JOIN product p ON b.id = p.id " +
+                "JOIN category c ON p.category_id = c.id " +
+                "GROUP BY c.name";
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+            while (rs.next()) {
+                String category = rs.getString("name");
+                double categoryIncome = rs.getDouble("category_income");
+                pieChartData.add(new PieChart.Data(category, categoryIncome));
+            }
+
+            adminIncomePieChart.setData(pieChartData);
+
+            // Optionally set a title for the chart
+            adminIncomePieChart.setTitle("Income by Category");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
