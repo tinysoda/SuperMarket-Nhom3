@@ -1,6 +1,9 @@
 .employee-form{
     -fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);
 }
+.employee-header{
+/*-fx-background-color: #fff !important;*/
+}
 .label{
     /*-fx-text-fill: white;*/
 }

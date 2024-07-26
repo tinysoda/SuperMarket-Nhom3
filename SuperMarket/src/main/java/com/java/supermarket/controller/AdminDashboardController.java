@@ -408,7 +408,7 @@ public class AdminDashboardController implements Initializable {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return count;
+        return count-1;
     }
 
     //bill
