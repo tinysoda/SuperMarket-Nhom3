@@ -542,6 +542,7 @@ public class EmployeeDashboardController implements Initializable {
 
     public void saveCustomer(Customer customer) {
         try {
+            this.customer = customer;
             Connection connection = DBUtils.getConnection();
             String query = "INSERT INTO customer (name, phone, points) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE name=VALUES(name), points=VALUES(points)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -553,6 +554,7 @@ public class EmployeeDashboardController implements Initializable {
             e.printStackTrace();
         }
     }
+
 
     double x; double y;
 
