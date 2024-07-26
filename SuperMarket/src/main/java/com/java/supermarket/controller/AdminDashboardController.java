@@ -3,10 +3,13 @@ package com.java.supermarket.controller;
 import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.*;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,6 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 import java.net.URL;
 import java.sql.*;
@@ -116,9 +120,6 @@ public class AdminDashboardController implements Initializable {
     private Button adminProAddBtn;
 
     @FXML
-    private TextField adminProCatTF;
-
-    @FXML
     private Button adminProClearBtn;
 
     @FXML
@@ -203,16 +204,16 @@ public class AdminDashboardController implements Initializable {
     private TableColumn<Product, String> col_pro_desc;
 
     @FXML
-    private TableColumn<?, ?> col_pro_id;
+    private TableColumn<Product, Integer> col_pro_id;
 
     @FXML
     private TableColumn<Product, String> col_pro_name;
 
     @FXML
-    private TableColumn<Product, String> col_pro_price;
+    private TableColumn<Product, Double> col_pro_price;
 
     @FXML
-    private TableColumn<Product, String> col_pro_quantity;
+    private TableColumn<Product, Integer> col_pro_quantity;
 
     @FXML
     private TableColumn<Product, String> col_pro_status;
@@ -242,6 +243,37 @@ public class AdminDashboardController implements Initializable {
     private TableColumn<Employee, String> col_staff_username;
 
     @FXML
+    private ComboBox<Category> adminProCatTF;
+
+    @FXML
+    private HBox adminCategoryManForm;
+    @FXML
+    private Button adminCategoryAddBtn;
+    @FXML
+    private Button adminCategoryBtn;
+    @FXML
+    private Button adminCategoryClearBtn;
+    @FXML
+    private TextField adminCategoryDescTF;
+    @FXML
+    private AnchorPane adminCategoryForm;
+    @FXML
+    private TextField adminCategoryLookUpTF;
+    @FXML
+    private TextField adminCategoryNameTF;
+    @FXML
+    private TableView<Category> adminCategoryTable;
+    @FXML
+    private Button adminCategoryUpdateBtn;
+    @FXML
+    private TableColumn<Category, String> col_category_desc;
+    @FXML
+    private TableColumn<Category, Integer> col_category_id;
+    @FXML
+    private TableColumn<Category, String> col_category_name;
+
+
+    @FXML
     private TableColumn<?, ?> col_total_amount;
 
     private Double x;
@@ -259,6 +291,10 @@ public class AdminDashboardController implements Initializable {
 
         adminBillManForm.setVisible(false);
         adminBillManBtn.setStyle("-fx-background-color: TRANSPARENT");
+
+        adminCategoryManForm.setVisible(false);
+        adminCategoryManForm.setStyle("-fx-background-color: TRANSPARENT");
+
     }
 
     public void switchForm(ActionEvent event) {
@@ -274,15 +310,21 @@ public class AdminDashboardController implements Initializable {
         } else if (event.getSource() == adminProManBtn) {
             adminTitleLabel.setText("Quản lý - Sản phẩm");
             adminProManForm.setVisible(true);
+            adminProManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
             adminShowProduct();
             adminProLookUp();
-            adminProManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
         } else if (event.getSource() == adminBillManBtn) {
             adminTitleLabel.setText("Quản lý - Hoá đơn");
             adminBillManForm.setVisible(true);
             adminBillManBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
             adminShowBill();
             adminBillLookUp();
+        }else if (event.getSource() == adminCategoryBtn) {
+            adminTitleLabel.setText("Quản lý - Danh mục");
+            adminCategoryManForm.setVisible(true);
+            adminCategoryBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
+            adminShowCategory();
+            adminCategoryLookUp();
         }
     }
 
@@ -739,97 +781,364 @@ public class AdminDashboardController implements Initializable {
         adminRoleCB.getSelectionModel().clearSelection();
     }
 
+    //Category start
+    private ObservableList<Category> categoryList = FXCollections.observableArrayList();
 
-    public ObservableList<Product> adminProductList() {
-        ObservableList<Product> productsList = FXCollections.observableArrayList();
-        String sql = "select * from product";
+    private void loadCategories() {
+        try (Connection con = DBUtils.getConnection()) {
+            String query = "SELECT * FROM category";
+            try (PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+                categoryList.clear();
+                while (rs.next()) {
+                    Category category = new Category(rs.getInt("id"), rs.getString("name"), rs.getString("description"));
+                    categoryList.add(category);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        adminProCatTF.setItems(categoryList);
+    }
+
+    private ObservableList<Category> adminCategoryList() {
+        ObservableList<Category> categoriesList = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM category";
         con = DBUtils.getConnection();
         try {
-            Product product;
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
-                String desc = rs.getString("description");
-                String category = rs.getString("category");
-                Double price = rs.getDouble("price");
-                int quantity = rs.getInt("quantity");
-                String productStat = rs.getString("status");
-                ProductStatus productStatus = ProductStatus.valueOf(productStat);
-                product = new Product(id, name, desc, category, price, quantity, productStatus);
-                productsList.add(product);
+                String description = rs.getString("description");
+                Category category = new Category(id, name, description);
+                categoriesList.add(category);
             }
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        return productsList;
+        return categoriesList;
     }
 
-    //Product start
-    private ObservableList<Product> adminProductList2;
+    private ObservableList<Category> adminCategoryList2;
 
-    public void adminShowProduct() {
-        adminProductList2 = adminProductList();
-        col_pro_stt.setCellValueFactory(new PropertyValueFactory<Product, String>("id"));
-        col_pro_name.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
-        col_pro_cat.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
-        col_pro_desc.setCellValueFactory(new PropertyValueFactory<Product, String>("description"));
-        col_pro_price.setCellValueFactory(new PropertyValueFactory<Product, String>("price"));
-        col_pro_quantity.setCellValueFactory(new PropertyValueFactory<Product, String>("quantity"));
-        col_pro_status.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+    public void adminShowCategory() {
+        adminCategoryList2 = adminCategoryList();
+        col_category_id.setCellValueFactory(new PropertyValueFactory<Category, Integer>("id"));
+        col_category_name.setCellValueFactory(new PropertyValueFactory<Category, String>("name"));
+        col_category_desc.setCellValueFactory(new PropertyValueFactory<Category, String>("description"));
 
-
-        adminProTable.setItems(adminProductList2);
+        adminCategoryTable.setItems(adminCategoryList2);
     }
 
-    public void adminProSelect() {
-        Product product = adminProTable.getSelectionModel().getSelectedItem();
-        int index = adminProTable.getSelectionModel().getSelectedIndex();
+    public void adminCategoryLookUp() {
+        adminCategoryLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
+            String searchKey = newValue != null ? newValue.toLowerCase() : "";
+            ObservableList<Category> categoryList = FXCollections.observableArrayList();
+
+            try (Connection con = DBUtils.getConnection()) {
+                String query;
+                if (searchKey.isEmpty()) {
+                    query = "SELECT * FROM category";
+                } else {
+                    query = "SELECT * FROM category WHERE LOWER(name) LIKE ? OR LOWER(description) LIKE ?";
+                }
+
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    if (!searchKey.isEmpty()) {
+                        ps.setString(1, "%" + searchKey + "%");
+                        ps.setString(2, "%" + searchKey + "%");
+                    }
+
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) {
+                            Category category = new Category(
+                                    rs.getInt("id"),
+                                    rs.getString("name"),
+                                    rs.getString("description")
+                            );
+                            categoryList.add(category);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            // Update the table items without clearing the selection
+            adminCategoryTable.setItems(categoryList);
+        });
+    }
+
+
+    public void adminCateAdd() {
+        String insertQuery = "INSERT INTO category (name, description) VALUES (?, ?)";
+        con = DBUtils.getConnection();
+        try {
+            Alert alert;
+            if (adminCategoryNameTF.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Điền đầy đủ thông tin danh mục");
+                alert.showAndWait();
+            } else {
+                ps = con.prepareStatement(insertQuery);
+                ps.setString(1, adminCategoryNameTF.getText());
+                ps.setString(2, adminCategoryDescTF.getText());
+                ps.executeUpdate();
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Thêm danh mục " + adminCategoryNameTF.getText() + " thành công");
+                alert.showAndWait();
+
+                adminShowCategory();
+                adminCateClear();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Có lỗi xảy ra khi thêm danh mục");
+            alert.showAndWait();
+        } finally {
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    public void adminCateClear() {
+        adminCategoryNameTF.clear();
+        adminCategoryDescTF.clear();
+    }
+
+    public void adminCateUpdate() {
+        String updateQuery = "UPDATE category SET name = ?, description = ? WHERE id = ?";
+        con = DBUtils.getConnection();
+
+        Category selectedCategory = (Category) adminCategoryTable.getSelectionModel().getSelectedItem();
+        int selectedIndex = adminCategoryTable.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex == -1 || selectedCategory == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Chọn danh mục cần cập nhật");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            Alert alert;
+            if (adminCategoryNameTF.getText().isEmpty()) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Điền đầy đủ thông tin danh mục");
+                alert.showAndWait();
+            } else {
+                ps = con.prepareStatement(updateQuery);
+                ps.setString(1, adminCategoryNameTF.getText());
+                ps.setString(2, adminCategoryDescTF.getText());
+                ps.setInt(3, selectedCategory.getId());
+                ps.executeUpdate();
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thông báo");
+                alert.setHeaderText(null);
+                alert.setContentText("Cập nhật danh mục " + adminCategoryNameTF.getText() + " thành công");
+                alert.showAndWait();
+
+                // Update the selected category in the list with the new values
+                selectedCategory.setName(adminCategoryNameTF.getText());
+                selectedCategory.setDescription(adminCategoryDescTF.getText());
+
+                // Refresh the table with the updated list
+                adminShowCategory();
+                adminCategoryTable.getSelectionModel().select(selectedIndex); // Reselect the previously selected item
+                adminCateClear();
+                adminCategoryLookUp();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void adminCategorySelect() {
+        Category category = (Category) adminCategoryTable.getSelectionModel().getSelectedItem();
+        int index = adminCategoryTable.getSelectionModel().getSelectedIndex();
 
         if (index == -1) {
             return;
         }
-        adminProNameTF.setText(product.getName());
-        adminProDescTF.setText(product.getDescription());
-        adminProCatTF.setText(product.getCategory());
-        adminProPriceTF.setText(String.valueOf(product.getPrice()));
-        adminProQuanityTF.setText(String.valueOf(product.getQuantity()));
-
+        adminCategoryNameTF.setText(category.getName());
+        adminCategoryDescTF.setText(category.getDescription());
     }
 
-    public void adminProAdd() {
-        String insertQuery = "insert into product (name,description,category,price,quantity) values(?,?,?,?,?)";
+    public void adminCategoryDelete() {
+        String deleteQuery = "DELETE FROM category WHERE id = ?";
         con = DBUtils.getConnection();
+
+        Category selectedCategory = (Category) adminCategoryTable.getSelectionModel().getSelectedItem();
+        int selectedIndex = adminCategoryTable.getSelectionModel().getSelectedIndex();
+
+        if (selectedIndex == -1 || selectedCategory == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Chọn danh mục cần xoá");
+            alert.showAndWait();
+            return;
+        }
+
         try {
             Alert alert;
-            if (adminProNameTF.getText().isEmpty() || adminProPriceTF.getText().isEmpty() || adminProQuanityTF.getText().isEmpty()) {
+            ps = con.prepareStatement(deleteQuery);
+            ps.setInt(1, selectedCategory.getId());
+            ps.executeUpdate();
+
+            alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Thông báo");
+            alert.setHeaderText(null);
+            alert.setContentText("Xoá danh mục " + selectedCategory.getName() + " thành công");
+            alert.showAndWait();
+
+            adminShowCategory();
+            adminCateClear();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //Product start
+    private ObservableList<Product> adminProductList() {
+        ObservableList<Product> productList = FXCollections.observableArrayList();
+        String sql = "SELECT product.*, category.name as category_name FROM product LEFT JOIN category ON product.category_id = category.id";
+        try (Connection con = DBUtils.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                double price = rs.getDouble("price");
+                int quantity = rs.getInt("quantity");
+                Category category = new Category(rs.getInt("category_id"), rs.getString("category_name"), null); // Assuming no description needed here
+                Product product = new Product(id, name, description, category, price, quantity, ProductStatus.AVAILABLE);
+                productList.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return productList;
+    }
+
+
+
+
+
+
+    public ObservableList<Category> getCategoryList() {
+        String sql = "SELECT * FROM category";
+        con = DBUtils.getConnection();
+        try {
+            ps = con.prepareStatement(sql);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                Category category = new Category(id, name, description);
+                categoryList.add(category);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return categoryList;
+    }
+
+    private ObservableList<Product> adminProductList2;
+
+    public void adminShowProduct() {
+        ObservableList<Product> productList = adminProductList();
+        col_pro_id.setCellValueFactory(new PropertyValueFactory<>("id"));
+        col_pro_name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        col_pro_desc.setCellValueFactory(new PropertyValueFactory<>("description"));
+        col_pro_cat.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCategory().getName()));
+
+        // Assuming getPrice() and getQuantity() return double or Double
+        col_pro_price.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(cellData.getValue().getPrice())
+        );
+
+        col_pro_quantity.setCellValueFactory(cellData ->
+                new SimpleObjectProperty<>(cellData.getValue().getQuantity())
+        );
+
+        col_pro_status.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+        adminProTable.setItems(productList);
+    }
+
+
+
+    public void adminProSelect() {
+        Product product = adminProTable.getSelectionModel().getSelectedItem();
+        if (product == null) return;
+        adminProNameTF.setText(product.getName());
+        adminProDescTF.setText(product.getDescription());
+        adminProCatTF.setValue(product.getCategory());
+        adminProPriceTF.setText(String.valueOf(product.getPrice()));
+        adminProQuanityTF.setText(String.valueOf(product.getQuantity()));
+    }
+
+
+
+    public void adminProAdd() {
+        String insertQuery = "INSERT INTO product (name, description, category_id, price, quantity) VALUES (?, ?, ?, ?, ?)";
+        try (Connection con = DBUtils.getConnection(); PreparedStatement ps = con.prepareStatement(insertQuery)) {
+            Alert alert;
+            if (adminProNameTF.getText().isEmpty() || adminProPriceTF.getText().isEmpty() || adminProQuanityTF.getText().isEmpty() || adminProCatTF.getValue() == null) {
                 alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Lỗi");
                 alert.setHeaderText(null);
                 alert.setContentText("Điền đầy đủ thông tin sản phẩm");
                 alert.showAndWait();
             } else {
-                ps = con.prepareStatement(insertQuery);
                 ps.setString(1, adminProNameTF.getText());
                 ps.setString(2, adminProDescTF.getText());
-                ps.setString(3, adminProCatTF.getText());
-                ps.setFloat(4, Float.parseFloat(adminProPriceTF.getText()));
+                ps.setInt(3, adminProCatTF.getValue().getId());
+                ps.setDouble(4, Double.parseDouble(adminProPriceTF.getText()));
                 ps.setInt(5, Integer.parseInt(adminProQuanityTF.getText()));
                 ps.executeUpdate();
-
                 alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
                 alert.setHeaderText(null);
                 alert.setContentText("Thêm sản phẩm " + adminProNameTF.getText() + " thành công");
                 alert.showAndWait();
-
-                adminShowProduct();
+                adminShowProduct(); // Cập nhật bảng sau khi thêm sản phẩm
                 adminProClear();
             }
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -837,13 +1146,14 @@ public class AdminDashboardController implements Initializable {
     public void adminProClear() {
         adminProNameTF.clear();
         adminProDescTF.clear();
-        adminProCatTF.clear();
+        adminProCatTF.getSelectionModel().clearSelection();
         adminProPriceTF.clear();
         adminProQuanityTF.clear();
     }
 
+
     public void adminProUpdate() {
-        String updateQuery = "UPDATE product SET name = ?, description = ?, category = ?, price = ?, quantity = ? WHERE id = ?";
+        String updateQuery = "UPDATE product SET name = ?, description = ?, category_id = ?, price = ?, quantity = ? WHERE id = ?";
         con = DBUtils.getConnection();
 
         Product selectedProduct = adminProTable.getSelectionModel().getSelectedItem();
@@ -870,7 +1180,7 @@ public class AdminDashboardController implements Initializable {
                 ps = con.prepareStatement(updateQuery);
                 ps.setString(1, adminProNameTF.getText());
                 ps.setString(2, adminProDescTF.getText());
-                ps.setString(3, adminProCatTF.getText());
+                ps.setInt(3, adminProCatTF.getValue().getId()); // Update ComboBox to use ID
                 ps.setFloat(4, Float.parseFloat(adminProPriceTF.getText()));
                 ps.setInt(5, Integer.parseInt(adminProQuanityTF.getText()));
                 ps.setInt(6, selectedProduct.getId());
@@ -885,7 +1195,7 @@ public class AdminDashboardController implements Initializable {
                 // Update the selected product in the list with the new values
                 selectedProduct.setName(adminProNameTF.getText());
                 selectedProduct.setDescription(adminProDescTF.getText());
-                selectedProduct.setCategory(adminProCatTF.getText());
+                selectedProduct.setCategory(adminProCatTF.getValue()); // Update ComboBox to use Category object
                 selectedProduct.setPrice(Double.parseDouble(adminProPriceTF.getText()));
                 selectedProduct.setQuantity(Integer.parseInt(adminProQuanityTF.getText()));
 
@@ -902,6 +1212,8 @@ public class AdminDashboardController implements Initializable {
     }
 
 
+
+
     public void adminProLookUp() {
         adminProLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchKey = newValue != null ? newValue.toLowerCase() : "";
@@ -910,9 +1222,9 @@ public class AdminDashboardController implements Initializable {
             try (Connection con = DBUtils.getConnection()) {
                 String query;
                 if (searchKey.isEmpty()) {
-                    query = "SELECT * FROM product";
+                    query = "SELECT product.*, category.name as category_name FROM product LEFT JOIN category ON product.category_id = category.id";
                 } else {
-                    query = "SELECT * FROM product WHERE LOWER(name) LIKE ? OR LOWER(description) LIKE ? OR LOWER(category) LIKE ?";
+                    query = "SELECT product.*, category.name as category_name FROM product LEFT JOIN category ON product.category_id = category.id WHERE LOWER(product.name) LIKE ? OR LOWER(product.description) LIKE ? OR LOWER(category.name) LIKE ?";
                 }
 
                 try (PreparedStatement ps = con.prepareStatement(query)) {
@@ -928,7 +1240,8 @@ public class AdminDashboardController implements Initializable {
                             product.setId(rs.getInt("id"));
                             product.setName(rs.getString("name"));
                             product.setDescription(rs.getString("description"));
-                            product.setCategory(rs.getString("category"));
+                            Category category = getCategoryByName(rs.getString("category_name"));
+                            product.setCategory(category);
                             product.setPrice(rs.getDouble("price"));
                             product.setQuantity(rs.getInt("quantity"));
                             productList.add(product);
@@ -944,26 +1257,57 @@ public class AdminDashboardController implements Initializable {
         });
     }
 
+    private Category getCategoryByName(String categoryName) {
+        for (Category category : getCategoryList()) {
+            if (category.getName().equals(categoryName)) {
+                return category;
+            }
+        }
+        return null; // or handle the case when the category is not found
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        adminRoleCB.setItems(FXCollections.observableArrayList("Manager", "Employee"));
-        hideAllForm();
-        adminStaffManForm.setVisible(true);
-        adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
-        adminProNameTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
-        adminProDescTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
-        adminProCatTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
-        adminProPriceTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
-        adminProQuanityTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
-        admin_StaffTable.setOnMouseClicked(event -> adminEmployeeSelect());
-        adminBillTable.setOnMouseClicked(event -> adminBillSelect());
-        adminStaffNoLabel.setText(String.valueOf(countEmployees()));
-//        adminShowBill();
-//        adminBillLookUp();
-        adminShowEmployee();
-        adminStaffLookUp();
+        try {
+            adminRoleCB.setItems(FXCollections.observableArrayList("Manager", "Employee"));
+            hideAllForm();
+            adminStaffManForm.setVisible(true);
+            adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
+            adminProNameTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+            adminProDescTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+            adminProCatTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+            adminProPriceTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+            adminProQuanityTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
+            admin_StaffTable.setOnMouseClicked(event -> adminEmployeeSelect());
+            adminBillTable.setOnMouseClicked(event -> adminBillSelect());
+            adminStaffNoLabel.setText(String.valueOf(countEmployees()));
+            adminShowEmployee();
+            adminStaffLookUp();
+            loadCategories();
+            adminShowCategory();
+            adminCategoryLookUp();
+            adminShowProduct(); // Khởi tạo bảng sản phẩm
+            adminProCatTF.setConverter(new StringConverter<Category>() {
+                @Override
+                public String toString(Category category) {
+                    return category != null ? category.getName() : "";
+                }
+
+                @Override
+                public Category fromString(String string) {
+                    return null; // No need to implement
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("An error occurred while initializing the dashboard: " + e.getMessage());
+            alert.showAndWait();
+        }
     }
+
 
     //Focus change on Enter
     private void handleTextFieldEnterPressed(KeyEvent event) {
@@ -991,6 +1335,7 @@ public class AdminDashboardController implements Initializable {
             }
         }
     }
+
 
     // Your other methods like adminProLookUp, adminProUpdate, etc. go here
     // ...

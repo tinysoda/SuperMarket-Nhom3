@@ -7,26 +7,22 @@ public class Product {
     private int id;
     private String name;
     private String description;
-    private String category;
+    private Category category;
     private DoubleProperty price;
     private IntegerProperty quantity;
     private DoubleProperty total;
     private ProductStatus status;
     private Button deleteButton;
-
     public Product() {
         this.price = new SimpleDoubleProperty();
         this.quantity = new SimpleIntegerProperty();
         this.total = new SimpleDoubleProperty();
     }
-
-
     public StringProperty statusProperty() {
         String statusStr = (this.status == ProductStatus.AVAILABLE) ? "Còn hàng" : "Đã xoá";
         return new SimpleStringProperty(statusStr);
     }
-
-    public Product(int id, String name, String description, String category, double price, int quantity, ProductStatus status) {
+    public Product(int id, String name, String description, Category category, double price, int quantity, ProductStatus status) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -37,7 +33,6 @@ public class Product {
         this.status = status;
         updateTotal();
     }
-
     // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -50,9 +45,11 @@ public class Product {
         this.quantity.set(quantity);
         updateTotal(); // Cập nhật total khi quantity thay đổi
     }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public String getName() { return name; }
@@ -62,8 +59,8 @@ public class Product {
     public DoubleProperty totalProperty() { return total; }
     public Button getDeleteButton() { return deleteButton; }
     public void setDeleteButton(Button deleteButton) { this.deleteButton = deleteButton; }
-
     private void updateTotal() {
         this.total.set(this.price.get() * this.quantity.get());
     }
 }
+

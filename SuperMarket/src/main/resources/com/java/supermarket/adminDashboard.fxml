@@ -24,7 +24,7 @@
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
          <children>
-            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <styleClass>
                   <String fx:value="white-bg" />
                   <String fx:value="shadow" />
@@ -221,7 +221,6 @@
                         </Label>
                         <TextField fx:id="adminProNameTF" layoutX="99.0" layoutY="91.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <TextField fx:id="adminProDescTF" layoutX="99.0" layoutY="136.0" promptText="Mô tả" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
-                        <TextField fx:id="adminProCatTF" layoutX="99.0" layoutY="184.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <TextField fx:id="adminProPriceTF" layoutX="99.0" layoutY="228.0" promptText="VND" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <TextField fx:id="adminProQuanityTF" layoutX="99.0" layoutY="271.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <Button fx:id="adminProAddBtn" layoutX="33.0" layoutY="353.0" mnemonicParsing="false" onAction="#adminProAdd" prefHeight="45.0" prefWidth="84.0" styleClass="add-btn" stylesheets="@styles/Dashboard.css" text="Thêm mới" />
@@ -233,6 +232,7 @@
                               <Font name="Tahoma Bold" size="20.0" />
                            </font>
                         </Label>
+                        <ComboBox fx:id="adminProCatTF" layoutX="102.0" layoutY="185.0" prefWidth="150.0" />
                      </children>
                   </AnchorPane>
                   <AnchorPane fx:id="adminProForm" prefHeight="522.0" prefWidth="633.0" stylesheets="@styles/Dashboard.css">
@@ -245,7 +245,7 @@
                         <FontAwesomeIconView fill="#a19797" glyphName="SEARCH" layoutX="179.0" layoutY="35.0" size="15" />
                         <TableView fx:id="adminProTable" layoutX="14.0" layoutY="61.0" onMouseClicked="#adminProSelect" prefHeight="449.0" prefWidth="572.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
                            <columns>
-                              <TableColumn fx:id="col_pro_stt" prefWidth="51.0" text="STT" />
+                              <TableColumn fx:id="col_pro_id" prefWidth="51.0" text="STT" />
                               <TableColumn fx:id="col_pro_name" prefWidth="99.0" text="Tên sản phẩm" />
                               <TableColumn fx:id="col_pro_cat" prefWidth="84.0" text="Danh mục" />
                               <TableColumn fx:id="col_pro_desc" prefWidth="103.0" text="Mô tả" />
@@ -262,11 +262,11 @@
                <children>
                   <TableView fx:id="adminBillTable" layoutX="7.0" layoutY="7.0" prefHeight="482.0" prefWidth="446.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="40.0">
                      <columns>
-                        <TableColumn fx:id="col_bill_bill_id" prefWidth="60.0" text="Mã hoá đơn" />
-                        <TableColumn fx:id="col_billing_staff_id" prefWidth="60.0" text="Mã nhân viên" />
-                        <TableColumn fx:id="col_bill_customer_phone" prefWidth="102.0" text="SDT Khách hàng" />
+                        <TableColumn fx:id="col_bill_bill_id" prefWidth="75.99998140335083" text="Mã hoá đơn" />
+                        <TableColumn fx:id="col_billing_staff_id" prefWidth="87.20002746582031" text="Mã nhân viên" />
+                        <TableColumn fx:id="col_bill_customer_phone" prefWidth="115.99993896484375" text="SDT Khách hàng" />
                         <TableColumn fx:id="col_bill_total_amount" prefWidth="87.0" text="Tổng hoá đơn" />
-                        <TableColumn fx:id="col_bill_created_at" prefWidth="132.0" text="Ngày tạo" />
+                        <TableColumn fx:id="col_bill_created_at" prefWidth="78.0" text="Ngày tạo" />
                      </columns>
                   </TableView>
                   <TextField fx:id="adminBillLookUpTF" layoutX="8.0" layoutY="5.0" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm hoá đơn" styleClass="textfield" stylesheets="@styles/Dashboard.css" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="5.0" />
@@ -286,6 +286,55 @@
                   <String fx:value="shadow" />
                </styleClass>
             </AnchorPane>
+            <HBox fx:id="adminCategoryManForm" layoutX="14.0" layoutY="14.0" prefHeight="516.0" prefWidth="898.0" spacing="14.0" visible="false">
+               <children>
+                  <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="white-bg" />
+                     </styleClass>
+                     <children>
+                        <Label layoutX="17.0" layoutY="95.0" text="Tên danh mục">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="17.0" layoutY="140.0" text="Chi tiết:">
+                           <font>
+                              <Font size="13.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="adminCategoryNameTF" layoutX="99.0" layoutY="91.0" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <TextField fx:id="adminCategoryDescTF" layoutX="99.0" layoutY="136.0" promptText="Mô tả" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <Button fx:id="adminCategoryAddBtn" layoutX="33.0" layoutY="353.0" mnemonicParsing="false" onAction="#adminCateAdd" prefHeight="45.0" prefWidth="84.0" styleClass="add-btn" stylesheets="@styles/Dashboard.css" text="Thêm mới" />
+                        <Button fx:id="adminCategoryUpdateBtn" layoutX="147.0" layoutY="353.0" mnemonicParsing="false" onAction="#adminCateUpdate" prefHeight="45.0" prefWidth="84.0" styleClass="update-btn" stylesheets="@styles/Dashboard.css" text="Cập nhật" />
+                        <Button fx:id="adminCategoryClearBtn" layoutX="94.0" layoutY="431.0" mnemonicParsing="false" onAction="#adminCateClear" prefHeight="45.0" prefWidth="84.0" styleClass="clear-btn" stylesheets="@styles/Dashboard.css" text="Clear" />
+                        <Label layoutX="40.0" layoutY="32.0" text="QUẢN LÝ DANH MỤC">
+                           <font>
+                              <Font name="Tahoma Bold" size="20.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="adminCategoryForm" prefHeight="522.0" prefWidth="633.0" stylesheets="@styles/Dashboard.css">
+                     <styleClass>
+                        <String fx:value="shadow" />
+                        <String fx:value="white-bg" />
+                     </styleClass>
+                     <children>
+                        <TextField fx:id="adminCategoryLookUpTF" layoutX="14.0" layoutY="14.0" onKeyTyped="#adminProLookUp" onMouseMoved="#adminProLookUp" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm danh mục" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
+                        <FontAwesomeIconView fill="#a19797" glyphName="SEARCH" layoutX="179.0" layoutY="35.0" size="15" />
+                        <TableView fx:id="adminCategoryTable" layoutX="14.0" layoutY="61.0" onMouseClicked="#adminProSelect" prefHeight="449.0" prefWidth="572.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+                           <columns>
+                              <TableColumn fx:id="col_category_id" prefWidth="51.0" text="STT" />
+                              <TableColumn fx:id="col_category_name" prefWidth="264.7999572753906" text="Danh mục" />
+                              <TableColumn fx:id="col_category_desc" prefWidth="265.59991455078125" text="Mô tả" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </HBox>
          </children>
       </AnchorPane>
    </center>
@@ -318,6 +367,11 @@
                   <Button fx:id="adminBillManBtn" alignment="TOP_LEFT" layoutX="10.0" layoutY="76.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="37.0" prefWidth="171.0" styleClass="nav-button" stylesheets="@styles/Dashboard.css" text="Hoá đơn thanh toán">
                      <graphic>
                         <FontAwesomeIconView glyphName="CLIPBOARD" size="20" />
+                     </graphic>
+                  </Button>
+                  <Button fx:id="adminCategoryBtn" alignment="TOP_LEFT" layoutX="10.0" layoutY="76.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="37.0" prefWidth="171.0" styleClass="nav-button" stylesheets="@styles/Dashboard.css" text=" Quản lý danh mục">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="SHOPPING_CART" size="20" />
                      </graphic>
                   </Button>
                </children>

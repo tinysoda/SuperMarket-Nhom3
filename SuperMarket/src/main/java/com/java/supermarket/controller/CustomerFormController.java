@@ -1,37 +1,23 @@
 package com.java.supermarket.controller;
-
 import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.Customer;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.fxml.FXML; import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class CustomerFormController {
-
-
-    @FXML
-    private Button saveCustomerForm;
-
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private TextField phoneField;
-
-    @FXML
-    private TextField pointsField;
-
+    @FXML private Button saveCustomerForm;
+    @FXML private TextField nameField;
+    @FXML private TextField phoneField;
+    @FXML private TextField pointsField;
     private EmployeeDashboardController employeeDashboardController;
 
     public void setEmployeeDashboardController(EmployeeDashboardController controller) {
         this.employeeDashboardController = controller;
     }
-
     public void setCustomer(Customer customer) {
         if (customer != null) {
             nameField.setText(customer.getName());
@@ -42,6 +28,7 @@ public class CustomerFormController {
 
     @FXML
     private void initialize() {
+        pointsField.setEditable(false);
         phoneField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && !newValue.isEmpty()) {
                 Customer customer = employeeDashboardController.getCustomerByPhone(newValue);
@@ -49,6 +36,7 @@ public class CustomerFormController {
             }
         });
     }
+
 
     public Customer getCustomerByPhone(String phone) {
         Customer customer = null;
@@ -66,8 +54,7 @@ public class CustomerFormController {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        return customer;
+        } return customer;
     }
 
     public TextField getPhoneField() {
@@ -77,17 +64,21 @@ public class CustomerFormController {
     public TextField getNameField() {
         return nameField;
     }
-
     @FXML
     private void handleSave() {
         String name = nameField.getText();
         String phone = phoneField.getText();
-        int points = Integer.parseInt(pointsField.getText());
+        int points;
+
+        if (pointsField.getText().isEmpty()) {
+            points = 0; // Set default points to 0 if the points field is empty
+        } else {
+            points = Integer.parseInt(pointsField.getText());
+        }
 
         Customer customer = new Customer(name, phone, points);
         employeeDashboardController.saveCustomer(customer);
-        employeeDashboardController.setCustomerName(name); // Cập nhật tên khách hàng
-
+        employeeDashboardController.setCustomerName(name); // Update the customer name
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
     }
