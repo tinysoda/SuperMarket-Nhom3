@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -30,6 +31,7 @@ import com.itextpdf.layout.font.FontProvider;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.*;
+import java.text.ParseException;
 import java.util.*;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -39,6 +41,11 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.UnitValue;
 import javafx.stage.StageStyle;
+import javafx.util.StringConverter;
+
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class EmployeeDashboardController implements Initializable {
     @FXML private Label customerNameFiled;
@@ -75,42 +82,55 @@ public class EmployeeDashboardController implements Initializable {
         stage.setIconified(true);
     }
 
-    @FXML private void handleUsePointDiscount(ActionEvent event) {
+    @FXML
+    private void handleUsePointDiscount(ActionEvent event) {
         try {
-            double totalAmount = Double.parseDouble(totalAmountLabel.getText());
+            // Lấy tổng số tiền hiện tại từ nhãn
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
             int customerPoints = customer.getPoints();
+
             if (!discountApplied) {
+                // Tính toán số điểm giảm giá có thể sử dụng
                 discountAmount = customerPoints;
                 if (discountAmount > totalAmount) {
                     discountAmount = totalAmount;
                 }
+
+                // Áp dụng điểm giảm giá
                 double newTotalAmount = totalAmount - discountAmount;
-                totalAmountLabel.setText(String.valueOf(newTotalAmount));
+                totalAmountLabel.setText(formatCurrency(newTotalAmount));
                 discountApplied = true;
+
+                // Hiển thị thông báo áp dụng thành công
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thành công");
                 alert.setHeaderText(null);
                 alert.setContentText("Đã áp dụng điểm giảm giá thành công!");
                 alert.showAndWait();
             } else {
+                // Hủy bỏ điểm giảm giá
                 double originalTotalAmount = totalAmount + discountAmount;
-                totalAmountLabel.setText(String.valueOf(originalTotalAmount));
+                totalAmountLabel.setText(formatCurrency(originalTotalAmount));
                 discountApplied = false;
                 discountAmount = 0.0;
+
+                // Hiển thị thông báo không áp dụng mã giảm giá
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
                 alert.setHeaderText(null);
                 alert.setContentText("Không áp dụng mã giảm giá.");
                 alert.showAndWait();
             }
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi"); alert.setHeaderText(null);
-            alert.setContentText("Ban chưa điền thông tin khách hàng");
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Lỗi giảm giá");
             alert.showAndWait();
         }
     }
+
 
     private void updateCustomerPointsInDatabase(String customerPhone, int newPoints) {
         try {
@@ -158,40 +178,58 @@ public class EmployeeDashboardController implements Initializable {
         try (PdfWriter writer = new PdfWriter(filePath);
              PdfDocument pdf = new PdfDocument(writer);
              Document document = new Document(pdf)) {
-                PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
-                document.setFont(font);
-                ImageData imageData = ImageDataFactory.create("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png");
-                Image logo = new Image(imageData);
-                logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
-                logo.scaleToFit(100, 50);
-                document.add(logo);
-                Paragraph title = new Paragraph("Hóa Đơn Bán Hàng") .setFont(font) .setFontSize(18) .setBold() .setTextAlignment(TextAlignment.CENTER);
-                document.add(title);
-                document.add(new Paragraph("Mã Hóa Đơn: " + billId).setFont(font));
-                document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
-                document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
-                Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2})) .useAllAvailableWidth();
-                table.addHeaderCell(new Cell().add(new Paragraph("STT").setFont(font)));
-                table.addHeaderCell(new Cell().add(new Paragraph("Tên sản phẩm").setFont(font)));
-                table.addHeaderCell(new Cell().add(new Paragraph("Số lượng").setFont(font)));
-                table.addHeaderCell(new Cell().add(new Paragraph("Giá tiền").setFont(font)));
+            PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
+            document.setFont(font);
 
-                int stt = 1;
+            ImageData imageData = ImageDataFactory.create("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png");
+            Image logo = new Image(imageData);
+            logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
+            logo.scaleToFit(100, 50);
+            document.add(logo);
 
-                for (BillDetail detail : bill.getBillDetails()) {
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(stt++)).setFont(font)));
-                    table.addCell(new Cell().add(new Paragraph(detail.getProductName()).setFont(font)));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(detail.getQuantity())).setFont(font)));
-                    table.addCell(new Cell().add(new Paragraph(String.valueOf(detail.getPrice())).setFont(font)));
-                }
-                document.add(table);
-                document.add(new Paragraph("Tổng tiền: " + bill.getTotalAmount()).setFont(font));
-                Paragraph thank = new Paragraph("Cảm ơn quý khách") .setFont(font) .setFontSize(18) .setItalic() .setTextAlignment(TextAlignment.CENTER);
-                document.add(thank);
+            Paragraph title = new Paragraph("Hóa Đơn Bán Hàng")
+                    .setFont(font)
+                    .setFontSize(18)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(title);
+
+            document.add(new Paragraph("Mã Hóa Đơn: " + billId).setFont(font));
+            document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
+            document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
+
+            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2}))
+                    .useAllAvailableWidth();
+            table.addHeaderCell(new Cell().add(new Paragraph("STT").setFont(font)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Tên sản phẩm").setFont(font)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Số lượng").setFont(font)));
+            table.addHeaderCell(new Cell().add(new Paragraph("Giá tiền").setFont(font)));
+
+            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            int stt = 1;
+            for (BillDetail detail : bill.getBillDetails()) {
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(stt++)).setFont(font)));
+                table.addCell(new Cell().add(new Paragraph(detail.getProductName()).setFont(font)));
+                table.addCell(new Cell().add(new Paragraph(String.valueOf(detail.getQuantity())).setFont(font)));
+                table.addCell(new Cell().add(new Paragraph(currencyFormat.format(detail.getPrice())).setFont(font)));
+            }
+
+            document.add(table);
+            document.add(new Paragraph("Tổng tiền: " + currencyFormat.format(bill.getTotalAmount())).setFont(font));
+
+            Paragraph thank = new Paragraph("Cảm ơn quý khách")
+                    .setFont(font)
+                    .setFontSize(18)
+                    .setItalic()
+                    .setTextAlignment(TextAlignment.CENTER);
+            document.add(thank);
+
         } catch (Exception e) {
             e.printStackTrace();
-        } showInvoiceAlert(filePath);
+        }
+        showInvoiceAlert(filePath);
     }
+
 
     private void showInvoiceAlert(String filePath) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -229,69 +267,102 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
-    @FXML void calculateChange(KeyEvent event) {
-        double totalAmount = Double.parseDouble(totalAmountLabel.getText());
-        double amountGiven = Double.parseDouble(amountGivenField.getText());
-        double changeAmount = amountGiven - totalAmount;
-        changeAmountLabel.setText(String.valueOf(changeAmount));
+    @FXML
+    void calculateChange(KeyEvent event) {
+        try {
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+            double amountGiven = Double.parseDouble(amountGivenField.getText().replace(",", "").replace("₫", "").trim());
+            double changeAmount = amountGiven - totalAmount;
+            changeAmountLabel.setText(formatCurrency(changeAmount));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    @FXML void saveOrder(ActionEvent event) {
+
+    @FXML
+    void saveOrder(ActionEvent event) {
         if (amountGivenField.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi"); alert.setHeaderText(null);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
             alert.setContentText("Điền thiếu thông tin thanh toán");
-            alert.showAndWait(); return;
-        } if (customer == null) {
+            alert.showAndWait();
+            return;
+        }
+        if (customer == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi"); alert.setHeaderText(null);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
             alert.setContentText("Bạn chưa thêm thông tin khách hàng");
-            alert.showAndWait(); return;
-        } if (productList.isEmpty()) {
+            alert.showAndWait();
+            return;
+        }
+        if (productList.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi"); alert.setHeaderText(null);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
             alert.setContentText("Chưa thêm sản phẩm vào hóa đơn");
-            alert.showAndWait(); return;
+            alert.showAndWait();
+            return;
         }
-        List<BillDetail> billDetails = new ArrayList<>();
-        for (Product product : productList) {
-            int currentStock = getProductStock(product.getId());
-            if (product.getQuantity() > currentStock) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi"); alert.setHeaderText(null);
-                alert.setContentText("Sản phẩm " + product.getName() + " đã hết hàng");
-                alert.showAndWait(); return;
-            } else {
-                updateProductStock(product.getId(), currentStock - product.getQuantity());
-                billDetails.add(new BillDetail(product.getId(), product.getName(), product.getQuantity(), product.getTotal()));
+
+        try {
+            List<BillDetail> billDetails = new ArrayList<>();
+            for (Product product : productList) {
+                int currentStock = getProductStock(product.getId());
+                if (product.getQuantity() > currentStock) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Sản phẩm " + product.getName() + " đã hết hàng");
+                    alert.showAndWait();
+                    return;
+                } else {
+                    updateProductStock(product.getId(), currentStock - product.getQuantity());
+                    billDetails.add(new BillDetail(product.getId(), product.getName(), product.getQuantity(), product.getTotal()));
+                }
             }
-        }
-        double totalAmount = Double.parseDouble(totalAmountLabel.getText());
-        Bill bill = new Bill(customer.getPhone(), getEmployeeId(employeeUsername), totalAmount, billDetails);
-        saveBillToDatabase(bill);
-        double amountGiven = Double.parseDouble(amountGivenField.getText());
-        int pointsEarned = (int) (amountGiven / 10);
-        updateCustomerPoints(customer.getPhone(), pointsEarned);
 
-        if (discountApplied) {
-            int newCustomerPoints = customer.getPoints() - (int) discountAmount;
-            updateCustomerPointsInDatabase(customer.getPhone(), newCustomerPoints);
-            customer.setPoints(newCustomerPoints); discountApplied = false;
-            discountAmount = 0.0;
-        }
-        customer = null;
-        productList.clear();
-        productTableView.refresh();
-        totalAmountLabel.setText("0");
-        amountGivenField.clear();
-        changeAmountLabel.setText("0");
-        customerNameFiled.setText("0");
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+            Bill bill = new Bill(customer.getPhone(), getEmployeeId(employeeUsername), totalAmount, billDetails);
+            saveBillToDatabase(bill);
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Thành công");
-        alert.setHeaderText(null);
-        alert.setContentText("Tạo hóa đơn thành công");
-        alert.showAndWait();
+            double amountGiven = Double.parseDouble(amountGivenField.getText());
+            int pointsEarned = (int) (amountGiven / 10);
+            updateCustomerPoints(customer.getPhone(), pointsEarned);
+
+            if (discountApplied) {
+                int newCustomerPoints = customer.getPoints() - (int) discountAmount;
+                updateCustomerPointsInDatabase(customer.getPhone(), newCustomerPoints);
+                customer.setPoints(newCustomerPoints);
+                discountApplied = false;
+                discountAmount = 0.0;
+            }
+
+            customer = null;
+            productList.clear();
+            productTableView.refresh();
+            totalAmountLabel.setText(formatCurrency(0));
+            amountGivenField.setText("0");
+            changeAmountLabel.setText(formatCurrency(0));
+            customerNameFiled.setText("0");
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Thành công");
+            alert.setHeaderText(null);
+            alert.setContentText("Tạo hóa đơn thành công");
+            alert.showAndWait();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Có lỗi xảy ra khi xử lý hóa đơn");
+            alert.showAndWait();
+        }
     }
+
 
     private void updateCustomerPoints(String customerPhone, int pointsEarned) {
         try {
@@ -390,15 +461,55 @@ public class EmployeeDashboardController implements Initializable {
 
         suggestionListView.setOnMouseClicked(event -> addSelectedProduct(event));
         usePointDiscount.setOnAction(this::handleUsePointDiscount);
+
+        colPrice.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                return formatCurrency(object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                try {
+                    return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(string).doubleValue();
+                } catch (Exception e) {
+                    return 0.0;
+                }
+            }
+        }));
+
+        colTotal.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                return formatCurrency(object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                try {
+                    return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(string).doubleValue();
+                } catch (Exception e) {
+                    return 0.0;
+                }
+            }
+        }));
+
+
+        totalAmountLabel.setText(formatCurrency(0));
+        changeAmountLabel.setText(formatCurrency(0));
+
     }
     private ObservableList<String> getSuggestions(String searchText) {
         ObservableList<String> suggestions = FXCollections.observableArrayList();
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
         for (Product product : adminProductList()) {
             if (product.getName().toLowerCase().contains(searchText)) {
-                suggestions.add(product.getName() + " - " + product.getPrice());
+                suggestions.add(product.getName() + " - " + currencyFormat.format(product.getPrice()));
             }
-        } return suggestions;
+        }
+        return suggestions;
     }
+
 
     private void addSelectedProduct(MouseEvent event) {
         saveSpinnerValues();
@@ -471,7 +582,7 @@ public class EmployeeDashboardController implements Initializable {
 
     private void updateTotalAmount() {
         double totalAmount = productList.stream().mapToDouble(product -> product.getPrice() * product.getQuantity()).sum();
-        totalAmountLabel.setText(String.valueOf(totalAmount));
+        totalAmountLabel.setText(formatCurrency(totalAmount));
     }
     private ObservableList<Product> adminProductList() {
         ObservableList<Product> productList = FXCollections.observableArrayList();
@@ -553,6 +664,11 @@ public class EmployeeDashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String formatCurrency(double amount) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return currencyFormat.format(amount);
     }
 
 

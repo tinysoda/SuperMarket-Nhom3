@@ -19,6 +19,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -34,6 +35,10 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import java.text.NumberFormat;
+import java.util.Locale;
+
 
 public class AdminDashboardController implements Initializable {
 
@@ -1302,6 +1307,37 @@ public class AdminDashboardController implements Initializable {
             updateIncomeLineChart();
             updateIncomePieChart();
 
+            col_bill_total_amount.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
+                @Override
+                public String toString(Double object) {
+                    return formatCurrency(object);
+                }
+
+                @Override
+                public Double fromString(String string) {
+                    try {
+                        return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(string).doubleValue();
+                    } catch (Exception e) {
+                        return 0.0;
+                    }
+                }
+            }));
+
+            col_pro_price.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
+                @Override
+                public String toString(Double object) {
+                    return formatCurrency(object);
+                }
+
+                @Override
+                public Double fromString(String string) {
+                    try {
+                        return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(string).doubleValue();
+                    } catch (Exception e) {
+                        return 0.0;
+                    }
+                }
+            }));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1357,9 +1393,10 @@ public class AdminDashboardController implements Initializable {
 
             if (rs.next()) {
                 double dailyIncome = rs.getDouble("daily_income");
-                adminDailyIncomeLabel.setText(String.format("%.1f", dailyIncome));
+                NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                adminDailyIncomeLabel.setText(currencyFormat.format(dailyIncome));
             } else {
-                adminDailyIncomeLabel.setText("0.0");
+                adminDailyIncomeLabel.setText("0 ₫");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1374,9 +1411,10 @@ public class AdminDashboardController implements Initializable {
 
             if (rs.next()) {
                 double totalIncome = rs.getDouble("total_income");
-                adminTotalIncomLabel.setText(String.format("%.1f", totalIncome));
+                NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                adminTotalIncomLabel.setText(currencyFormat.format(totalIncome));
             } else {
-                adminTotalIncomLabel.setText("0.0");
+                adminTotalIncomLabel.setText("0 ₫");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1433,6 +1471,11 @@ public class AdminDashboardController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private String formatCurrency(double amount) {
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return currencyFormat.format(amount);
     }
 
 }

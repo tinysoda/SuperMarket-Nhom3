@@ -267,7 +267,7 @@
                         <TableColumn fx:id="col_bill_bill_id" prefWidth="75.99998140335083" text="Mã hoá đơn" />
                         <TableColumn fx:id="col_billing_staff_id" prefWidth="87.20002746582031" text="Mã nhân viên" />
                         <TableColumn fx:id="col_bill_customer_phone" prefWidth="115.99993896484375" text="SDT Khách hàng" />
-                        <TableColumn fx:id="col_bill_total_amount" prefWidth="87.0" text="Tổng hoá đơn" />
+                        <TableColumn fx:id="col_bill_total_amount" prefWidth="87.0" text="Tổng tiền" />
                         <TableColumn fx:id="col_bill_created_at" prefWidth="78.0" text="Ngày tạo" />
                      </columns>
                   </TableView>
