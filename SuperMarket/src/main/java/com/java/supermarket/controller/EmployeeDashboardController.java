@@ -47,6 +47,10 @@ import javafx.util.StringConverter;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+
 public class EmployeeDashboardController implements Initializable {
     @FXML private Label customerNameFiled;
     @FXML private Label employeeName;
@@ -85,36 +89,30 @@ public class EmployeeDashboardController implements Initializable {
     @FXML
     private void handleUsePointDiscount(ActionEvent event) {
         try {
-            // Lấy tổng số tiền hiện tại từ nhãn
             double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
             int customerPoints = customer.getPoints();
 
             if (!discountApplied) {
-                // Tính toán số điểm giảm giá có thể sử dụng
                 discountAmount = customerPoints;
                 if (discountAmount > totalAmount) {
                     discountAmount = totalAmount;
                 }
 
-                // Áp dụng điểm giảm giá
                 double newTotalAmount = totalAmount - discountAmount;
                 totalAmountLabel.setText(formatCurrency(newTotalAmount));
                 discountApplied = true;
 
-                // Hiển thị thông báo áp dụng thành công
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thành công");
                 alert.setHeaderText(null);
                 alert.setContentText("Đã áp dụng điểm giảm giá thành công!");
                 alert.showAndWait();
             } else {
-                // Hủy bỏ điểm giảm giá
                 double originalTotalAmount = totalAmount + discountAmount;
                 totalAmountLabel.setText(formatCurrency(originalTotalAmount));
                 discountApplied = false;
                 discountAmount = 0.0;
 
-                // Hiển thị thông báo không áp dụng mã giảm giá
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
                 alert.setHeaderText(null);
@@ -175,9 +173,7 @@ public class EmployeeDashboardController implements Initializable {
 
     private void generateInvoice(int billId, Bill bill) {
         String filePath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\bill_" + billId + ".pdf";
-        try (PdfWriter writer = new PdfWriter(filePath);
-             PdfDocument pdf = new PdfDocument(writer);
-             Document document = new Document(pdf)) {
+        try (PdfWriter writer = new PdfWriter(filePath); PdfDocument pdf = new PdfDocument(writer); Document document = new Document(pdf)) {
             PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
             document.setFont(font);
 
@@ -198,8 +194,7 @@ public class EmployeeDashboardController implements Initializable {
             document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
             document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
 
-            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2}))
-                    .useAllAvailableWidth();
+            Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2})).useAllAvailableWidth();
             table.addHeaderCell(new Cell().add(new Paragraph("STT").setFont(font)));
             table.addHeaderCell(new Cell().add(new Paragraph("Tên sản phẩm").setFont(font)));
             table.addHeaderCell(new Cell().add(new Paragraph("Số lượng").setFont(font)));
@@ -213,8 +208,8 @@ public class EmployeeDashboardController implements Initializable {
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(detail.getQuantity())).setFont(font)));
                 table.addCell(new Cell().add(new Paragraph(currencyFormat.format(detail.getPrice())).setFont(font)));
             }
-
             document.add(table);
+
             document.add(new Paragraph("Tổng tiền: " + currencyFormat.format(bill.getTotalAmount())).setFont(font));
 
             Paragraph thank = new Paragraph("Cảm ơn quý khách")
@@ -223,12 +218,31 @@ public class EmployeeDashboardController implements Initializable {
                     .setItalic()
                     .setTextAlignment(TextAlignment.CENTER);
             document.add(thank);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        openPDF(filePath);
         showInvoiceAlert(filePath);
     }
+
+    private void openPDF(String filePath) {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                File pdfFile = new File(filePath);
+                if (pdfFile.exists()) {
+                    Desktop.getDesktop().open(pdfFile);
+                } else {
+                    System.out.println("The PDF file does not exist.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("Desktop is not supported.");
+        }
+    }
+
 
 
     private void showInvoiceAlert(String filePath) {

@@ -8,6 +8,7 @@ module com.java.supermarket {
     requires kernel;
     requires layout;
     requires io;
+    requires java.desktop;
 
 
     opens com.java.supermarket to javafx.fxml;

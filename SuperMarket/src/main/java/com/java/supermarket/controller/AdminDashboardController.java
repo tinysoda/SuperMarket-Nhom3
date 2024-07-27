@@ -596,7 +596,6 @@ public class AdminDashboardController implements Initializable {
     }
     //staff
     public void adminStaffLookUp() {
-        // Lắng nghe thay đổi trong trường tìm kiếm
         adminStaffLookUpTF.textProperty().addListener((observable, oldValue, newValue) -> {
             String searchKey = newValue != null ? newValue.toLowerCase() : "";
             ObservableList<Employee> employeeList = FXCollections.observableArrayList();
@@ -1275,7 +1274,7 @@ public class AdminDashboardController implements Initializable {
         try {
             adminRoleCB.setItems(FXCollections.observableArrayList("Manager", "Employee"));
             hideAllForm();
-            adminStaffManForm.setVisible(true);
+            adminStatForm.setVisible(true);
             adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
             adminProNameTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
             adminProDescTF.setOnKeyPressed(this::handleTextFieldEnterPressed);
@@ -1324,6 +1323,38 @@ public class AdminDashboardController implements Initializable {
             }));
 
             col_pro_price.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
+                @Override
+                public String toString(Double object) {
+                    return formatCurrency(object);
+                }
+
+                @Override
+                public Double fromString(String string) {
+                    try {
+                        return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(string).doubleValue();
+                    } catch (Exception e) {
+                        return 0.0;
+                    }
+                }
+            }));
+
+            col_bill_pro_price.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
+                @Override
+                public String toString(Double object) {
+                    return formatCurrency(object);
+                }
+
+                @Override
+                public Double fromString(String string) {
+                    try {
+                        return NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(string).doubleValue();
+                    } catch (Exception e) {
+                        return 0.0;
+                    }
+                }
+            }));
+
+            col_bill_pro_total.setCellFactory(tc -> new TextFieldTableCell<>(new StringConverter<Double>() {
                 @Override
                 public String toString(Double object) {
                     return formatCurrency(object);

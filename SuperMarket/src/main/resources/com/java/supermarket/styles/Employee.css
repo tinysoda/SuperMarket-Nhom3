@@ -21,10 +21,16 @@
     -fx-border-radius: 5px;
 }
 
-.close-button,.minimize-button{
-    -fx-background-color: transparent;
+.close-button{
+    -fx-background-color: #dd2f4f;
     -fx-cursor: hand;
 }
+
+.minimize-button{
+    -fx-background-color: #FFDD00;
+    -fx-cursor: hand;
+}
+
 .close-button:hover{
     -fx-background-color: #dd2f4f;
 }
@@ -38,6 +44,8 @@
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
     -fx-padding: 0px;
+    -fx-font-family: Arial;
+    -fx-font-size: 15px;
 }
 
 .table-view .table-column {
@@ -51,7 +59,6 @@
 }
 .table-view .column-header,.filter{
     -fx-background-color: linear-gradient(to top right, #8AE308, #4CAF50);
-    /*-fx-background-color: transparent;*/
     -fx-text-fill: white;
 }
 
