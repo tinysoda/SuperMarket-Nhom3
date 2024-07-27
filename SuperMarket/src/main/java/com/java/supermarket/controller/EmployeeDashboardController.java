@@ -448,10 +448,14 @@ public class EmployeeDashboardController implements Initializable {
                 }
             }
         });
+
         productSearchField.setOnKeyReleased(event -> {
             String searchText = productSearchField.getText().toLowerCase();
             if (!searchText.isEmpty()) {
                 ObservableList<String> suggestions = getSuggestions(searchText);
+                if (suggestions.isEmpty()) {
+                    suggestions.add("Không có loại sản phẩm này trong kho");
+                }
                 suggestionListView.setItems(suggestions);
                 suggestionListView.setVisible(true);
             } else {
@@ -497,6 +501,18 @@ public class EmployeeDashboardController implements Initializable {
 
         totalAmountLabel.setText(formatCurrency(0));
         changeAmountLabel.setText(formatCurrency(0));
+
+
+        amountGivenField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                amountGivenField.setText(oldValue);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Sai cú pháp: chỉ được phép nhập số");
+                alert.showAndWait();
+            }
+        });
 
     }
     private ObservableList<String> getSuggestions(String searchText) {

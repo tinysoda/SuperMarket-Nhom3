@@ -2,6 +2,7 @@
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import java.lang.String?>
+<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -16,7 +17,7 @@
 
 <BorderPane fx:id="employeeForm" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="800.0" styleClass="employee-form" stylesheets="@styles/Employee.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.EmployeeDashboardController">
    <top>
-      <AnchorPane prefHeight="40.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="40.0" prefWidth="800.0" styleClass="employee-header" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="staffMinimizeBtn" layoutX="700.0" layoutY="2.0" mnemonicParsing="false" onAction="#minimize" prefHeight="24.0" prefWidth="47.0" styleClass="minimize-button" AnchorPane.topAnchor="2.0">
                <graphic>
@@ -30,7 +31,7 @@
             </Button>
             <Label layoutX="298.0" layoutY="7.0" text="THANH TOÁN HÓA ĐƠN">
                <font>
-                  <Font name="Tahoma Bold" size="20.0" />
+                  <Font name="Arial Bold" size="20.0" />
                </font>
             </Label>
             <ImageView fitHeight="38.0" fitWidth="56.0" layoutX="12.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
@@ -44,94 +45,98 @@
    <bottom>
         <AnchorPane prefHeight="595.0" prefWidth="800.0" BorderPane.alignment="CENTER">
             <children>
-            <AnchorPane layoutX="350.0" layoutY="2.0" prefHeight="250.0" prefWidth="448.0" stylesheets="@styles/Dashboard.css">
+            <AnchorPane layoutX="350.0" layoutY="2.0" prefHeight="250.0" prefWidth="447.0">
                <styleClass>
-                  <String fx:value="white-bg" />
                   <String fx:value="shadow" />
+                  <String fx:value="bill_field" />
                </styleClass>
                <children>
-                  <Button fx:id="usePointDiscount" layoutX="14.0" layoutY="204.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="142.0" styleClass="discountBtn" text="Điểm giảm giá">
+                  <Button fx:id="usePointDiscount" layoutX="18.0" layoutY="195.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="142.0" styleClass="discountBtn" text="Điểm giảm giá">
                      <font>
-                        <Font name="Tahoma" size="16.0" />
+                        <Font name="Arial" size="16.0" />
                      </font>
                   </Button>
-                  <Label fx:id="employeeName" layoutX="335.0" layoutY="14.0" prefHeight="23.0" prefWidth="98.0">
+                  <Label fx:id="employeeName" layoutX="341.0" layoutY="14.0" prefHeight="23.0" prefWidth="98.0">
                      <font>
-                        <Font name="Tahoma" size="16.0" />
+                        <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="12.0" prefHeight="26.0" prefWidth="126.0" text="Tên khách hàng:">
+                  <Label layoutX="14.0" layoutY="12.0" prefHeight="26.0" prefWidth="130.0" text="Tên khách hàng:">
                      <font>
-                        <Font name="Tahoma" size="16.0" />
+                        <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Label fx:id="customerNameFiled" layoutX="136.0" layoutY="14.0" prefHeight="23.0" prefWidth="129.0">
+                  <Label fx:id="customerNameFiled" layoutX="140.0" layoutY="14.0" prefHeight="23.0" prefWidth="126.0">
                      <font>
-                        <Font name="Tahoma" size="16.0" />
+                        <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
+                      <Label layoutX="18.0" layoutY="112.0" text="Tiền khách đưa:">
+                          <font>
+                              <Font name="Arial" size="20.0" />
+                          </font>
+                      </Label>
+                      <Label layoutX="70.0" layoutY="64.0" text="Tổng tiền:">
+                          <font>
+                              <Font name="Arial" size="20.0" />
+                          </font>
+                      </Label>
+                      <Label layoutX="59.0" layoutY="154.0" text="Tiền trả lại:">
+                          <font>
+                              <Font name="Arial" size="20.0" />
+                          </font>
+                      </Label>
+                      <TextField fx:id="amountGivenField" layoutX="208.0" layoutY="110.0" onKeyReleased="#calculateChange" prefHeight="12.0" prefWidth="206.0">
+                          <font>
+                              <Font name="Arial" size="15.0" />
+                          </font>
+                      </TextField>
+                      <Label fx:id="totalAmountLabel" layoutX="208.0" layoutY="61.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;">
+                          <font>
+                              <Font size="20.0" />
+                          </font>
+                      </Label>
+                      <Label fx:id="changeAmountLabel" layoutX="208.0" layoutY="151.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;">
+                          <font>
+                              <Font size="20.0" />
+                          </font>
+                      </Label>
                </children>
+               <stylesheets>
+                  <URL value="@styles/Dashboard.css" />
+                  <URL value="@styles/Employee.css" />
+               </stylesheets>
             </AnchorPane>
-                <TextField fx:id="productSearchField" layoutX="27.0" layoutY="2.0" prefHeight="49.0" prefWidth="302.0" promptText="Tìm kiếm sản phẩm">
+                <TextField fx:id="productSearchField" layoutX="10.0" layoutY="2.0" prefHeight="50.0" prefWidth="326.0" promptText="Tìm kiếm sản phẩm" styleClass="search_field">
                <font>
-                  <Font name="Tahoma" size="15.0" />
+                  <Font name="Arial" size="15.0" />
                </font></TextField>
-                <ListView fx:id="suggestionListView" layoutX="27.0" layoutY="55.0" prefHeight="183.0" prefWidth="300.0" visible="false" />
-                <Button fx:id="customerInfoButton" layoutX="27.0" layoutY="482.0" mnemonicParsing="false" onAction="#showCustomerForm" prefHeight="40.0" prefWidth="238.0" styleClass="customerFormBtn" text="THÔNG TIN KHÁCH HÀNG">
+                <ListView fx:id="suggestionListView" layoutX="11.0" layoutY="55.0" prefHeight="194.0" prefWidth="326.0" visible="false" />
+                <Button fx:id="customerInfoButton" layoutX="27.0" layoutY="482.0" mnemonicParsing="false" onAction="#showCustomerForm" prefHeight="40.0" prefWidth="220.0" styleClass="customerFormBtn" text="THÔNG TIN KHÁCH HÀNG">
                <font>
-                  <Font name="Tahoma Bold" size="16.0" />
+                  <Font name="Arial Bold" size="16.0" />
                </font></Button>
-                <TableView fx:id="productTableView" layoutX="11.0" layoutY="255.0" prefHeight="200.0" prefWidth="782.0" stylesheets="@styles/Employee.css">
+                <TableView fx:id="productTableView" layoutX="5.0" layoutY="259.0" prefHeight="200.0" prefWidth="791.0" stylesheets="@styles/Employee.css">
                     <columns>
                         <TableColumn fx:id="colTitle" prefWidth="173.60003089904785" text="Tên sản phẩm" />
                         <TableColumn fx:id="colPrice" prefWidth="126.39996337890625" text="Đơn giá" />
                         <TableColumn fx:id="colQuantity" prefWidth="110.4000244140625" text="Số lượng" />
                         <TableColumn fx:id="colTotal" prefWidth="122.39999389648438" text="Thành tiền" />
-                        <TableColumn fx:id="colDelete" prefWidth="245.59995117187498" styleClass="colDelete" />
+                        <TableColumn fx:id="colDelete" prefWidth="254.39995117187505" styleClass="colDelete" />
                     </columns>
                 </TableView>
-                <Label layoutX="424.0" layoutY="67.0" text="Tổng tiền:">
-                    <font>
-                        <Font name="Tahoma" size="20.0" />
-                    </font>
-                </Label>
-                <Label layoutX="371.0" layoutY="127.0" text="Tiền khách đưa:">
-                    <font>
-                        <Font name="Tahoma" size="20.0" />
-                    </font>
-                </Label>
-                <Label layoutX="411.0" layoutY="178.0" text="Tiền trả lại:">
-                    <font>
-                        <Font name="Tahoma" size="20.0" />
-                    </font>
-                </Label>
-                <Button fx:id="saveOrderButton" layoutX="328.0" layoutY="482.0" mnemonicParsing="false" onAction="#saveOrder" prefHeight="40.0" prefWidth="205.0" styleClass="saveOrderButton" stylesheets="@styles/Employee.css" text="THANH TOÁN">
+                <Button fx:id="saveOrderButton" layoutX="308.0" layoutY="482.0" mnemonicParsing="false" onAction="#saveOrder" prefHeight="40.0" prefWidth="205.0" styleClass="saveOrderButton" stylesheets="@styles/Employee.css" text="THANH TOÁN">
                <font>
-                  <Font name="Tahoma Bold" size="16.0" />
+                  <Font name="Arial Bold" size="16.0" />
                </font></Button>
-                <Label fx:id="totalAmountLabel" layoutX="558.0" layoutY="65.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                </Label>
-                <TextField fx:id="amountGivenField" layoutX="558.0" layoutY="118.0" onKeyReleased="#calculateChange" prefHeight="38.0" prefWidth="206.0">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                </TextField>
-                <Label fx:id="changeAmountLabel" layoutX="558.0" layoutY="176.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;">
-                    <font>
-                        <Font size="20.0" />
-                    </font>
-                </Label>
             <Label layoutX="625.0" layoutY="17.0" text="Cashier:">
                <font>
-                  <Font name="Tahoma" size="16.0" />
+                  <Font name="Arial Bold" size="16.0" />
                </font>
             </Label>
             <Button fx:id="staffLogoutBtn" layoutX="594.0" layoutY="482.0" mnemonicParsing="false" onAction="#logout" prefHeight="40.0" prefWidth="176.0" styleClass="logoutBtn" text="ĐĂNG XUẤT">
                <font>
-                  <Font name="Tahoma Bold" size="16.0" />
+                  <Font name="Arial Bold" size="16.0" />
                </font>
                <graphic>
                   <FontAwesomeIconView glyphName="SIGN_OUT" />
