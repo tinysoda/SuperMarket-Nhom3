@@ -124,22 +124,28 @@
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
     -fx-padding: 0px;
+    -fx-font-weight: bold ;
+    -fx-font-size: 13px;
 }
 
 .table-view .table-column {
     -fx-alignment: CENTER;
 }
-.table-view .column-header-background{
+
+.table-view .column-header-background {
     -fx-background-color: linear-gradient(to top right, #8AE308, #4CAF50);
     -fx-background-color: transparent;
     -fx-background-insets: 0 0 0 0;
     -fx-background-radius: 5px 5px 0px 0px;
 }
-.table-view .column-header,.filter{
+
+.table-view .column-header, .filter {
     -fx-background-color: linear-gradient(to top right, #8AE308, #4CAF50);
     /*-fx-background-color: transparent;*/
     -fx-text-fill: white;
 }
+
+
 .pay-btn {
     -fx-background-color: #1c7679;
     -fx-background-radius: 8px;

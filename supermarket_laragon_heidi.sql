@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
--- Host:                         127.0.0.1
+-- Máy chủ:                      127.0.0.1
 -- Server version:               8.0.30 - MySQL Community Server - GPL
 -- Server OS:                    Win64
--- HeidiSQL Version:             12.1.0.6537
+-- HeidiSQL Phiên bản:           12.1.0.6537
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -14,72 +14,141 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Create the database
-CREATE DATABASE IF NOT EXISTS `supermarket` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+
+-- Dumping database structure for supermarket
+CREATE DATABASE IF NOT EXISTS `supermarket` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `supermarket`;
 
--- Create customer table
-CREATE TABLE IF NOT EXISTS `customer` (
-  `name` varchar(255) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `points` int DEFAULT '0',
-  PRIMARY KEY (`phone`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Create user table
-CREATE TABLE IF NOT EXISTS `user` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `phone` varchar(20) DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `role` enum('manager','employee') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'employee',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- Create bill table
+-- Dumping structure for table supermarket.bill
 CREATE TABLE IF NOT EXISTS `bill` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `customer_phone` varchar(20) NOT NULL,
+  `customer_phone` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
   `user_id` int DEFAULT NULL,
-  `total_amount` decimal(10,2) DEFAULT NULL,
+  `total_amount` decimal(10,0) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `customer_phone` (`customer_phone`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `bill_ibfk_1` FOREIGN KEY (`customer_phone`) REFERENCES `customer` (`phone`),
   CONSTRAINT `bill_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create billdetail table
+-- Dumping data for table supermarket.bill: ~12 rows (approximately)
+INSERT INTO `bill` (`id`, `customer_phone`, `user_id`, `total_amount`, `created_at`) VALUES
+	(1, '06666', 3, 20000, '2024-07-26 07:50:28'),
+	(2, '06666', 3, 20000, '2024-07-26 08:01:46'),
+	(3, '06666', 3, 15999, '2024-07-26 08:06:30'),
+	(4, '0123', 3, 20000, '2024-07-26 08:34:12'),
+	(5, '06666', 3, 20000, '2024-07-26 10:30:51'),
+	(6, '09999', 3, 40000, '2024-07-26 11:08:30'),
+	(7, '0777', 3, 30000, '2024-07-26 11:26:42'),
+	(8, '06666', 3, 50000, '2024-07-26 13:09:38'),
+	(9, '06666', 3, 30000, '2024-07-26 23:18:24'),
+	(10, '06666', 3, 10000, '2024-07-26 17:40:35'),
+	(11, '06666', 3, 20000, '2024-07-26 17:44:31'),
+	(12, '06666', 3, 20000, '2024-07-26 18:37:07'),
+	(13, '06666', 3, 80000, '2024-07-27 14:37:32'),
+	(14, '06666', 3, 10000, '2024-07-27 14:41:38');
+
+-- Dumping structure for table supermarket.billdetail
 CREATE TABLE IF NOT EXISTS `billdetail` (
   `id` int NOT NULL AUTO_INCREMENT,
   `product_id` int DEFAULT NULL,
   `bill_id` int DEFAULT NULL,
+  `product_name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `quantity` int DEFAULT NULL,
-  `price` decimal(10,2) DEFAULT NULL,
+  `price` decimal(10,0) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `product_id` (`product_id`),
   KEY `bill_id` (`bill_id`),
   CONSTRAINT `billdetail_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `product` (`id`),
   CONSTRAINT `billdetail_ibfk_2` FOREIGN KEY (`bill_id`) REFERENCES `bill` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table supermarket.billdetail: ~15 rows (approximately)
+INSERT INTO `billdetail` (`id`, `product_id`, `bill_id`, `product_name`, `quantity`, `price`) VALUES
+	(1, 2, 3, 'Lavie', 2, 20000),
+	(2, 2, 4, 'Lavie', 2, 20000),
+	(3, 2, 5, 'Lavie', 2, 20000),
+	(4, 2, 6, 'Lavie', 1, 10000),
+	(5, 3, 6, 'Mỳ hảo hảo', 3, 30000),
+	(6, 2, 7, 'Lavie', 2, 20000),
+	(7, 3, 7, 'Mỳ hảo hảo', 1, 10000),
+	(8, 1, 8, 'Sting', 5, 50000),
+	(9, 1, 9, 'Sting', 3, 30000),
+	(10, 2, 10, 'Lavie', 1, 10000),
+	(11, 2, 11, 'Lavie', 2, 20000),
+	(12, 2, 12, 'Lavie', 2, 20000),
+	(13, 2, 13, 'Lavie', 3, 30000),
+	(14, 3, 13, 'Mỳ hảo hảo', 5, 50000),
+	(15, 3, 14, 'Mỳ hảo hảo', 1, 10000);
+
+-- Dumping structure for table supermarket.category
+CREATE TABLE IF NOT EXISTS `category` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table supermarket.category: ~2 rows (approximately)
+INSERT INTO `category` (`id`, `name`, `description`) VALUES
+	(1, 'Nước', 'nước uống'),
+	(2, 'Mỳ', 'Mỳ ăn liền');
+
+-- Dumping structure for table supermarket.customer
+CREATE TABLE IF NOT EXISTS `customer` (
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `phone` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
+  `points` int DEFAULT '0',
+  PRIMARY KEY (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Create product table
+-- Dumping data for table supermarket.customer: ~2 rows (approximately)
+INSERT INTO `customer` (`name`, `phone`, `points`) VALUES
+	('Giang', '0123', 2000),
+	('Dũng', '06666', 23000),
+	('Đô', '0777', 5000),
+	('Diệu Hương', '09999', 4000);
+
+-- Dumping structure for table supermarket.product
 CREATE TABLE IF NOT EXISTS `product` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `category` varchar(255) DEFAULT NULL,
-  `description` text,
-  `price` decimal(10,2) DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `category_id` int DEFAULT NULL,
+  `description` text COLLATE utf8mb4_general_ci,
+  `price` double DEFAULT NULL,
   `quantity` int DEFAULT NULL,
   `is_deleted` int DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `product_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Insert initial data into user table
-INSERT INTO `user` (`username`, `phone`, `password`, `role`) VALUES
-    ('admin', NULL, 'admin123', 'manager'),
-    ('employee1', NULL, 'employee', 'employee');
+-- Dumping data for table supermarket.product: ~2 rows (approximately)
+INSERT INTO `product` (`id`, `name`, `category_id`, `description`, `price`, `quantity`, `is_deleted`) VALUES
+	(1, 'Sting', 1, 'Nước giải khát', 10000, 0, 0),
+	(2, 'Lavie', 1, 'Nước lọc Lavie', 10000, 0, 0),
+	(3, 'Mỳ hảo hảo', 2, 'Mỳ ăn liền', 10000, 0, 0);
+
+-- Dumping structure for table supermarket.user
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `last_name` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `role` enum('manager','employee') CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'employee',
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Dumping data for table supermarket.user: ~2 rows (approximately)
+INSERT INTO `user` (`id`, `first_name`, `last_name`, `phone`, `role`, `username`, `password`) VALUES
+	(1, 'Quốc Dũng', 'Đỗ ', '0923132', 'manager', 'admin', 'admin123'),
+	(2, 'Rê Mon', 'Đỗ', '076744564', 'employee', 'employee1', 'employee'),
+	(3, 'Messi', 'Lionel', '01323132', 'employee', 'c', '1'),
+	(4, 'Cris', 'Backam', '0992332', 'manager', 'd', '1');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
