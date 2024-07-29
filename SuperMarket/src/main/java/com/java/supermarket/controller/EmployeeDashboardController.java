@@ -712,7 +712,7 @@ public class EmployeeDashboardController implements Initializable {
             Optional<ButtonType> option = alert.showAndWait();
             if (option.get().equals(ButtonType.OK)) {
                 staffLogoutBtn.getScene().getWindow().hide();
-                Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+                Parent root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/login.fxml"));
                 Stage stage = new Stage();
                 Scene scene = new Scene(root);
                 stage.initStyle(StageStyle.TRANSPARENT);

@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `bill` (
   CONSTRAINT `bill_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table supermarket.bill: ~12 rows (approximately)
+-- Dumping data for table supermarket.bill: ~14 rows (approximately)
 INSERT INTO `bill` (`id`, `customer_phone`, `user_id`, `total_amount`, `created_at`) VALUES
 	(1, '06666', 3, 20000, '2024-07-26 07:50:28'),
 	(2, '06666', 3, 20000, '2024-07-26 08:01:46'),
@@ -48,7 +48,9 @@ INSERT INTO `bill` (`id`, `customer_phone`, `user_id`, `total_amount`, `created_
 	(11, '06666', 3, 20000, '2024-07-26 17:44:31'),
 	(12, '06666', 3, 20000, '2024-07-26 18:37:07'),
 	(13, '06666', 3, 80000, '2024-07-27 14:37:32'),
-	(14, '06666', 3, 10000, '2024-07-27 14:41:38');
+	(14, '06666', 3, 10000, '2024-07-27 14:41:38'),
+	(15, '0987654321', 3, 50000, '2024-07-29 12:24:40'),
+	(16, '09823312', 3, 100000, '2024-07-29 12:36:25');
 
 -- Dumping structure for table supermarket.billdetail
 CREATE TABLE IF NOT EXISTS `billdetail` (
@@ -81,7 +83,11 @@ INSERT INTO `billdetail` (`id`, `product_id`, `bill_id`, `product_name`, `quanti
 	(12, 2, 12, 'Lavie', 2, 20000),
 	(13, 2, 13, 'Lavie', 3, 30000),
 	(14, 3, 13, 'Mỳ hảo hảo', 5, 50000),
-	(15, 3, 14, 'Mỳ hảo hảo', 1, 10000);
+	(15, 3, 14, 'Mỳ hảo hảo', 1, 10000),
+	(16, 4, 15, 'Clear Man', 2, 50000),
+	(17, 1, 16, 'Sting', 3, 30000),
+	(18, 2, 16, 'Lavie', 2, 20000),
+	(19, 4, 16, 'Clear Man', 2, 50000);
 
 -- Dumping structure for table supermarket.category
 CREATE TABLE IF NOT EXISTS `category` (
@@ -94,7 +100,9 @@ CREATE TABLE IF NOT EXISTS `category` (
 -- Dumping data for table supermarket.category: ~2 rows (approximately)
 INSERT INTO `category` (`id`, `name`, `description`) VALUES
 	(1, 'Nước', 'nước uống'),
-	(2, 'Mỳ', 'Mỳ ăn liền');
+	(2, 'Mỳ', 'Mỳ ăn liền'),
+	(3, 'Sữa tắm', 'Các loại sữa tắm'),
+	(4, 'Đồ ăn vặt', 'Đồ ăn vặt cho trẻ em');
 
 -- Dumping structure for table supermarket.customer
 CREATE TABLE IF NOT EXISTS `customer` (
@@ -104,11 +112,13 @@ CREATE TABLE IF NOT EXISTS `customer` (
   PRIMARY KEY (`phone`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table supermarket.customer: ~2 rows (approximately)
+-- Dumping data for table supermarket.customer: ~4 rows (approximately)
 INSERT INTO `customer` (`name`, `phone`, `points`) VALUES
 	('Giang', '0123', 2000),
 	('Dũng', '06666', 23000),
 	('Đô', '0777', 5000),
+	('Diep', '09823312', 10000),
+	('David', '0987654321', 5000),
 	('Diệu Hương', '09999', 4000);
 
 -- Dumping structure for table supermarket.product
@@ -125,11 +135,12 @@ CREATE TABLE IF NOT EXISTS `product` (
   CONSTRAINT `product_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table supermarket.product: ~2 rows (approximately)
+-- Dumping data for table supermarket.product: ~3 rows (approximately)
 INSERT INTO `product` (`id`, `name`, `category_id`, `description`, `price`, `quantity`, `is_deleted`) VALUES
-	(1, 'Sting', 1, 'Nước giải khát', 10000, 0, 0),
-	(2, 'Lavie', 1, 'Nước lọc Lavie', 10000, 0, 0),
-	(3, 'Mỳ hảo hảo', 2, 'Mỳ ăn liền', 10000, 0, 0);
+	(1, 'Sting', 1, 'Nước giải khát', 10000, 7, 0),
+	(2, 'Lavie', 1, 'Nước lọc Lavie', 10000, 8, 0),
+	(3, 'Mỳ hảo hảo', 2, 'Mỳ ăn liền', 10000, 10, 0),
+	(4, 'Clear Man', 3, 'Sữa tắm Clear Man', 25000, 6, 0);
 
 -- Dumping structure for table supermarket.user
 CREATE TABLE IF NOT EXISTS `user` (
@@ -143,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dumping data for table supermarket.user: ~2 rows (approximately)
+-- Dumping data for table supermarket.user: ~4 rows (approximately)
 INSERT INTO `user` (`id`, `first_name`, `last_name`, `phone`, `role`, `username`, `password`) VALUES
 	(1, 'Quốc Dũng', 'Đỗ ', '0923132', 'manager', 'admin', 'admin123'),
 	(2, 'Rê Mon', 'Đỗ', '076744564', 'employee', 'employee1', 'employee'),

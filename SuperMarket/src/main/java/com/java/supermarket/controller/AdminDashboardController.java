@@ -302,7 +302,7 @@ public class AdminDashboardController implements Initializable {
         adminBillManBtn.setStyle("-fx-background-color: TRANSPARENT");
 
         adminCategoryManForm.setVisible(false);
-        adminCategoryManForm.setStyle("-fx-background-color: TRANSPARENT");
+        adminCategoryBtn.setStyle("-fx-background-color: TRANSPARENT");
 
     }
 
@@ -355,36 +355,36 @@ public class AdminDashboardController implements Initializable {
 
             Optional<ButtonType> option = alert.showAndWait();
 
-            if (option.get().equals(ButtonType.OK)) {
-                adminLogoutBtn.getScene().getWindow().hide();
+            if (option.isPresent() && option.get().equals(ButtonType.OK)) {
+                Stage stage = (Stage) adminLogoutBtn.getScene().getWindow();
+                stage.close();
 
-                Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
-                Stage stage = new Stage();
+                Parent root = FXMLLoader.load(getClass().getResource("/com/java/supermarket/login.fxml"));
                 Scene scene = new Scene(root);
+                Stage loginStage = new Stage();
+                loginStage.setScene(scene);
+                loginStage.initStyle(StageStyle.TRANSPARENT);
 
-                stage.initStyle(StageStyle.TRANSPARENT);
                 root.setOnMousePressed((MouseEvent event) -> {
                     x = event.getSceneX();
                     y = event.getSceneY();
                 });
                 root.setOnMouseDragged((MouseEvent event) -> {
-                    stage.setX(event.getScreenX() - x);
-                    stage.setY(event.getScreenY() - y);
-
-                    stage.setOpacity(.8);
+                    loginStage.setX(event.getScreenX() - x);
+                    loginStage.setY(event.getScreenY() - y);
+                    loginStage.setOpacity(0.8);
                 });
                 root.setOnMouseReleased((MouseEvent event) -> {
-                    stage.setOpacity(1);
+                    loginStage.setOpacity(1);
                 });
-                stage.setScene(scene);
-                stage.show();
 
-            } else return;
-
+                loginStage.show();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     //Employee
 
     private Connection con;
@@ -808,6 +808,7 @@ public class AdminDashboardController implements Initializable {
         adminProCatTF.setItems(categoryList);
     }
 
+
     private ObservableList<Category> adminCategoryList() {
         ObservableList<Category> categoriesList = FXCollections.observableArrayList();
         String sql = "SELECT * FROM category";
@@ -902,7 +903,7 @@ public class AdminDashboardController implements Initializable {
                 alert.setHeaderText(null);
                 alert.setContentText("Thêm danh mục " + adminCategoryNameTF.getText() + " thành công");
                 alert.showAndWait();
-
+                loadCategories();
                 adminShowCategory();
                 adminCateClear();
             }
@@ -1188,7 +1189,7 @@ public class AdminDashboardController implements Initializable {
                 ps = con.prepareStatement(updateQuery);
                 ps.setString(1, adminProNameTF.getText());
                 ps.setString(2, adminProDescTF.getText());
-                ps.setInt(3, adminProCatTF.getValue().getId()); // Update ComboBox to use ID
+                ps.setInt(3, adminProCatTF.getValue().getId());
                 ps.setFloat(4, Float.parseFloat(adminProPriceTF.getText()));
                 ps.setInt(5, Integer.parseInt(adminProQuanityTF.getText()));
                 ps.setInt(6, selectedProduct.getId());
