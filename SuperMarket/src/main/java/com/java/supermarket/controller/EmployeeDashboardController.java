@@ -172,12 +172,22 @@ public class EmployeeDashboardController implements Initializable {
     }
 
     private void generateInvoice(int billId, Bill bill) {
-        String filePath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\bill_" + billId + ".pdf";
+        // Define the relative paths
+        String filePath = "bills/bill_" + billId + ".pdf";
+        String fontPath = "src/main/resources/fonts/ARIAL.TTF";
+        String logoPath = "src/main/resources/com/java/supermarket/images/bigclogo.png";
+
+        // Ensure the directories exist
+        File dir = new File("bills");
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
         try (PdfWriter writer = new PdfWriter(filePath); PdfDocument pdf = new PdfDocument(writer); Document document = new Document(pdf)) {
-            PdfFont font = PdfFontFactory.createFont("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\arial-cufonfonts\\ARIAL.TTF", "Identity-H", true);
+            PdfFont font = PdfFontFactory.createFont(fontPath, "Identity-H", true);
             document.setFont(font);
 
-            ImageData imageData = ImageDataFactory.create("C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png");
+            ImageData imageData = ImageDataFactory.create(logoPath);
             Image logo = new Image(imageData);
             logo.setHorizontalAlignment(HorizontalAlignment.RIGHT);
             logo.scaleToFit(100, 50);
@@ -225,6 +235,8 @@ public class EmployeeDashboardController implements Initializable {
         openPDF(filePath);
         showInvoiceAlert(filePath);
     }
+
+
 
     private void openPDF(String filePath) {
         if (Desktop.isDesktopSupported()) {
@@ -565,7 +577,7 @@ public class EmployeeDashboardController implements Initializable {
                             alert.setHeaderText(null);
                             alert.setContentText("Sản phẩm này đã hết hàng");
                             alert.showAndWait();
-                        } else { product.setQuantity(0);
+                        } else { product.setQuantity(1);
                             productList.add(product);
                             productTableView.setItems(productList);
                             suggestionListView.setVisible(false);
