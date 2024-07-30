@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.sql.*;
 import java.text.ParseException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -88,6 +89,14 @@ public class EmployeeDashboardController implements Initializable {
 
     @FXML
     private void handleUsePointDiscount(ActionEvent event) {
+        if (customer == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Bạn chưa thêm thông tin khách hàng");
+            alert.showAndWait();
+            return;
+        }
         try {
             double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
             int customerPoints = customer.getPoints();
@@ -145,11 +154,13 @@ public class EmployeeDashboardController implements Initializable {
     private void saveBillToDatabase(Bill bill) {
         try {
             Connection connection = DBUtils.getConnection();
-            String billQuery = "INSERT INTO bill (customer_phone, user_id, total_amount) VALUES (?, ?, ?)";
+            String billQuery = "INSERT INTO bill (customer_phone, user_id, total_amount, created_at) VALUES (?, ?, ?, ?)";
             PreparedStatement billStatement = connection.prepareStatement(billQuery, Statement.RETURN_GENERATED_KEYS);
             billStatement.setString(1, bill.getCustomerPhone());
             billStatement.setInt(2, bill.getUserId());
             billStatement.setDouble(3, bill.getTotalAmount());
+            bill.setCreatedAt(new Timestamp(System.currentTimeMillis())); // Set the current time
+            billStatement.setTimestamp(4, bill.getCreatedAt());
             billStatement.executeUpdate();
             ResultSet generatedKeys = billStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -163,13 +174,15 @@ public class EmployeeDashboardController implements Initializable {
                     billDetailStatement.setInt(4, detail.getQuantity());
                     billDetailStatement.setDouble(5, detail.getPrice());
                     billDetailStatement.addBatch();
-                } billDetailStatement.executeBatch();
-                generateInvoice(billId, bill);
+                }
+                billDetailStatement.executeBatch();
+                generateInvoice(billId, bill); // Pass the bill with the createdAt timestamp
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     private void generateInvoice(int billId, Bill bill) {
         // Define the relative paths
@@ -200,6 +213,10 @@ public class EmployeeDashboardController implements Initializable {
                     .setTextAlignment(TextAlignment.CENTER);
             document.add(title);
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String formattedCreatedAt = bill.getCreatedAt().toLocalDateTime().format(formatter);
+
+            document.add(new Paragraph("Thời gian in hóa đơn: " + formattedCreatedAt).setFont(font));
             document.add(new Paragraph("Mã Hóa Đơn: " + billId).setFont(font));
             document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
             document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
@@ -235,6 +252,7 @@ public class EmployeeDashboardController implements Initializable {
         openPDF(filePath);
         showInvoiceAlert(filePath);
     }
+
 
 
 
@@ -294,13 +312,14 @@ public class EmployeeDashboardController implements Initializable {
     }
 
     @FXML
-    void calculateChange(KeyEvent event) {
+    void calculateChange() {
         try {
-            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
-            double amountGiven = Double.parseDouble(amountGivenField.getText().replace(",", "").replace("₫", "").trim());
+            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+            double totalAmount = currencyFormat.parse(totalAmountLabel.getText()).doubleValue();
+            double amountGiven = currencyFormat.parse(amountGivenField.getText()).doubleValue();
             double changeAmount = amountGiven - totalAmount;
-            changeAmountLabel.setText(formatCurrency(changeAmount));
-        } catch (Exception e) {
+            changeAmountLabel.setText(currencyFormat.format(changeAmount));
+        } catch (ParseException e) {
             e.printStackTrace();
         }
     }
@@ -529,16 +548,38 @@ public class EmployeeDashboardController implements Initializable {
         changeAmountLabel.setText(formatCurrency(0));
 
 
-        amountGivenField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                amountGivenField.setText(oldValue);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
-                alert.setHeaderText(null);
-                alert.setContentText("Sai cú pháp: chỉ được phép nhập số");
-                alert.showAndWait();
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        TextFormatter<Double> textFormatter = new TextFormatter<>(new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                if (object == null) {
+                    return "";
+                }
+                return currencyFormat.format(object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                if (string == null || string.isEmpty()) {
+                    return 0.0;
+                }
+                try {
+                    return currencyFormat.parse(string).doubleValue();
+                } catch (ParseException e) {
+                    return 0.0;
+                }
             }
         });
+        amountGivenField.setTextFormatter(textFormatter);
+        amountGivenField.setText("0");
+
+        // Add a listener to calculate change whenever the amountGivenField changes
+        amountGivenField.textProperty().addListener((observable, oldValue, newValue) -> {
+            calculateChange();
+        });
+
+
+
 
     }
     private ObservableList<String> getSuggestions(String searchText) {

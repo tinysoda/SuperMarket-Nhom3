@@ -32,5 +32,3 @@ public class Bill {
     public List<BillDetail> getBillDetails() { return billDetails; }
     public void setBillDetails(List<BillDetail> billDetails) { this.billDetails = billDetails; }
 }
-
-

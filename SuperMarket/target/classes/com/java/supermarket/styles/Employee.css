@@ -22,12 +22,12 @@
 }
 
 .close-button{
-    -fx-background-color: #dd2f4f;
+    -fx-background-color: transparent;
     -fx-cursor: hand;
 }
 
 .minimize-button{
-    -fx-background-color: #FFDD00;
+    -fx-background-color: transparent;
     -fx-cursor: hand;
 }
 
