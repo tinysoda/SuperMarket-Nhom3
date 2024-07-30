@@ -72,6 +72,7 @@ public class EmployeeDashboardController implements Initializable {
     @FXML private Label changeAmountLabel;
     @FXML private Button usePointDiscount;
     @FXML private Button staffLogoutBtn;
+    @FXML private Button changePassBtn;
 
     private ObservableList<Product> productList;
     private Customer customer;
@@ -707,7 +708,8 @@ public class EmployeeDashboardController implements Initializable {
         } return customer;
     }
 
-    @FXML void showCustomerForm(ActionEvent event) {
+    @FXML
+    void showCustomerForm(ActionEvent event) {
         try { FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/CustomerForm.fxml"));
             Parent root = loader.load();
             CustomerFormController controller = loader.getController();
@@ -731,6 +733,43 @@ public class EmployeeDashboardController implements Initializable {
             stage.setTitle("Thông tin khách hàng");
             stage.setScene(new Scene(root));
             stage.show(); } catch (Exception e) { e.printStackTrace();
+        }
+    }
+    public void showChangePassForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/changePasswordForm.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            Scene scene = new Scene(root);
+
+            // Make the window draggable
+            final double[] xOffset = {0};
+            final double[] yOffset = {0};
+
+            root.setOnMousePressed(event -> {
+                xOffset[0] = event.getSceneX();
+                yOffset[0] = event.getSceneY();
+            });
+
+            root.setOnMouseDragged(event -> {
+                stage.setX(event.getScreenX() - xOffset[0]);
+                stage.setY(event.getScreenY() - yOffset[0]);
+                stage.setOpacity(0.8);
+            });
+
+            root.setOnMouseReleased(event -> stage.setOpacity(1));
+
+            stage.initStyle(StageStyle.TRANSPARENT);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to load change password form: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 

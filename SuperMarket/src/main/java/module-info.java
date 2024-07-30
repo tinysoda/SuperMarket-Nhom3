@@ -9,6 +9,7 @@ module com.java.supermarket {
     requires layout;
     requires io;
     requires java.desktop;
+    requires jbcrypt;
 
 
     opens com.java.supermarket to javafx.fxml;

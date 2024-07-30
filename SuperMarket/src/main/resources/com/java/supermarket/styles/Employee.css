@@ -89,6 +89,19 @@
 .saveOrderButton:hover {
     -fx-background-color: #22ff00;
 }
+.changePassBtn {
+    -fx-background-color:orange;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}
+
+.changePassBtn:hover {
+    -fx-background-color: yellow;
+}
 
 .customerFormBtn {
     -fx-background-color: #00eaff;

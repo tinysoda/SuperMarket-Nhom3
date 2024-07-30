@@ -659,7 +659,7 @@ public class AdminDashboardController implements Initializable {
                 ps.setString(3, adminPhoneTF.getText());
                 ps.setString(4, adminRoleCB.getValue());
                 ps.setString(5, adminUsernameTF.getText());
-                ps.setString(6, "default_password"); // Bạn có thể thay đổi hoặc mã hóa mật khẩu sau
+                ps.setString(6, "bigc"); // Bạn có thể thay đổi hoặc mã hóa mật khẩu sau
                 ps.executeUpdate();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
