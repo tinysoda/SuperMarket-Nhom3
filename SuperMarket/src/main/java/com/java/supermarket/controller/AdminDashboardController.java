@@ -32,6 +32,8 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -638,6 +640,7 @@ public class AdminDashboardController implements Initializable {
     }
 
 
+
     public void adminEmployeeAdd() {
         String insertQuery = "INSERT INTO user (first_name, last_name, phone, role, username, password) VALUES (?, ?, ?, ?, ?, ?)";
         String checkUsernameQuery = "SELECT COUNT(*) FROM user WHERE username = ?";
@@ -674,7 +677,11 @@ public class AdminDashboardController implements Initializable {
                     insertPs.setString(3, adminPhoneTF.getText());
                     insertPs.setString(4, adminRoleCB.getValue());
                     insertPs.setString(5, adminUsernameTF.getText());
-                    insertPs.setString(6, "bigc"); // Bạn có thể thay đổi hoặc mã hóa mật khẩu sau
+
+                    // Encrypt the password
+                    String encryptedPassword = encryptPassword("bigc");
+                    insertPs.setString(6, encryptedPassword);
+
                     insertPs.executeUpdate();
 
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -688,7 +695,7 @@ public class AdminDashboardController implements Initializable {
                 }
             }
 
-        } catch (SQLException e) {
+        } catch (SQLException | NoSuchAlgorithmException e) {
             e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Lỗi");
@@ -696,6 +703,17 @@ public class AdminDashboardController implements Initializable {
             alert.setContentText("Có lỗi xảy ra khi thêm nhân viên: " + e.getMessage());
             alert.showAndWait();
         }
+    }
+
+    private String encryptPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashedPassword = md.digest(password.getBytes());
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashedPassword) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 
     public void adminEmployeeUpdate() {

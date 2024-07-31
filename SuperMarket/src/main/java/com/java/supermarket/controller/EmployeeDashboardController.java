@@ -254,9 +254,6 @@ public class EmployeeDashboardController implements Initializable {
         showInvoiceAlert(filePath);
     }
 
-
-
-
     private void openPDF(String filePath) {
         if (Desktop.isDesktopSupported()) {
             try {
@@ -290,8 +287,8 @@ public class EmployeeDashboardController implements Initializable {
         customerNameFiled.setText(name);
     }
 
-    public void setEmployeeUsername(String username) {
-        this.employeeUsername = username;
+    public void setEmployeeUsername() {
+        String username=this.getEmployeeUsername();
         setEmployeeNameFromUsername(username);
     }
 
@@ -840,8 +837,8 @@ public class EmployeeDashboardController implements Initializable {
 //        return employeeId;
 //    }
 //
-//    public String getEmployeeUsername() {
-//        return employeeUsername;
-//    }
+    public String getEmployeeUsername() {
+        return employeeUsername;
+    }
 
 }
