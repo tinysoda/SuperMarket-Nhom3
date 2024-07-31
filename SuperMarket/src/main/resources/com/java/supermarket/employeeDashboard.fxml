@@ -19,7 +19,7 @@
    <top>
       <AnchorPane prefHeight="34.0" prefWidth="800.0" styleClass="employee-header" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="staffMinimizeBtn" layoutX="690.0" layoutY="2.0" minHeight="20.0" mnemonicParsing="false" onAction="#minimize" prefHeight="23.0" prefWidth="54.0" styleClass="minimize-button" AnchorPane.topAnchor="2.0">
+            <Button fx:id="staffMinimizeBtn" layoutX="725.0" layoutY="2.0" minHeight="20.0" mnemonicParsing="false" onAction="#minimize" prefHeight="23.0" prefWidth="54.0" styleClass="minimize-button" AnchorPane.topAnchor="2.0">
                <graphic>
                   <FontAwesomeIconView glyphName="MINUS" />
                </graphic>

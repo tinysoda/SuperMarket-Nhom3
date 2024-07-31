@@ -262,7 +262,11 @@ public class EmployeeDashboardController implements Initializable {
             }
             document.add(table);
 
-            document.add(new Paragraph("Tổng tiền: " + currencyFormat.format(bill.getTotalAmount())).setFont(font));
+            document.add(new Paragraph("\nTổng tiền: " + formatCurrency(bill.getTotalAmount())));
+            document.add(new Paragraph("Tổng tiền (viết bằng chữ): " + convertNumberToWords((int) bill.getTotalAmount())));
+            if (discountApplied) {
+                document.add(new Paragraph("Đã áp dụng điểm giảm giá: " + formatCurrency(discountAmount)));
+            }
 
             Paragraph thank = new Paragraph("Cảm ơn quý khách")
                     .setFont(font)
@@ -275,7 +279,54 @@ public class EmployeeDashboardController implements Initializable {
         }
 
         openPDF(filePath);
-        showInvoiceAlert(filePath);
+        showInvoiceAlert();
+    }
+
+    private static final String[] units = {"", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"};
+    private static final String[] teens = {"mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín"};
+    private static final String[] tens = {"", "", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"};
+    private static final String[] thousands = {"", "nghìn", "triệu", "tỷ"};
+
+    private String convertLessThanOneThousand(int number) {
+        String current;
+
+        if (number % 100 < 20){
+            current = teens[number % 100];
+            number /= 100;
+        } else {
+            current = units[number % 10];
+            number /= 10;
+
+            current = tens[number % 10] + " " + current;
+            number /= 10;
+        }
+        if (number == 0) return current;
+        return units[number] + " trăm " + current;
+    }
+
+    public String convertNumberToWords(int number) {
+        if (number == 0) { return "không"; }
+
+        String prefix = "";
+        if (number < 0) {
+            number = -number;
+            prefix = "âm ";
+        }
+
+        String current = "";
+        int place = 0;
+
+        do {
+            int n = number % 1000;
+            if (n != 0){
+                String s = convertLessThanOneThousand(n);
+                current = s + " " + thousands[place] + " " + current;
+            }
+            place++;
+            number /= 1000;
+        } while (number > 0);
+
+        return (prefix + current).trim() + " đồng";
     }
 
     private void openPDF(String filePath) {
@@ -297,11 +348,11 @@ public class EmployeeDashboardController implements Initializable {
 
 
 
-    private void showInvoiceAlert(String filePath) {
+    private void showInvoiceAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Hóa Đơn");
         alert.setHeaderText("Hóa Đơn Bán Hàng");
-        alert.setContentText("Hóa đơn đã được tạo tại: " + filePath);
+        alert.setContentText("Tạo hóa đơn thành công");
         alert.showAndWait();
     }
 
@@ -334,17 +385,17 @@ public class EmployeeDashboardController implements Initializable {
     }
 
     @FXML
-    void calculateChange() {
+    void calculateChange(KeyEvent event) {
         try {
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            double totalAmount = currencyFormat.parse(totalAmountLabel.getText()).doubleValue();
-            double amountGiven = currencyFormat.parse(amountGivenField.getText()).doubleValue();
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+            double amountGiven = Double.parseDouble(amountGivenField.getText().replace(",", "").replace("₫", "").trim());
             double changeAmount = amountGiven - totalAmount;
-            changeAmountLabel.setText(currencyFormat.format(changeAmount));
-        } catch (ParseException e) {
+            changeAmountLabel.setText(formatCurrency(changeAmount));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 
     @FXML
     void saveOrder(ActionEvent event) {
@@ -394,8 +445,8 @@ public class EmployeeDashboardController implements Initializable {
             Bill bill = new Bill(customer.getPhone(), getEmployeeId(employeeUsername), totalAmount, billDetails);
             saveBillToDatabase(bill);
 
-            double amountGiven = Double.parseDouble(amountGivenField.getText());
-            int pointsEarned = (int) (amountGiven / 10);
+            double pricePerBill = totalAmount;
+            int pointsEarned = (int) (pricePerBill / 10);
             updateCustomerPoints(customer.getPhone(), pointsEarned);
 
             if (discountApplied) {
@@ -412,13 +463,7 @@ public class EmployeeDashboardController implements Initializable {
             totalAmountLabel.setText(formatCurrency(0));
             amountGivenField.setText("0");
             changeAmountLabel.setText(formatCurrency(0));
-            customerNameFiled.setText("0");
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Thành công");
-            alert.setHeaderText(null);
-            alert.setContentText("Tạo hóa đơn thành công");
-            alert.showAndWait();
+            customerNameFiled.setText(" ");
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -570,38 +615,16 @@ public class EmployeeDashboardController implements Initializable {
         changeAmountLabel.setText(formatCurrency(0));
 
 
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-        TextFormatter<Double> textFormatter = new TextFormatter<>(new StringConverter<Double>() {
-            @Override
-            public String toString(Double object) {
-                if (object == null) {
-                    return "";
-                }
-                return currencyFormat.format(object);
-            }
-
-            @Override
-            public Double fromString(String string) {
-                if (string == null || string.isEmpty()) {
-                    return 0.0;
-                }
-                try {
-                    return currencyFormat.parse(string).doubleValue();
-                } catch (ParseException e) {
-                    return 0.0;
-                }
-            }
-        });
-        amountGivenField.setTextFormatter(textFormatter);
-        amountGivenField.setText("0");
-
-        // Add a listener to calculate change whenever the amountGivenField changes
         amountGivenField.textProperty().addListener((observable, oldValue, newValue) -> {
-            calculateChange();
+            if (!newValue.matches("\\d*")) {
+                amountGivenField.setText(oldValue);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Sai cú pháp: chỉ được phép nhập số");
+                alert.showAndWait();
+            }
         });
-
-
-
 
     }
     private ObservableList<String> getSuggestions(String searchText) {
@@ -856,11 +879,7 @@ public class EmployeeDashboardController implements Initializable {
     }
 
 
-    // Getter methods if needed
-//    public int getEmployeeId() {
-//        return employeeId;
-//    }
-//
+
     public String getEmployeeUsername() {
         return employeeUsername;
     }
