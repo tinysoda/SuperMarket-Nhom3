@@ -169,11 +169,12 @@ public class EmployeeDashboardController implements Initializable {
                 String billDetailQuery = "INSERT INTO billdetail (product_id, bill_id, product_name, quantity, price) VALUES (?, ?, ?, ?, ?)";
                 PreparedStatement billDetailStatement = connection.prepareStatement(billDetailQuery);
                 for (BillDetail detail : bill.getBillDetails()) {
+                    Product product = getProductById(detail.getProductId());
                     billDetailStatement.setInt(1, detail.getProductId());
                     billDetailStatement.setInt(2, billId);
                     billDetailStatement.setString(3, detail.getProductName());
                     billDetailStatement.setInt(4, detail.getQuantity());
-                    billDetailStatement.setDouble(5, detail.getPrice());
+                    billDetailStatement.setDouble(5, product.getPrice());
                     billDetailStatement.addBatch();
                 }
                 billDetailStatement.executeBatch();
@@ -182,6 +183,29 @@ public class EmployeeDashboardController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private Product getProductById(int productId) {
+        Product product = null;
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "SELECT * FROM product WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, productId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                product = new Product();
+                product.setId(resultSet.getInt("id"));
+                product.setName(resultSet.getString("name"));
+                product.setPrice(resultSet.getDouble("price"));
+                product.setQuantity(resultSet.getInt("quantity"));
+                // Set other properties as needed
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return product;
     }
 
 

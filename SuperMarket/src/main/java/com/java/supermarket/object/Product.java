@@ -19,7 +19,7 @@ public class Product {
         this.total = new SimpleDoubleProperty();
     }
     public StringProperty statusProperty() {
-        String statusStr = (this.status == ProductStatus.AVAILABLE) ? "Còn hàng" : "Đã xoá";
+        String statusStr = (getQuantity() > 0) ? "Còn hàng" : "Đã xoá";
         return new SimpleStringProperty(statusStr);
     }
     public Product(int id, String name, String description, Category category, double price, int quantity, ProductStatus status) {
@@ -43,7 +43,8 @@ public class Product {
     public int getQuantity() { return quantity.get(); }
     public void setQuantity(int quantity) {
         this.quantity.set(quantity);
-        updateTotal(); // Cập nhật total khi quantity thay đổi
+        updateTotal();
+        updateStatus();
     }
     public Category getCategory() { return category; }
     public void setCategory(Category category) {
@@ -61,6 +62,9 @@ public class Product {
     public void setDeleteButton(Button deleteButton) { this.deleteButton = deleteButton; }
     private void updateTotal() {
         this.total.set(this.price.get() * this.quantity.get());
+    }
+    private void updateStatus() {
+        this.status = (this.quantity.get() > 0) ? ProductStatus.AVAILABLE : ProductStatus.DELETED;
     }
 }
 

@@ -128,10 +128,10 @@
                         <TableColumn fx:id="colPrice" prefWidth="126.39996337890625" text="Đơn giá" />
                         <TableColumn fx:id="colQuantity" prefWidth="110.4000244140625" text="Số lượng" />
                         <TableColumn fx:id="colTotal" prefWidth="122.39999389648438" text="Thành tiền" />
-                        <TableColumn fx:id="colDelete" prefWidth="254.39995117187505" styleClass="colDelete" />
+                        <TableColumn fx:id="colDelete" prefWidth="276.0001220703125" styleClass="colDelete" />
                     </columns>
                 </TableView>
-                <Button fx:id="saveOrderButton" layoutX="248.0" layoutY="482.0" mnemonicParsing="false" onAction="#saveOrder" prefHeight="40.0" prefWidth="153.0" styleClass="saveOrderButton" stylesheets="@styles/Employee.css" text="THANH TOÁN">
+                <Button fx:id="saveOrderButton" layoutX="274.0" layoutY="482.0" mnemonicParsing="false" onAction="#saveOrder" prefHeight="40.0" prefWidth="153.0" styleClass="saveOrderButton" stylesheets="@styles/Employee.css" text="THANH TOÁN">
                <font>
                   <Font name="Arial Bold" size="16.0" />
                </font></Button>
@@ -148,7 +148,7 @@
                   <FontAwesomeIconView glyphName="SIGN_OUT" />
                </graphic>
             </Button>
-            <Button fx:id="changePassBtn" layoutX="505.0" layoutY="482.0" mnemonicParsing="false" onAction="#showChangePassForm" prefHeight="40.0" prefWidth="153.0" styleClass="changePassBtn" stylesheets="@styles/Employee.css" text="Đổi mật khẩu">
+            <Button fx:id="changePassBtn" layoutX="471.0" layoutY="482.0" mnemonicParsing="false" onAction="#showChangePassForm" prefHeight="40.0" prefWidth="153.0" styleClass="changePassBtn" stylesheets="@styles/Employee.css" text="Đổi mật khẩu">
                <font>
                   <Font name="Arial Bold" size="16.0" />
                </font>

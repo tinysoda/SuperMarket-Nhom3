@@ -464,7 +464,7 @@ public class AdminDashboardController implements Initializable {
         return count-1;
     }
 
-    //bill
+    //bill start
     public ObservableList<Bill> adminBillList() {
         ObservableList<Bill> billList = FXCollections.observableArrayList();
         String sql = "SELECT * FROM bill";
@@ -1101,10 +1101,6 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-
-
-
-
     public ObservableList<Category> getCategoryList() {
         String sql = "SELECT * FROM category";
         con = DBUtils.getConnection();
@@ -1134,7 +1130,6 @@ public class AdminDashboardController implements Initializable {
         col_pro_desc.setCellValueFactory(new PropertyValueFactory<>("description"));
         col_pro_cat.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCategory().getName()));
 
-        // Assuming getPrice() and getQuantity() return double or Double
         col_pro_price.setCellValueFactory(cellData ->
                 new SimpleObjectProperty<>(cellData.getValue().getPrice())
         );
@@ -1246,7 +1241,7 @@ public class AdminDashboardController implements Initializable {
                 selectedProduct.setCategory(adminProCatTF.getValue()); // Update ComboBox to use Category object
                 selectedProduct.setPrice(Double.parseDouble(adminProPriceTF.getText()));
                 selectedProduct.setQuantity(Integer.parseInt(adminProQuanityTF.getText()));
-
+                selectedProduct.setStatus((selectedProduct.getQuantity() > 0) ? ProductStatus.AVAILABLE : ProductStatus.DELETED);
                 // Refresh the table with the updated list
                 adminShowProduct();
                 adminProTable.getSelectionModel().select(selectedIndex); // Reselect the previously selected item
