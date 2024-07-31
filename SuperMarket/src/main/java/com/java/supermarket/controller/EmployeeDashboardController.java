@@ -823,4 +823,25 @@ public class EmployeeDashboardController implements Initializable {
             e.printStackTrace();
         }
     }
+
+    private int employeeId;
+    private String password;
+//    private String employeeUsername;
+
+    public void setEmployeeData(int id, String username,String password) {
+        this.employeeId = id;
+        this.employeeUsername = username;
+        this.password = password;
+    }
+
+
+    // Getter methods if needed
+//    public int getEmployeeId() {
+//        return employeeId;
+//    }
+//
+//    public String getEmployeeUsername() {
+//        return employeeUsername;
+//    }
+
 }

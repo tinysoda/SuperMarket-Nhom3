@@ -103,6 +103,15 @@
     -fx-background-color: yellow;
 }
 
+.cancel{
+    -fx-background-color: #fff;
+    -fx-text-fill: black;
+}
+.cancel:hover{
+    -fx-cursor: hand;
+    -fx-background-color: gray;
+}
+
 .customerFormBtn {
     -fx-background-color: #00eaff;
     -fx-background-radius: 8px;

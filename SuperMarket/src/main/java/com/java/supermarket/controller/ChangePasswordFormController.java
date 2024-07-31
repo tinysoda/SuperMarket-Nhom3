@@ -1,47 +1,124 @@
 package com.java.supermarket.controller;
 
 import com.java.supermarket.DBUtils;
+import com.java.supermarket.object.Employee;
+import com.java.supermarket.object.UserSession;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class ChangePasswordFormController {
-    public void updatePasswordWithEncryption(int userId, String newPassword) {
-        String updateQuery = "UPDATE user SET password = ? WHERE id = ?";
-        try (Connection con = DBUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(updateQuery)) {
 
-            // Hash the password
-            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+    @FXML
+    private Button cancelBtn;
 
-            ps.setString(1, hashedPassword);
-            ps.setInt(2, userId);
+    @FXML
+    private PasswordField newPassTF;
 
-            int affectedRows = ps.executeUpdate();
+    @FXML
+    private PasswordField oldPassTF;
 
-            if (affectedRows > 0) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thông báo");
+    @FXML
+    private PasswordField reNewPassTF;
+
+    @FXML
+    private Button savePassBtn;
+    @FXML
+    public void cancelChangePass( ) {
+        cancelBtn.getScene().getWindow().hide();
+    }
+    @FXML
+    public void changePassword() {
+        int userId = UserSession.getInstance().getUserId();
+        String username = UserSession.getInstance().getUsername();
+        String storedEncryptedPassword = UserSession.getInstance().getPassword();
+        String oldPassword = oldPassTF.getText();
+        String newPassword = newPassTF.getText();
+        String reNewPassword = reNewPassTF.getText();
+        Alert alert;
+
+        try {
+            String encryptedOldPassword = encryptPassword(oldPassword);
+
+            if (newPassword.equals(oldPassword)) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Cập nhật mật khẩu thành công");
+                alert.setContentText("Mật khẩu mới phải khác mật khẩu cũ");
+                alert.showAndWait();
+            } else if (!newPassword.equals(reNewPassword)) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Mật khẩu mới không khớp");
+                alert.showAndWait();
+            } else if (!encryptedOldPassword.equals(storedEncryptedPassword)) {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText(null);
+                alert.setContentText("Mật khẩu cũ không đúng");
                 alert.showAndWait();
             } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
+                String encryptedNewPassword = encryptPassword(newPassword);
+                updatePasswordWithEncryption(userId, encryptedNewPassword);
+
+                // Update the UserSession with the new encrypted password
+                UserSession.getInstance().setPassword(encryptedNewPassword);
+
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
                 alert.setHeaderText(null);
-                alert.setContentText("Không thể cập nhật mật khẩu");
+                alert.setContentText("Mật khẩu đã được thay đổi thành công");
                 alert.showAndWait();
+
+                // Clear the password fields
+                oldPassTF.clear();
+                newPassTF.clear();
+                reNewPassTF.clear();
+                cancelBtn.getScene().getWindow().hide();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
+        } catch (NoSuchAlgorithmException | SQLException e) {
+            alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
             alert.setHeaderText(null);
             alert.setContentText("Có lỗi xảy ra khi cập nhật mật khẩu: " + e.getMessage());
             alert.showAndWait();
         }
     }
+
+    private void updatePasswordWithEncryption(int userId, String encryptedPassword) throws SQLException {
+        String updateQuery = "UPDATE user SET password = ? WHERE id = ?";
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement ps = con.prepareStatement(updateQuery)) {
+
+            ps.setString(1, encryptedPassword);
+            ps.setInt(2, userId);
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Updating password failed, no rows affected.");
+            }
+        }
+    }
+
+    private String encryptPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashedPassword = md.digest(password.getBytes());
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashedPassword) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
 }

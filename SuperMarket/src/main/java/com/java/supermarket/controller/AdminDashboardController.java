@@ -640,9 +640,11 @@ public class AdminDashboardController implements Initializable {
 
     public void adminEmployeeAdd() {
         String insertQuery = "INSERT INTO user (first_name, last_name, phone, role, username, password) VALUES (?, ?, ?, ?, ?, ?)";
+        String checkUsernameQuery = "SELECT COUNT(*) FROM user WHERE username = ?";
 
         try (Connection con = DBUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(insertQuery)) {
+             PreparedStatement checkPs = con.prepareStatement(checkUsernameQuery);
+             PreparedStatement insertPs = con.prepareStatement(insertQuery)) {
 
             if (adminFnameTF.getText().isEmpty() || adminLnameTF.getText().isEmpty() ||
                     adminPhoneTF.getText().isEmpty() || adminUsernameTF.getText().isEmpty() ||
@@ -654,26 +656,45 @@ public class AdminDashboardController implements Initializable {
                 alert.setContentText("Điền đầy đủ thông tin nhân viên");
                 alert.showAndWait();
             } else {
-                ps.setString(1, adminFnameTF.getText());
-                ps.setString(2, adminLnameTF.getText());
-                ps.setString(3, adminPhoneTF.getText());
-                ps.setString(4, adminRoleCB.getValue());
-                ps.setString(5, adminUsernameTF.getText());
-                ps.setString(6, "bigc"); // Bạn có thể thay đổi hoặc mã hóa mật khẩu sau
-                ps.executeUpdate();
+                // Check if username already exists
+                checkPs.setString(1, adminUsernameTF.getText());
+                ResultSet rs = checkPs.executeQuery();
+                rs.next();
+                int count = rs.getInt(1);
 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thông báo");
-                alert.setHeaderText(null);
-                alert.setContentText("Thêm nhân viên " + adminFnameTF.getText() + " thành công");
-                alert.showAndWait();
+                if (count > 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Tên đăng nhập đã tồn tại. Vui lòng chọn tên đăng nhập khác.");
+                    alert.showAndWait();
+                } else {
+                    insertPs.setString(1, adminFnameTF.getText());
+                    insertPs.setString(2, adminLnameTF.getText());
+                    insertPs.setString(3, adminPhoneTF.getText());
+                    insertPs.setString(4, adminRoleCB.getValue());
+                    insertPs.setString(5, adminUsernameTF.getText());
+                    insertPs.setString(6, "bigc"); // Bạn có thể thay đổi hoặc mã hóa mật khẩu sau
+                    insertPs.executeUpdate();
 
-                adminShowEmployee();
-                adminEmployeeClear();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Thông báo");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Thêm nhân viên " + adminFnameTF.getText() + " thành công");
+                    alert.showAndWait();
+
+                    adminShowEmployee();
+                    adminEmployeeClear();
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Có lỗi xảy ra khi thêm nhân viên: " + e.getMessage());
+            alert.showAndWait();
         }
     }
 
