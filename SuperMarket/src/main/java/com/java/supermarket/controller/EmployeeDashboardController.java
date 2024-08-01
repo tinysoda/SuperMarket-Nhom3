@@ -212,8 +212,8 @@ public class EmployeeDashboardController implements Initializable {
     private void generateInvoice(int billId, Bill bill) {
         // Define the relative paths
         String filePath = "bills/bill_" + billId + ".pdf";
-        String fontPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\fonts\\ARIAL.TTF";
-        String logoPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png";
+        String fontPath = "src/main/resources/fonts/ARIAL.TTF";
+        String logoPath = "src/main/resources/com/java/supermarket/images/bigclogo.png";
 
         // Ensure the directories exist
         File dir = new File("bills");
