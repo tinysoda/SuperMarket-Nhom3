@@ -212,8 +212,8 @@ public class EmployeeDashboardController implements Initializable {
     private void generateInvoice(int billId, Bill bill) {
         // Define the relative paths
         String filePath = "bills/bill_" + billId + ".pdf";
-        String fontPath = "src/main/resources/fonts/ARIAL.TTF";
-        String logoPath = "src/main/resources/com/java/supermarket/images/bigclogo.png";
+        String fontPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\fonts\\ARIAL.TTF";
+        String logoPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png";
 
         // Ensure the directories exist
         File dir = new File("bills");
@@ -357,6 +357,10 @@ public class EmployeeDashboardController implements Initializable {
     }
 
     private String employeeUsername;
+
+    public void clearCustomerNameField() {
+        customerNameFiled.setText("");
+    }
 
     public void setCustomerName(String name) {
         customerNameFiled.setText(name);
@@ -626,6 +630,7 @@ public class EmployeeDashboardController implements Initializable {
             }
         });
 
+        updateTotalAmount();
     }
     private ObservableList<String> getSuggestions(String searchText) {
         ObservableList<String> suggestions = FXCollections.observableArrayList();
@@ -711,6 +716,19 @@ public class EmployeeDashboardController implements Initializable {
     private void updateTotalAmount() {
         double totalAmount = productList.stream().mapToDouble(product -> product.getPrice() * product.getQuantity()).sum();
         totalAmountLabel.setText(formatCurrency(totalAmount));
+        calculateChange();
+    }
+
+    @FXML
+    void calculateChange() {
+        try {
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+            double amountGiven = Double.parseDouble(amountGivenField.getText().replace(",", "").replace("₫", "").trim());
+            double changeAmount = amountGiven - totalAmount;
+            changeAmountLabel.setText(formatCurrency(changeAmount));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     private ObservableList<Product> adminProductList() {
         ObservableList<Product> productList = FXCollections.observableArrayList();

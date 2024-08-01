@@ -1,7 +1,11 @@
 package com.java.supermarket.controller;
 import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.Customer;
-import javafx.fxml.FXML; import javafx.scene.control.Button;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.sql.Connection;
@@ -29,14 +33,43 @@ public class CustomerFormController {
     @FXML
     private void initialize() {
         pointsField.setEditable(false);
+        phoneField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (newValue.isEmpty()) {
+                    clearCustomerInfo();
+                    return;
+                }
+
+                Customer customer = getCustomerByPhone(newValue);
+                if (customer != null) {
+                    nameField.setText(customer.getName());
+                    pointsField.setText(String.valueOf(customer.getPoints()));
+                } else {
+                    clearCustomerInfo();
+                }
+            }
+        });
+
         phoneField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !newValue.isEmpty()) {
-                Customer customer = employeeDashboardController.getCustomerByPhone(newValue);
-                setCustomer(customer);
+            if (!newValue.matches("\\d*")) {
+                phoneField.setText(oldValue);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Sai cú pháp: chỉ được phép nhập số");
+                alert.showAndWait();
             }
         });
     }
 
+    private void clearCustomerInfo() {
+        nameField.clear();
+        pointsField.clear();
+        if (employeeDashboardController != null) {
+            employeeDashboardController.clearCustomerNameField();
+        }
+    }
 
     public Customer getCustomerByPhone(String phone) {
         Customer customer = null;

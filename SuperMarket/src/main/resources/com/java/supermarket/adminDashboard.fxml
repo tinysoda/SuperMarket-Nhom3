@@ -25,7 +25,7 @@
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
          <children>
-            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <styleClass>
                   <String fx:value="white-bg" />
                   <String fx:value="shadow" />
@@ -86,7 +86,7 @@
                                     <Font name="Tahoma" size="20.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="adminTotalIncomLabel" alignment="CENTER_RIGHT" layoutX="156.0" layoutY="28.0" prefHeight="25.0" prefWidth="95.0" text="0" textFill="WHITE">
+                              <Label fx:id="adminTotalIncomLabel" alignment="CENTER_RIGHT" layoutX="75.0" layoutY="28.0" prefHeight="26.0" prefWidth="176.0" text="0" textFill="WHITE">
                                  <font>
                                     <Font name="Tahoma" size="20.0" />
                                  </font>
@@ -260,7 +260,7 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
                   <TableView fx:id="adminBillTable" layoutX="2.4" layoutY="7.0" prefHeight="226.0" prefWidth="893.0" AnchorPane.bottomAnchor="255.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="40.0">
                      <columns>
