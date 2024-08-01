@@ -363,7 +363,7 @@
                   </Button>
                   <Button fx:id="adminCategoryBtn" alignment="TOP_LEFT" layoutX="10.0" layoutY="76.0" mnemonicParsing="false" onAction="#switchForm" prefHeight="37.0" prefWidth="171.0" styleClass="nav-button" stylesheets="@styles/Dashboard.css" text=" Quản lý danh mục">
                      <graphic>
-                        <FontAwesomeIconView glyphName="BOX" size="20" />
+                        <FontAwesomeIconView glyphName="FOLDER" size="20" />
                      </graphic>
                   </Button>
                   <Button fx:id="adminProManBtn" alignment="TOP_LEFT" mnemonicParsing="false" onAction="#switchForm" prefHeight="37.0" prefWidth="171.0" styleClass="nav-button" stylesheets="@styles/Dashboard.css" text=" Quản lý sản phẩm">
