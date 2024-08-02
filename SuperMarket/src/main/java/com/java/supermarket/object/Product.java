@@ -19,7 +19,7 @@ public class Product {
         this.total = new SimpleDoubleProperty();
     }
     public StringProperty statusProperty() {
-        String statusStr = (getQuantity() > 0) ? "Còn hàng" : "Đã xoá";
+        String statusStr = (getQuantity() > 0) ? "Còn hàng" : "Hết hàng";
         return new SimpleStringProperty(statusStr);
     }
     public Product(int id, String name, String description, Category category, double price, int quantity, ProductStatus status) {

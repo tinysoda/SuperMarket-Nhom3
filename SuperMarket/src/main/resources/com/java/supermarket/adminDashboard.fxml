@@ -25,7 +25,7 @@
    <center>
       <AnchorPane prefHeight="550.0" prefWidth="900.0">
          <children>
-            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminStatForm" layoutX="14.0" layoutY="14.0" prefHeight="522.0" prefWidth="872.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <styleClass>
                   <String fx:value="white-bg" />
                   <String fx:value="shadow" />
@@ -288,7 +288,7 @@
                   <String fx:value="shadow" />
                </styleClass>
             </AnchorPane>
-            <HBox fx:id="adminCategoryManForm" layoutX="14.0" layoutY="14.0" prefHeight="516.0" prefWidth="898.0" spacing="14.0" visible="false">
+            <HBox fx:id="adminCategoryManForm" layoutX="14.0" layoutY="14.0" prefHeight="516.0" prefWidth="898.0" spacing="14.0">
                <children>
                   <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
                      <styleClass>
@@ -326,7 +326,7 @@
                      <children>
                         <TextField fx:id="adminCategoryLookUpTF" layoutX="14.0" layoutY="14.0" onKeyTyped="#adminProLookUp" onMouseMoved="#adminProLookUp" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm danh mục" styleClass="textfield" stylesheets="@styles/Dashboard.css" />
                         <FontAwesomeIconView fill="#a19797" glyphName="SEARCH" layoutX="179.0" layoutY="35.0" size="15" />
-                        <TableView fx:id="adminCategoryTable" layoutX="14.0" layoutY="61.0" onMouseClicked="#adminProSelect" prefHeight="449.0" prefWidth="572.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
+                        <TableView fx:id="adminCategoryTable" layoutX="14.0" layoutY="61.0" onMouseClicked="#adminCategorySelect" prefHeight="449.0" prefWidth="572.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0">
                            <columns>
                               <TableColumn fx:id="col_category_id" prefWidth="51.0" text="STT" />
                               <TableColumn fx:id="col_category_name" prefWidth="264.7999572753906" text="Danh mục" />
