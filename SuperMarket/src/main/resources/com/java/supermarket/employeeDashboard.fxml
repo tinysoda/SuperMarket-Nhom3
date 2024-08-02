@@ -107,7 +107,7 @@
                               <Font size="20.0" />
                           </font>
                       </Label>
-                  <Label layoutX="398.0" layoutY="115.0" text="đ" textFill="#57575796">
+                  <Label layoutX="355.0" layoutY="114.0" text="đ" textFill="#0d0000">
                      <font>
                         <Font size="15.0" />
                      </font>

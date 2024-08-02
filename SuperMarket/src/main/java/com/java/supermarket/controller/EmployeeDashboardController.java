@@ -200,7 +200,6 @@ public class EmployeeDashboardController implements Initializable {
                 product.setName(resultSet.getString("name"));
                 product.setPrice(resultSet.getDouble("price"));
                 product.setQuantity(resultSet.getInt("quantity"));
-                // Set other properties as needed
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,8 +211,8 @@ public class EmployeeDashboardController implements Initializable {
     private void generateInvoice(int billId, Bill bill) {
         // Define the relative paths
         String filePath = "bills/bill_" + billId + ".pdf";
-        String fontPath = "src/main/resources/fonts/ARIAL.TTF";
-        String logoPath = "src/main/resources/com/java/supermarket/images/bigclogo.png";
+        String fontPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\fonts\\ARIAL.TTF";
+        String logoPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png";
 
         // Ensure the directories exist
         File dir = new File("bills");
@@ -308,11 +307,6 @@ public class EmployeeDashboardController implements Initializable {
         if (number == 0) { return "không"; }
 
         String prefix = "";
-        if (number < 0) {
-            number = -number;
-            prefix = "âm ";
-        }
-
         String current = "";
         int place = 0;
 
@@ -387,19 +381,6 @@ public class EmployeeDashboardController implements Initializable {
             e.printStackTrace();
         }
     }
-
-    @FXML
-    void calculateChange(KeyEvent event) {
-        try {
-            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
-            double amountGiven = Double.parseDouble(amountGivenField.getText().replace(",", "").replace("₫", "").trim());
-            double changeAmount = amountGiven - totalAmount;
-            changeAmountLabel.setText(formatCurrency(changeAmount));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @FXML
     void saveOrder(ActionEvent event) {
@@ -722,12 +703,38 @@ public class EmployeeDashboardController implements Initializable {
     @FXML
     void calculateChange() {
         try {
-            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
-            double amountGiven = Double.parseDouble(amountGivenField.getText().replace(",", "").replace("₫", "").trim());
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"))
+                    .parse(totalAmountLabel.getText())
+                    .doubleValue();
+
+            String amountGivenText = amountGivenField.getText().replace(",", "").replace("₫", "").trim();
+
+            if (amountGivenText.isEmpty()) {
+                changeAmountLabel.setText(formatCurrency(0));
+                return;
+            }
+
+            double amountGiven = Double.parseDouble(amountGivenText);
+
             double changeAmount = amountGiven - totalAmount;
+
             changeAmountLabel.setText(formatCurrency(changeAmount));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            // Handle invalid number format
             e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Sai định dạng số tiền");
+            alert.showAndWait();
+        } catch (ParseException e) {
+            // Handle parse exception for currency format
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Lỗi");
+            alert.setHeaderText(null);
+            alert.setContentText("Lỗi khi phân tích tổng tiền");
+            alert.showAndWait();
         }
     }
     private ObservableList<Product> adminProductList() {
@@ -751,23 +758,6 @@ public class EmployeeDashboardController implements Initializable {
             e.printStackTrace();
         }
         return productList;
-    }
-
-    public Customer getCustomerByPhone(String phone) {
-        Customer customer = null; try {
-            Connection connection = DBUtils.getConnection();
-            String query = "SELECT * FROM customer WHERE phone = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, phone);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String name = resultSet.getString("name");
-                int points = resultSet.getInt("points");
-                customer = new Customer(name, phone, points);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } return customer;
     }
 
     @FXML
@@ -888,7 +878,6 @@ public class EmployeeDashboardController implements Initializable {
 
     private int employeeId;
     private String password;
-//    private String employeeUsername;
 
     public void setEmployeeData(int id, String username,String password) {
         this.employeeId = id;
