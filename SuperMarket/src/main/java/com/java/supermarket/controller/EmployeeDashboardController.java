@@ -290,8 +290,8 @@ public class EmployeeDashboardController implements Initializable {
     private String convertLessThanOneThousand(int number) {
         String current;
 
-        if (number % 100 < 20){
-            current = teens[number % 100];
+        if (number % 100 < 20 && number % 100 > 9){
+            current = teens[number % 10];
             number /= 100;
         } else {
             current = units[number % 10];
@@ -300,8 +300,8 @@ public class EmployeeDashboardController implements Initializable {
             current = tens[number % 10] + " " + current;
             number /= 10;
         }
-        if (number == 0) return current;
-        return units[number] + " trăm " + current;
+        if (number == 0) return current.trim();
+        return units[number] + " trăm " + current.trim();
     }
 
     public String convertNumberToWords(int number) {
@@ -323,6 +323,7 @@ public class EmployeeDashboardController implements Initializable {
 
         return (prefix + current).trim() + " đồng";
     }
+
 
     private void openPDF(String filePath) {
         if (Desktop.isDesktopSupported()) {
