@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
@@ -211,8 +212,8 @@ public class EmployeeDashboardController implements Initializable {
     private void generateInvoice(int billId, Bill bill) {
         // Define the relative paths
         String filePath = "bills/bill_" + billId + ".pdf";
-        String fontPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\fonts\\ARIAL.TTF";
-        String logoPath = "C:\\Users\\ASUS\\OneDrive\\Máy tính\\SuperMarket-Nhom3\\SuperMarket-Nhom3\\SuperMarket\\src\\main\\resources\\com\\java\\supermarket\\images\\bigclogo.png";
+        String fontPath = "src/main/resources/fonts/ARIAL.TTF";
+        String logoPath = "src/main/resources/com/java/supermarket/images/bigclogo.png";
 
         // Ensure the directories exist
         File dir = new File("bills");
@@ -513,21 +514,7 @@ public class EmployeeDashboardController implements Initializable {
         colPrice.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getPrice()));
         colQuantity.setCellValueFactory(cellData -> {
             Product product = cellData.getValue();
-            int currentStock = getProductStock(product.getId());
-            Spinner<Integer> spinner = new Spinner<>(0, currentStock, product.getQuantity());
-            spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
-                if (newValue > currentStock) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Lỗi");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Số lượng chọn vượt quá số lượng hàng hiện có");
-                    alert.showAndWait();
-                } else {
-                    product.setQuantity(newValue.intValue());
-                    updateTotalAmount();
-                }
-            });
-            return new SimpleObjectProperty<>(spinner);
+            return new SimpleObjectProperty<>(createSpinnerForProduct(product));
         });
         colTotal.setCellValueFactory(cellData -> cellData.getValue().totalProperty().asObject());
         colDelete.setCellFactory(param -> new TableCell<Product, Button>() {
@@ -649,7 +636,7 @@ public class EmployeeDashboardController implements Initializable {
                             alert.setHeaderText(null);
                             alert.setContentText("Sản phẩm này đã hết hàng");
                             alert.showAndWait();
-                        } else { product.setQuantity(1);
+                        } else { product.setQuantity(0);
                             productList.add(product);
                             productTableView.setItems(productList);
                             suggestionListView.setVisible(false);
@@ -662,6 +649,47 @@ public class EmployeeDashboardController implements Initializable {
         }
         restoreSpinnerValues();
         updateTotalAmount();
+    }
+
+    private Spinner<Integer> createSpinnerForProduct(Product product) {
+        int currentStock = getProductStock(product.getId());
+        Spinner<Integer> spinner = new Spinner<>(0, currentStock, product.getQuantity());
+        spinner.setEditable(true);
+
+        // Handle spinner value changes
+        spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue > currentStock) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Số lượng chọn vượt quá số lượng hàng hiện có");
+                alert.showAndWait();
+                spinner.getValueFactory().setValue(oldValue);
+            } else {
+                product.setQuantity(newValue.intValue());
+                updateTotalAmount();
+            }
+        });
+
+        spinner.getEditor().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.BACK_SPACE) {
+                spinner.getEditor().clear();
+                event.consume();
+            }
+        });
+
+        // Handle keyboard input
+        spinner.getEditor().setOnAction(event -> {
+            try {
+                int value = Integer.parseInt(spinner.getEditor().getText());
+                spinner.getValueFactory().setValue(value);
+            } catch (NumberFormatException e) {
+                spinner.getEditor().setText("0");
+                spinner.getValueFactory().setValue(0);
+            }
+        });
+
+        return spinner;
     }
 
     private int getProductStock(int productId) {
