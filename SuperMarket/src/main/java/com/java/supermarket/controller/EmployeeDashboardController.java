@@ -597,6 +597,21 @@ public class EmployeeDashboardController implements Initializable {
             updateTotalAmount();
         });
 
+        amountGivenField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String character = event.getCharacter();
+            // Kiểm tra nếu ký tự nhập vào không phải là số và không phải ký tự đ
+            if (!character.matches("[0-9]") && !character.equals("đ")) {
+                // Hiển thị thông báo lỗi
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Chỉ được nhập ký tự số");
+                alert.showAndWait();
+                // Hủy bỏ sự kiện nhập ký tự
+                event.consume();
+            }
+        });
+
         updateTotalAmount();
     }
 
