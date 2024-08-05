@@ -22,6 +22,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -54,6 +55,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class EmployeeDashboardController implements Initializable {
+    @FXML private AnchorPane headerEmployeeController;
+    @FXML private AnchorPane bodyEmployeeController;
     @FXML private Label customerNameFiled;
     @FXML private Label employeeName;
     @FXML private BorderPane employeeForm;

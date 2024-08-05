@@ -17,7 +17,7 @@
 
 <BorderPane fx:id="employeeForm" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#setEmployeeUsername" prefHeight="588.0" prefWidth="835.0" styleClass="employee-form" stylesheets="@styles/Employee.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.EmployeeDashboardController">
    <top>
-      <AnchorPane prefHeight="34.0" prefWidth="800.0" styleClass="employee-header" BorderPane.alignment="CENTER">
+      <AnchorPane fx:id="headerEmployeeController" prefHeight="34.0" prefWidth="800.0" styleClass="employee-header" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="staffMinimizeBtn" layoutX="725.0" layoutY="2.0" minHeight="20.0" mnemonicParsing="false" onAction="#minimize" prefHeight="23.0" prefWidth="54.0" styleClass="minimize-button" AnchorPane.topAnchor="2.0">
                <graphic>
@@ -49,7 +49,7 @@
       </AnchorPane>
    </top>
    <bottom>
-        <AnchorPane prefHeight="595.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="bodyEmployeeController" prefHeight="595.0" prefWidth="800.0" BorderPane.alignment="CENTER">
             <children>
             <AnchorPane layoutX="350.0" layoutY="2.0" prefHeight="250.0" prefWidth="473.0" AnchorPane.rightAnchor="10.0">
                <styleClass>
@@ -112,7 +112,11 @@
                         <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
-                  <Label fx:id="customerPointField" layoutX="376.0" layoutY="215.0" prefHeight="18.0" prefWidth="76.0" text="Label" />
+                  <Label fx:id="customerPointField" layoutX="376.0" layoutY="215.0" prefHeight="18.0" prefWidth="76.0">
+                     <font>
+                        <Font name="Arial Bold" size="16.0" />
+                     </font>
+                  </Label>
                </children>
                <stylesheets>
                   <URL value="@styles/Dashboard.css" />
