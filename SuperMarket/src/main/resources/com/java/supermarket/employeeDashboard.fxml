@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import de.jensd.fx.glyphs.fontawesome.*?>
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="employeeForm" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#setEmployeeUsername" prefHeight="588.0" prefWidth="835.0" styleClass="employee-form" stylesheets="@styles/Employee.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.EmployeeDashboardController">
+<BorderPane fx:id="employeeForm" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseEntered="#setEmployeeUsername" prefHeight="588.0" prefWidth="835.0" styleClass="employee-form" stylesheets="@styles/Employee.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.EmployeeDashboardController">
    <top>
       <AnchorPane prefHeight="34.0" prefWidth="800.0" styleClass="employee-header" BorderPane.alignment="CENTER">
          <children>
@@ -50,7 +57,7 @@
                   <String fx:value="bill_field" />
                </styleClass>
                <children>
-                  <Button fx:id="usePointDiscount" layoutX="18.0" layoutY="208.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="160.0" styleClass="discountBtn" text="Dùng điểm tích luỹ">
+                  <Button fx:id="usePointDiscount" layoutX="18.0" layoutY="208.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="223.0" styleClass="discountBtn" text="Dùng điểm tích luỹ">
                      <font>
                         <Font name="Arial" size="16.0" />
                      </font>
@@ -100,11 +107,12 @@
                               <Font size="20.0" />
                           </font>
                       </Label>
-                  <Label fx:id="staffCustomerPointLabel" layoutX="201.0" layoutY="210.0" prefHeight="26.0" prefWidth="130.0" text="Điểm tích luỹ">
+                  <Label fx:id="staffCustomerPointLabel" layoutX="259.0" layoutY="210.0" prefHeight="26.0" prefWidth="108.0" text="Điểm tích luỹ">
                      <font>
                         <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
+                  <Label fx:id="customerPointField" layoutX="376.0" layoutY="215.0" prefHeight="18.0" prefWidth="76.0" text="Label" />
                </children>
                <stylesheets>
                   <URL value="@styles/Dashboard.css" />

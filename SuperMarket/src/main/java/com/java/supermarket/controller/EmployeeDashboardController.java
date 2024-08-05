@@ -75,6 +75,7 @@ public class EmployeeDashboardController implements Initializable {
     @FXML private Button usePointDiscount;
     @FXML private Button staffLogoutBtn;
     @FXML private Button changePassBtn;
+    @FXML private Label customerPointField;
 
     private ObservableList<Product> productList;
     private Customer customer;
@@ -100,20 +101,22 @@ public class EmployeeDashboardController implements Initializable {
             alert.showAndWait();
             return;
         }
+
+        String initialText = "Dùng điểm giảm giá";
+        String toggleText = "Không dùng điểm giảm giá";
+
         try {
             double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
             int customerPoints = customer.getPoints();
-
             if (!discountApplied) {
                 discountAmount = customerPoints;
                 if (discountAmount > totalAmount) {
                     discountAmount = totalAmount;
                 }
-
                 double newTotalAmount = totalAmount - discountAmount;
                 totalAmountLabel.setText(formatCurrency(newTotalAmount));
                 discountApplied = true;
-
+                usePointDiscount.setText(toggleText);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thành công");
                 alert.setHeaderText(null);
@@ -124,7 +127,7 @@ public class EmployeeDashboardController implements Initializable {
                 totalAmountLabel.setText(formatCurrency(originalTotalAmount));
                 discountApplied = false;
                 discountAmount = 0.0;
-
+                usePointDiscount.setText(initialText);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
                 alert.setHeaderText(null);
@@ -140,6 +143,7 @@ public class EmployeeDashboardController implements Initializable {
             alert.showAndWait();
         }
     }
+
 
 
     private void updateCustomerPointsInDatabase(String customerPhone, int newPoints) {
@@ -431,13 +435,33 @@ public class EmployeeDashboardController implements Initializable {
                     billDetails.add(new BillDetail(product.getId(), product.getName(), product.getQuantity(), product.getTotal()));
                 }
             }
-
             double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+            double amountGiven = parseAmountGivenField();
+            double changeAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(changeAmountLabel.getText()).doubleValue();
+
+            if (amountGiven < totalAmount) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Tiền khách trả < tổng tiền hóa đơn");
+                alert.showAndWait();
+                return;
+            }
+
+            if (changeAmount < 0) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Tiền trả lại khách không thể âm");
+                alert.showAndWait();
+                return;
+            }
+
             Bill bill = new Bill(customer.getPhone(), getEmployeeId(employeeUsername), totalAmount, billDetails);
             saveBillToDatabase(bill);
 
             double pricePerBill = totalAmount;
-            int pointsEarned = (int) (pricePerBill / 10);
+            int pointsEarned = (int) (pricePerBill / 100);
             updateCustomerPoints(customer.getPhone(), pointsEarned);
 
             if (discountApplied) {
@@ -605,15 +629,15 @@ public class EmployeeDashboardController implements Initializable {
 
         amountGivenField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
             String character = event.getCharacter();
-            // Kiểm tra nếu ký tự nhập vào không phải là số và không phải ký tự đ
-            if (!character.matches("[0-9]") && !character.equals("đ")) {
-                // Hiển thị thông báo lỗi
+            // Check if the entered character is not a digit and not 'đ' and not backspace
+            if (!character.matches("[0-9]") && !character.equals("đ") && !character.equals("\b")) {
+                // Show error alert
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
+                alert.setTitle("Error");
                 alert.setHeaderText(null);
-                alert.setContentText("Chỉ được nhập ký tự số");
+                alert.setContentText("Only numeric characters are allowed.");
                 alert.showAndWait();
-                // Hủy bỏ sự kiện nhập ký tự
+                // Consume the event to prevent the character from being entered
                 event.consume();
             }
         });
@@ -623,32 +647,25 @@ public class EmployeeDashboardController implements Initializable {
 
     private void formatAmountGivenField(String newValue) {
         if (!newValue.isEmpty()) {
-            // Lưu vị trí con trỏ hiện tại
             int caretPosition = amountGivenField.getCaretPosition();
-            // Loại bỏ tất cả ký tự không phải là số
             String cleanString = newValue.replaceAll("[^\\d]", "");
 
-            int maxLength = 12; // Ví dụ: giới hạn là 12 ký tự số
+            int maxLength = 12;
             if (cleanString.length() > maxLength) {
                 cleanString = cleanString.substring(0, maxLength);
             }
 
             if (!cleanString.isEmpty()) {
                 try {
-                    // Chuyển đổi chuỗi thành số nguyên
                     long amountGiven = Long.parseLong(cleanString);
-                    // Định dạng số tiền
                     NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
                     String formattedAmount = currencyFormatter.format(amountGiven).replace("₫", "đ");
 
-                    // Tính toán độ dài của chuỗi mới và sự chênh lệch với chuỗi cũ
                     int newLength = formattedAmount.length();
                     int lengthDifference = newLength - newValue.length();
 
-                    // Cập nhật giá trị của trường amountGivenField
                     amountGivenField.setText(formattedAmount);
 
-                    // Đảm bảo con trỏ được đặt đúng vị trí sau khi cập nhật
                     amountGivenField.positionCaret(caretPosition + (formattedAmount.length() - newValue.length()));
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
@@ -657,6 +674,13 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
+    private double parseAmountGivenField() throws ParseException {
+        String amountGivenText = amountGivenField.getText().replace("đ", "").replaceAll("[^\\d]", "");
+        if (amountGivenText.isEmpty()) {
+            return 0.0;
+        }
+        return Double.parseDouble(amountGivenText);
+    }
 
 
     private void updateChangeAmount() {
@@ -746,6 +770,20 @@ public class EmployeeDashboardController implements Initializable {
             } else {
                 product.setQuantity(newValue.intValue());
                 updateTotalAmount();
+            }
+        });
+
+        spinner.getEditor().addEventFilter(KeyEvent.KEY_TYPED, event -> {
+            String character = event.getCharacter();
+            if (!character.matches("[0-9]") && !character.equals("\b") && !character.equals("\r")) {
+                // Show error message
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Chỉ được nhập ký tự số");
+                alert.showAndWait();
+                // Consume the event
+                event.consume();
             }
         });
 
