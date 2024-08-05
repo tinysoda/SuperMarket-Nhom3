@@ -263,6 +263,9 @@ public class EmployeeDashboardController implements Initializable {
             }
             document.add(table);
 
+            document.add(new Paragraph("Tiền khách đưa: " + amountGivenField.getText()).setFont(font));
+            document.add(new Paragraph("Tiền trả lại khách: " + changeAmountLabel.getText()).setFont(font));
+
             document.add(new Paragraph("\nTổng tiền: " + formatCurrency(bill.getTotalAmount())));
             document.add(new Paragraph("Tổng tiền (viết bằng chữ): " + convertNumberToWords((int) bill.getTotalAmount())));
             if (discountApplied) {
