@@ -57,7 +57,7 @@
                   <String fx:value="bill_field" />
                </styleClass>
                <children>
-                  <Button fx:id="usePointDiscount" layoutX="18.0" layoutY="195.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="142.0" styleClass="discountBtn" text="Điểm giảm giá">
+                  <Button fx:id="usePointDiscount" layoutX="18.0" layoutY="195.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="160.0" styleClass="discountBtn" text="Dùng điểm tích luỹ">
                      <font>
                         <Font name="Arial" size="16.0" />
                      </font>
@@ -110,6 +110,11 @@
                   <Label layoutX="355.0" layoutY="114.0" text="đ" textFill="#0d0000">
                      <font>
                         <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="staffCustomerPointLabel" layoutX="208.0" layoutY="198.0" prefHeight="26.0" prefWidth="130.0" text="Điểm tích luỹ">
+                     <font>
+                        <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
                </children>

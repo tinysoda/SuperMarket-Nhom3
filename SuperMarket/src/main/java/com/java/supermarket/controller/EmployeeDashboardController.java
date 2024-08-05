@@ -68,6 +68,7 @@ public class EmployeeDashboardController implements Initializable {
     @FXML private TableColumn<Product, Double> colTotal;
     @FXML private TableColumn<Product, Button> colDelete;
     @FXML private Label totalAmountLabel;
+    @FXML private Label staffCustomerPointLabel;
     @FXML private Button saveOrderButton;
     @FXML private TextField amountGivenField;
     @FXML private Label changeAmountLabel;
@@ -471,6 +472,7 @@ public class EmployeeDashboardController implements Initializable {
             preparedStatement.setInt(1, pointsEarned);
             preparedStatement.setString(2, customerPhone);
             preparedStatement.executeUpdate();
+            staffCustomerPointLabel.setText(String.valueOf(customer.getPoints()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -637,7 +639,7 @@ public class EmployeeDashboardController implements Initializable {
                             alert.setHeaderText(null);
                             alert.setContentText("Sản phẩm này đã hết hàng");
                             alert.showAndWait();
-                        } else { product.setQuantity(0);
+                        } else { product.setQuantity(1);
                             productList.add(product);
                             productTableView.setItems(productList);
                             suggestionListView.setVisible(false);
