@@ -590,18 +590,70 @@ public class EmployeeDashboardController implements Initializable {
 
 
         amountGivenField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                amountGivenField.setText(oldValue);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
-                alert.setHeaderText(null);
-                alert.setContentText("Sai cú pháp: chỉ được phép nhập số");
-                alert.showAndWait();
-            }
+            formatAmountGivenField(newValue);
+            updateTotalAmount();
         });
 
         updateTotalAmount();
     }
+
+    private void formatAmountGivenField(String newValue) {
+        if (!newValue.isEmpty()) {
+            // Lưu vị trí con trỏ hiện tại
+            int caretPosition = amountGivenField.getCaretPosition();
+            // Loại bỏ tất cả ký tự không phải là số
+            String cleanString = newValue.replaceAll("[^\\d]", "");
+
+            int maxLength = 12; // Ví dụ: giới hạn là 12 ký tự số
+            if (cleanString.length() > maxLength) {
+                cleanString = cleanString.substring(0, maxLength);
+            }
+
+            if (!cleanString.isEmpty()) {
+                try {
+                    // Chuyển đổi chuỗi thành số nguyên
+                    long amountGiven = Long.parseLong(cleanString);
+                    // Định dạng số tiền
+                    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+                    String formattedAmount = currencyFormatter.format(amountGiven).replace("₫", "đ");
+
+                    // Tính toán độ dài của chuỗi mới và sự chênh lệch với chuỗi cũ
+                    int newLength = formattedAmount.length();
+                    int lengthDifference = newLength - newValue.length();
+
+                    // Cập nhật giá trị của trường amountGivenField
+                    amountGivenField.setText(formattedAmount);
+
+                    // Đảm bảo con trỏ được đặt đúng vị trí sau khi cập nhật
+                    amountGivenField.positionCaret(caretPosition + (formattedAmount.length() - newValue.length()));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+
+    private void updateChangeAmount() {
+        try {
+            // Parse the total amount and amount given
+            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+            String cleanString = amountGivenField.getText().replaceAll("[^\\d]", "");
+            if (!cleanString.isEmpty()) {
+                double amountGiven = Double.parseDouble(cleanString);
+                // Calculate the change amount
+                double changeAmount = amountGiven - totalAmount;
+                changeAmountLabel.setText(formatCurrency(changeAmount));
+            } else {
+                changeAmountLabel.setText(formatCurrency(0));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            changeAmountLabel.setText(formatCurrency(0));
+        }
+    }
+
     private ObservableList<String> getSuggestions(String searchText) {
         ObservableList<String> suggestions = FXCollections.observableArrayList();
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -731,42 +783,15 @@ public class EmployeeDashboardController implements Initializable {
     }
 
     @FXML
-    void calculateChange() {
-        try {
-            double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"))
-                    .parse(totalAmountLabel.getText())
-                    .doubleValue();
-
-            String amountGivenText = amountGivenField.getText().replace(",", "").replace("₫", "").trim();
-
-            if (amountGivenText.isEmpty()) {
-                changeAmountLabel.setText(formatCurrency(0));
-                return;
-            }
-
-            double amountGiven = Double.parseDouble(amountGivenText);
-
-            double changeAmount = amountGiven - totalAmount;
-
-            changeAmountLabel.setText(formatCurrency(changeAmount));
-        } catch (NumberFormatException e) {
-            // Handle invalid number format
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText(null);
-            alert.setContentText("Sai định dạng số tiền");
-            alert.showAndWait();
-        } catch (ParseException e) {
-            // Handle parse exception for currency format
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Lỗi");
-            alert.setHeaderText(null);
-            alert.setContentText("Lỗi khi phân tích tổng tiền");
-            alert.showAndWait();
+    private void calculateChange() {
+        if (!amountGivenField.getText().isEmpty()) {
+            formatAmountGivenField(amountGivenField.getText());
+            updateChangeAmount();
+        } else {
+            changeAmountLabel.setText(formatCurrency(0));
         }
     }
+
     private ObservableList<Product> adminProductList() {
         ObservableList<Product> productList = FXCollections.observableArrayList();
         String sql = "SELECT product.*, category.name as category_name FROM product LEFT JOIN category ON product.category_id = category.id";

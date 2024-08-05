@@ -107,11 +107,6 @@
                               <Font size="20.0" />
                           </font>
                       </Label>
-                  <Label layoutX="355.0" layoutY="114.0" text="đ" textFill="#0d0000">
-                     <font>
-                        <Font size="15.0" />
-                     </font>
-                  </Label>
                   <Label fx:id="staffCustomerPointLabel" layoutX="208.0" layoutY="198.0" prefHeight="26.0" prefWidth="130.0" text="Điểm tích luỹ">
                      <font>
                         <Font name="Arial Bold" size="16.0" />
