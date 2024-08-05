@@ -472,7 +472,6 @@ public class EmployeeDashboardController implements Initializable {
             preparedStatement.setInt(1, pointsEarned);
             preparedStatement.setString(2, customerPhone);
             preparedStatement.executeUpdate();
-            staffCustomerPointLabel.setText(String.valueOf(customer.getPoints()));
         } catch (Exception e) {
             e.printStackTrace();
         }
