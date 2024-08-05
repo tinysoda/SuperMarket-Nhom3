@@ -67,7 +67,13 @@ public class ChangePasswordFormController {
                 alert.setHeaderText(null);
                 alert.setContentText("Mật khẩu cũ không đúng");
                 alert.showAndWait();
-            } else {
+            }else if(newPassword.length()<6){
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Mật khẩu phải dài hơn 6 kí tự");
+                alert.showAndWait();}
+            else {
                 String encryptedNewPassword = encryptPassword(newPassword);
                 updatePasswordWithEncryption(userId, encryptedNewPassword);
 

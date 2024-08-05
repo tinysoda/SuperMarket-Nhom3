@@ -166,8 +166,6 @@ public class AdminDashboardController implements Initializable {
     @FXML
     private Button adminProUpdateBtn;
 
-    @FXML
-    private ComboBox<String> adminRoleCB;
 
     @FXML
     private TextField adminStaffLookUpTF;
@@ -443,8 +441,8 @@ public class AdminDashboardController implements Initializable {
             adminFnameTF.setText(employee.getFirst_name());
             adminLnameTF.setText(employee.getLast_name());
             adminPhoneTF.setText(employee.getPhone());
-            adminRoleCB.setValue(employee.getRole());
             adminUsernameTF.setText(employee.getUsername());
+
         }
     }
 
@@ -642,7 +640,7 @@ public class AdminDashboardController implements Initializable {
 
 
     public void adminEmployeeAdd() {
-        String insertQuery = "INSERT INTO user (first_name, last_name, phone, role, username, password) VALUES (?, ?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO user (first_name, last_name, phone, username, password) VALUES (?, ?, ?, ?, ?)";
         String checkUsernameQuery = "SELECT COUNT(*) FROM user WHERE username = ?";
 
         try (Connection con = DBUtils.getConnection();
@@ -650,8 +648,7 @@ public class AdminDashboardController implements Initializable {
              PreparedStatement insertPs = con.prepareStatement(insertQuery)) {
 
             if (adminFnameTF.getText().isEmpty() || adminLnameTF.getText().isEmpty() ||
-                    adminPhoneTF.getText().isEmpty() || adminUsernameTF.getText().isEmpty() ||
-                    adminRoleCB.getSelectionModel().isEmpty()) {
+                    adminPhoneTF.getText().isEmpty() || adminUsernameTF.getText().isEmpty()) {
 
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Lỗi");
@@ -671,16 +668,32 @@ public class AdminDashboardController implements Initializable {
                     alert.setHeaderText(null);
                     alert.setContentText("Tên đăng nhập đã tồn tại. Vui lòng chọn tên đăng nhập khác.");
                     alert.showAndWait();
-                } else {
+
+                }else if(adminUsernameTF.getText().length()<3){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Tên đăng nhập phải dài hơn 3 kí tự");
+                    alert.showAndWait();
+                }else if (!adminPhoneTF.getText().matches("\\+?\\d+") ||
+                        adminPhoneTF.getText().length() < 10 ||
+                        adminPhoneTF.getText().length() > 13) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText(null);
+                    alert.setContentText("SDT không đúng định dạng");
+                    alert.showAndWait();
+                }
+                else {
                     insertPs.setString(1, adminFnameTF.getText());
                     insertPs.setString(2, adminLnameTF.getText());
                     insertPs.setString(3, adminPhoneTF.getText());
-                    insertPs.setString(4, adminRoleCB.getValue());
-                    insertPs.setString(5, adminUsernameTF.getText());
+
+                    insertPs.setString(4, adminUsernameTF.getText());
 
                     // Encrypt the password
-                    String encryptedPassword = encryptPassword("bigc");
-                    insertPs.setString(6, encryptedPassword);
+                    String encryptedPassword = encryptPassword("bigcstaff");
+                    insertPs.setString(5, encryptedPassword);
 
                     insertPs.executeUpdate();
 
@@ -717,7 +730,7 @@ public class AdminDashboardController implements Initializable {
     }
 
     public void adminEmployeeUpdate() {
-        String updateQuery = "UPDATE user SET first_name = ?, last_name = ?, phone = ?, role = ?, username = ? WHERE id = ?";
+        String updateQuery = "UPDATE user SET first_name = ?, last_name = ?, phone = ? WHERE id = ?";
         try (Connection con = DBUtils.getConnection();
              PreparedStatement ps = con.prepareStatement(updateQuery)) {
 
@@ -736,22 +749,40 @@ public class AdminDashboardController implements Initializable {
             String firstName = adminFnameTF.getText();
             String lastName = adminLnameTF.getText();
             String phone = adminPhoneTF.getText();
-            String role = adminRoleCB.getValue();
-            String username = adminUsernameTF.getText();
 
-            if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() || role == null || username.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty() || phone.isEmpty() ) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Lỗi");
                 alert.setHeaderText(null);
                 alert.setContentText("Điền đầy đủ thông tin nhân viên");
                 alert.showAndWait();
+            }
+//            else if(adminUsernameTF.getText().length()<3){
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setTitle("Lỗi");
+//                alert.setHeaderText(null);
+//                alert.setContentText("Tên đăng nhập phải dài hơn 3 kí tự");
+//                alert.showAndWait();}
+             else if (!adminUsernameTF.getText().equals(selectedEmployee.getUsername())) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("Không thể thay đổi Username");
+                alert.showAndWait();}
+            else if (!adminPhoneTF.getText().matches("\\+?\\d+") ||
+                    adminPhoneTF.getText().length() < 10 ||
+                    adminPhoneTF.getText().length() > 13) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText(null);
+                alert.setContentText("SDT không đúng định dạng");
+                alert.showAndWait();
             } else {
                 ps.setString(1, firstName);
                 ps.setString(2, lastName);
                 ps.setString(3, phone);
-                ps.setString(4, role);
-                ps.setString(5, username);
-                ps.setInt(6, selectedEmployee.getId());
+
+                ps.setInt(4, selectedEmployee.getId());
                 ps.executeUpdate();
 
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -763,9 +794,6 @@ public class AdminDashboardController implements Initializable {
                 selectedEmployee.setFirst_name(firstName);
                 selectedEmployee.setLast_name(lastName);
                 selectedEmployee.setPhone(phone);
-                selectedEmployee.setRole(role);
-                selectedEmployee.setUsername(username);
-
 
                 adminShowEmployee();
                 admin_StaffTable.getSelectionModel().select(selectedIndex); // Chọn lại mục đã chọn trước đó
@@ -778,54 +806,53 @@ public class AdminDashboardController implements Initializable {
     }
 
 
-    public void adminEmployeeDelete() {
-        String deleteQuery = "DELETE FROM user WHERE id = ?";
-
-        try (Connection con = DBUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(deleteQuery)) {
-
-            Employee selectedEmployee = admin_StaffTable.getSelectionModel().getSelectedItem();
-            int selectedIndex = admin_StaffTable.getSelectionModel().getSelectedIndex();
-
-            if (selectedIndex == -1 || selectedEmployee == null) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Lỗi");
-                alert.setHeaderText(null);
-                alert.setContentText("Chọn nhân viên cần xóa");
-                alert.showAndWait();
-                return;
-            }
-
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Xóa Nhân Viên");
-            alert.setHeaderText(null);
-            alert.setContentText("Bạn có chắc chắn muốn xóa nhân viên " + selectedEmployee.getFirst_name() + " ?");
-            Optional<ButtonType> option = alert.showAndWait();
-
-            if (option.get().equals(ButtonType.OK)) {
-                ps.setInt(1, selectedEmployee.getId());
-                ps.executeUpdate();
-
-                alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thông báo");
-                alert.setHeaderText(null);
-                alert.setContentText("Xóa nhân viên thành công");
-                alert.showAndWait();
-
-                adminShowEmployee();
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void adminEmployeeDelete() {
+//        String deleteQuery = "DELETE FROM user WHERE id = ?";
+//
+//        try (Connection con = DBUtils.getConnection();
+//             PreparedStatement ps = con.prepareStatement(deleteQuery)) {
+//
+//            Employee selectedEmployee = admin_StaffTable.getSelectionModel().getSelectedItem();
+//            int selectedIndex = admin_StaffTable.getSelectionModel().getSelectedIndex();
+//
+//            if (selectedIndex == -1 || selectedEmployee == null) {
+//                Alert alert = new Alert(Alert.AlertType.ERROR);
+//                alert.setTitle("Lỗi");
+//                alert.setHeaderText(null);
+//                alert.setContentText("Chọn nhân viên cần xóa");
+//                alert.showAndWait();
+//                return;
+//            }
+//
+//            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+//            alert.setTitle("Xóa Nhân Viên");
+//            alert.setHeaderText(null);
+//            alert.setContentText("Bạn có chắc chắn muốn xóa nhân viên " + selectedEmployee.getFirst_name() + " ?");
+//            Optional<ButtonType> option = alert.showAndWait();
+//
+//            if (option.get().equals(ButtonType.OK)) {
+//                ps.setInt(1, selectedEmployee.getId());
+//                ps.executeUpdate();
+//
+//                alert = new Alert(Alert.AlertType.INFORMATION);
+//                alert.setTitle("Thông báo");
+//                alert.setHeaderText(null);
+//                alert.setContentText("Xóa nhân viên thành công");
+//                alert.showAndWait();
+//
+//                adminShowEmployee();
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void adminEmployeeClear() {
         adminFnameTF.clear();
         adminLnameTF.clear();
         adminPhoneTF.clear();
         adminUsernameTF.clear();
-        adminRoleCB.getSelectionModel().clearSelection();
     }
 
     //Category start
@@ -1307,7 +1334,6 @@ public class AdminDashboardController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            adminRoleCB.setItems(FXCollections.observableArrayList("Manager", "Employee"));
             hideAllForm();
             adminStatForm.setVisible(true);
             adminStatBtn.setStyle("-fx-background-color: linear-gradient(to bottom right, #8AE308, #4CAF50);");
