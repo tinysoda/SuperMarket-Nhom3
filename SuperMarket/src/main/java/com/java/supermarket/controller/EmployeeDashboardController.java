@@ -522,7 +522,13 @@ public class EmployeeDashboardController implements Initializable {
             return new SimpleObjectProperty<>(createSpinnerForProduct(product));
         });
         colTotal.setCellValueFactory(cellData -> cellData.getValue().totalProperty().asObject());
+        colTitle.setResizable(false);
+        colPrice.setResizable(false);
+        colQuantity.setResizable(false);
+        colDelete.setResizable(false);
+        colTotal.setResizable(false);
         colDelete.setCellFactory(param -> new TableCell<Product, Button>() {
+
             private final Button deleteButton = new Button("Xóa");
 
             @Override protected void updateItem(Button item, boolean empty) {
