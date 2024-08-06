@@ -57,7 +57,7 @@
                   <String fx:value="bill_field" />
                </styleClass>
                <children>
-                  <Button fx:id="usePointDiscount" layoutX="18.0" layoutY="208.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="223.0" styleClass="discountBtn" text="Dùng điểm tích luỹ">
+                  <Button fx:id="usePointDiscount" layoutX="292.0" layoutY="210.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="168.0" styleClass="discountBtn" text="Dùng điểm tích luỹ">
                      <font>
                         <Font name="Arial" size="16.0" />
                      </font>
@@ -107,16 +107,16 @@
                               <Font size="20.0" />
                           </font>
                       </Label>
-                  <Label fx:id="staffCustomerPointLabel" layoutX="259.0" layoutY="210.0" prefHeight="26.0" prefWidth="108.0" text="Điểm tích luỹ">
-                     <font>
-                        <Font name="Arial Bold" size="16.0" />
-                     </font>
-                  </Label>
                   <Label fx:id="customerPointField" layoutX="376.0" layoutY="215.0" prefHeight="18.0" prefWidth="76.0">
                      <font>
                         <Font name="Arial Bold" size="16.0" />
                      </font>
                   </Label>
+                  <Button fx:id="QRBtn" layoutX="12.0" layoutY="210.0" mnemonicParsing="false" onAction="#toggleQRVisibility" prefHeight="31.0" prefWidth="116.0" styleClass="discountBtn" text="Quét mã QR">
+                     <font>
+                        <Font name="Arial" size="16.0" />
+                     </font>
+                  </Button>
                </children>
                <stylesheets>
                   <URL value="@styles/Dashboard.css" />
@@ -163,6 +163,11 @@
                   <Font name="Arial Bold" size="16.0" />
                </font>
             </Button>
+            <ImageView fx:id="qrImage" fitHeight="199.0" fitWidth="208.0" layoutX="74.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/qr.jpg" />
+               </image>
+            </ImageView>
             </children>
         </AnchorPane>
    </bottom>

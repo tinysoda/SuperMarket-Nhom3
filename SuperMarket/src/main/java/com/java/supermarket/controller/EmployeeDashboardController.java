@@ -19,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -57,6 +58,10 @@ import java.io.IOException;
 public class EmployeeDashboardController implements Initializable {
     @FXML private AnchorPane headerEmployeeController;
     @FXML private AnchorPane bodyEmployeeController;
+    @FXML
+    private Button QRBtn;
+    @FXML
+    private ImageView qrImage;
     @FXML private Label customerNameFiled;
     @FXML private Label employeeName;
     @FXML private BorderPane employeeForm;
@@ -93,6 +98,20 @@ public class EmployeeDashboardController implements Initializable {
         Stage stage = (Stage) employeeForm.getScene().getWindow();
         stage.setIconified(true);
     }
+    private boolean isQRVisible = false;
+
+    @FXML
+    private void toggleQRVisibility() {
+        isQRVisible = !isQRVisible;
+        qrImage.setVisible(isQRVisible);
+
+        if (isQRVisible) {
+            QRBtn.setText("Ẩn QR");
+        } else {
+            QRBtn.setText("Mã QR");
+        }
+    }
+
 
     @FXML
     private void handleUsePointDiscount(ActionEvent event) {
@@ -548,6 +567,7 @@ public class EmployeeDashboardController implements Initializable {
             Product product = cellData.getValue();
             return new SimpleObjectProperty<>(createSpinnerForProduct(product));
         });
+        qrImage.setVisible(false);
         colTotal.setCellValueFactory(cellData -> cellData.getValue().totalProperty().asObject());
         colTitle.setResizable(false);
         colPrice.setResizable(false);
