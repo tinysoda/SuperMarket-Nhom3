@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -58,6 +59,9 @@ import java.io.IOException;
 public class EmployeeDashboardController implements Initializable {
     @FXML private AnchorPane headerEmployeeController;
     @FXML private AnchorPane bodyEmployeeController;
+    @FXML
+    private TabPane billTabPane;
+
     @FXML
     private Button QRBtn;
     @FXML
@@ -558,6 +562,7 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
+    private List<Node> initialBodyEmployeeContent;
     public void initialize(URL url, ResourceBundle resourceBundle) {
         productList = FXCollections.observableArrayList();
         productTableView.setItems(productList);
@@ -666,7 +671,76 @@ public class EmployeeDashboardController implements Initializable {
         });
 
         updateTotalAmount();
+
+        // Ensure the "+" tab is always the last tab and does not trigger when selected
+        Tab addTab = billTabPane.getTabs().get(billTabPane.getTabs().size() - 1);
+        addTab.setOnSelectionChanged(event -> {
+            if (addTab.isSelected()) {
+                addNewBillTab();
+            }
+        });
+
+        // Initialize the first tab
+        Tab initialTab = billTabPane.getTabs().get(0);
+        initialTab.setText("Tab 1");
+        List<Node> initialContent = new ArrayList<>(bodyEmployeeController.getChildren());
+        tabContentMap.put(initialTab, initialContent);
+
+        // Restore content to the tab when reselected
+        billTabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) -> {
+            if (newTab != null) {
+                List<Node> savedContent = tabContentMap.get(newTab);
+                if (savedContent != null) {
+                    AnchorPane newContent = new AnchorPane();
+                    newContent.getChildren().addAll(savedContent);
+                    newTab.setContent(newContent);
+                }
+            }
+        });
     }
+    private int tabCount = 1;
+    private Map<Tab, List<Node>> tabContentMap = new HashMap<>();
+
+    @FXML
+    private void addNewBillTab() {
+        // Increment the tab count
+        tabCount++;
+
+        // Create a new tab
+        Tab newTab = new Tab("Tab " + tabCount);
+
+        // Clone the content from the initial tab
+        List<Node> newContentList = new ArrayList<>(tabContentMap.get(billTabPane.getTabs().get(0)));
+        AnchorPane newContent = new AnchorPane();
+        newContent.getChildren().addAll(newContentList);
+
+        // Save the content for this tab
+        tabContentMap.put(newTab, newContentList);
+
+        // Set the content of the new tab
+        newTab.setContent(newContent);
+
+        // Add a close button with confirmation
+        newTab.setOnCloseRequest(event -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Xác nhận xóa");
+            alert.setHeaderText("Bạn chắc chắn muốn xóa hóa đơn này chứ?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                tabContentMap.remove(newTab);
+                billTabPane.getTabs().remove(newTab);
+            } else {
+                event.consume();
+            }
+        });
+
+        // Add the new tab before the "+" tab
+        billTabPane.getTabs().add(billTabPane.getTabs().size() - 1, newTab);
+
+        // Select the new tab
+        billTabPane.getSelectionModel().select(newTab);
+    }
+
 
     private void formatAmountGivenField(String newValue) {
         if (!newValue.isEmpty()) {
