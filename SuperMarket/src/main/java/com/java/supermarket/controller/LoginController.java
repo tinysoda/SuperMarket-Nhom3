@@ -103,7 +103,6 @@ public class LoginController {
                         if (!loggedInUsername.equals("admin")) {
                             EmployeeDashboardController controller = loader.getController();
                             controller.setEmployeeData(userId, loggedInUsername, storedPassword);
-
                             UserSession.getInstance().setUserData(userId, loggedInUsername, storedPassword);
                         }
 
@@ -151,7 +150,7 @@ public class LoginController {
             alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText(null);
-            alert.setContentText("Có lỗi xảy ra: " + e.getMessage());
+            alert.setContentText("Có lỗi xảy ra: " + e.getMessage() + " " + e.getCause());
             alert.showAndWait();
         }
     }

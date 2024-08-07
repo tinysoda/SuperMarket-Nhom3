@@ -17,10 +17,10 @@ public class CustomerFormController {
     @FXML private TextField nameField;
     @FXML private TextField phoneField;
     @FXML private TextField pointsField;
-    private EmployeeDashboardController employeeDashboardController;
+    private TabContentController tabContentController;
 
-    public void setEmployeeDashboardController(EmployeeDashboardController controller) {
-        this.employeeDashboardController = controller;
+    public void setTabContentController(TabContentController controller) {
+        this.tabContentController = controller;
     }
     public void setCustomer(Customer customer) {
         if (customer != null) {
@@ -66,8 +66,8 @@ public class CustomerFormController {
     private void clearCustomerInfo() {
         nameField.clear();
         pointsField.clear();
-        if (employeeDashboardController != null) {
-            employeeDashboardController.clearCustomerNameField();
+        if (tabContentController != null) {
+            tabContentController.clearCustomerNameField();
         }
     }
 
@@ -110,8 +110,8 @@ public class CustomerFormController {
         }
 
         Customer customer = new Customer(name, phone, points);
-        employeeDashboardController.saveCustomer(customer);
-        employeeDashboardController.setCustomerName(name); // Update the customer name
+        tabContentController.saveCustomer(customer);
+        tabContentController.setCustomerName(name); // Update the customer name
         Stage stage = (Stage) nameField.getScene().getWindow();
         stage.close();
     }
