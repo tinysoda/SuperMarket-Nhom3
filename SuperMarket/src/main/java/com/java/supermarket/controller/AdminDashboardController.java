@@ -75,6 +75,7 @@ public class AdminDashboardController implements Initializable {
     private TableView<BillDetail> adminBillProTable;
     @FXML
     private TableColumn<BillDetail, Integer>  col_bill_pro_id;
+
     @FXML
     private TableColumn<BillDetail, String>  col_bill_pro_name;
     @FXML
@@ -91,7 +92,12 @@ public class AdminDashboardController implements Initializable {
     @FXML
     private TableColumn<Bill, Integer>  col_billing_staff_id;
     @FXML
+    private TableColumn<Bill, String>  col_billing_staff_username;
+
+    @FXML
     private TableColumn<Bill, String>  col_bill_customer_phone;
+    @FXML
+    private TableColumn<Bill, String>  col_bill_customer_name;
     @FXML
     private TableColumn<Bill, Double>  col_bill_total_amount;
     @FXML
@@ -235,6 +241,8 @@ public class AdminDashboardController implements Initializable {
 
     @FXML
     private TableColumn<Employee, String> col_staff_fname;
+@FXML
+    private TableColumn<Bill, String> col_bill_staff_name;
 
     @FXML
     private TableColumn<Employee, Integer> col_staff_id;
@@ -468,14 +476,17 @@ public class AdminDashboardController implements Initializable {
         String sql = "SELECT * FROM bill";
         con = DBUtils.getConnection();
         try {
-            Bill bill = null;
+            Bill bill;
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                bill = new Bill(null, 0, 0, null);
+//                bill = new Bill(null, 0, 0, null);
+                bill = new Bill();
                 bill.setId(rs.getInt("id"));
                 bill.setUserId(rs.getInt("user_id"));
+                bill.setUserFName(rs.getString("user_name"));
                 bill.setCustomerPhone(rs.getString("customer_phone"));
+                bill.setCustomerName(rs.getString("customer_name"));
                 bill.setTotalAmount(rs.getDouble("total_amount"));
                 bill.setCreatedAt(rs.getTimestamp("created_at"));
                 billList.add(bill);
@@ -491,7 +502,9 @@ public class AdminDashboardController implements Initializable {
             ObservableList<Bill> billList = adminBillList();
             col_bill_bill_id.setCellValueFactory(new PropertyValueFactory<>("id"));
             col_billing_staff_id.setCellValueFactory(new PropertyValueFactory<>("userId"));
+            col_billing_staff_username.setCellValueFactory(new PropertyValueFactory<>("userFName"));
             col_bill_customer_phone.setCellValueFactory(new PropertyValueFactory<>("customerPhone"));
+            col_bill_customer_name.setCellValueFactory(new PropertyValueFactory<>("customerName"));
             col_bill_total_amount.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
             col_bill_created_at.setCellValueFactory(new PropertyValueFactory<>("createdAt"));
 

@@ -61,7 +61,7 @@ public class EmployeeDashboardController implements Initializable {
     private void setEmployeeNameFromUsernameForController(String username, TabContentController tabContentController) {
         try {
             Connection connection = DBUtils.getConnection();
-            String query = "SELECT first_name, last_name FROM user WHERE username = ?";
+            String query = "SELECT first_name, last_name FROM user WHERE BINARY username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -106,11 +106,14 @@ public class EmployeeDashboardController implements Initializable {
             TabContentController tabContentController = loader.getController();
             tabContent.setUserData(tabContentController);
 
+
             String username = this.getEmployeeUsername();
             int employeeId = this.getEmployeeId();
             tabContentController.setEmployeeData(employeeId, username, this.password);
 
             Tab newTab = new Tab("Hoá đơn " + tabCount++);
+
+
             newTab.setContent(tabContent);
             newTab.setOnCloseRequest(event -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

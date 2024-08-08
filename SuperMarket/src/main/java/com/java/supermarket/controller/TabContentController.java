@@ -1,4 +1,5 @@
 package com.java.supermarket.controller;
+
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.layout.element.Image;
@@ -14,7 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -24,20 +24,18 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.layout.font.FontProvider;
-import java.io.InputStream;
+
 import java.net.URL;
 import java.sql.*;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -57,30 +55,54 @@ import java.io.File;
 import java.io.IOException;
 
 public class TabContentController implements Initializable {
-    @FXML private Button QRBtn;
-    @FXML private ImageView qrImage;
-    @FXML private Label customerNameFiled;
-    @FXML private Label employeeName;
-    @FXML private BorderPane employeeForm;
-    @FXML private TextField productSearchField;
-    @FXML private ListView<String> suggestionListView;
-    @FXML private Button staffCloseBtn;
-    @FXML private Button staffMinimizeBtn;
-    @FXML private TableView<Product> productTableView;
-    @FXML private TableColumn<Product, String> colTitle;
-    @FXML private TableColumn<Product, Double> colPrice;
-    @FXML private TableColumn<Product, Spinner<Integer>> colQuantity;
-    @FXML private TableColumn<Product, Double> colTotal;
-    @FXML private TableColumn<Product, Button> colDelete;
-    @FXML private Label totalAmountLabel;
-    @FXML private Label staffCustomerPointLabel;
-    @FXML private Button saveOrderButton;
-    @FXML private TextField amountGivenField;
-    @FXML private Label changeAmountLabel;
-    @FXML private Button usePointDiscount;
-    @FXML private Button staffLogoutBtn;
-    @FXML private Button changePassBtn;
-    @FXML private Label customerPointField;
+    @FXML
+    private Button QRBtn;
+    @FXML
+    private ImageView qrImage;
+    @FXML
+    private Label customerNameFiled;
+    @FXML
+    private Label employeeName;
+    @FXML
+    private BorderPane employeeForm;
+    @FXML
+    private TextField productSearchField;
+    @FXML
+    private ListView<String> suggestionListView;
+    @FXML
+    private Button staffCloseBtn;
+    @FXML
+    private Button staffMinimizeBtn;
+    @FXML
+    private TableView<Product> productTableView;
+    @FXML
+    private TableColumn<Product, String> colTitle;
+    @FXML
+    private TableColumn<Product, Double> colPrice;
+    @FXML
+    private TableColumn<Product, Spinner<Integer>> colQuantity;
+    @FXML
+    private TableColumn<Product, Double> colTotal;
+    @FXML
+    private TableColumn<Product, Button> colDelete;
+    @FXML
+    private Label totalAmountLabel;
+    @FXML
+    private Label staffCustomerPointLabel;
+    @FXML
+    private Button saveOrderButton;
+    @FXML
+    private TextField amountGivenField;
+    @FXML
+    private Label changeAmountLabel;
+    @FXML
+    private Button usePointDiscount;
+    @FXML
+    private Button staffLogoutBtn;
+    @FXML
+    private Button changePassBtn;
+    @FXML
+    private Label customerPointField;
 
     private ObservableList<Product> productList;
     private Customer customer;
@@ -167,16 +189,19 @@ public class TabContentController implements Initializable {
             e.printStackTrace();
         }
     }
+
     private void saveBillToDatabase(Bill bill) {
         try {
             Connection connection = DBUtils.getConnection();
-            String billQuery = "INSERT INTO bill (customer_phone, user_id, total_amount, created_at) VALUES (?, ?, ?, ?)";
+            String billQuery = "INSERT INTO bill (customer_phone,customer_name, user_id,user_name, total_amount, created_at) VALUES (?, ?, ?, ?,?,?)";
             PreparedStatement billStatement = connection.prepareStatement(billQuery, Statement.RETURN_GENERATED_KEYS);
             billStatement.setString(1, bill.getCustomerPhone());
-            billStatement.setInt(2, bill.getUserId());
-            billStatement.setDouble(3, bill.getTotalAmount());
+            billStatement.setString(2, bill.getCustomerName());
+            billStatement.setInt(3, bill.getUserId());
+            billStatement.setString(4, bill.getUserFName());
+            billStatement.setDouble(5, bill.getTotalAmount());
             bill.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-            billStatement.setTimestamp(4, bill.getCreatedAt());
+            billStatement.setTimestamp(6, bill.getCreatedAt());
             billStatement.executeUpdate();
             ResultSet generatedKeys = billStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -305,7 +330,7 @@ public class TabContentController implements Initializable {
     private String convertLessThanOneThousand(int number) {
         String current;
 
-        if (number % 100 < 20 && number % 100 > 9){
+        if (number % 100 < 20 && number % 100 > 9) {
             current = teens[number % 10];
             number /= 100;
         } else {
@@ -320,7 +345,9 @@ public class TabContentController implements Initializable {
     }
 
     public String convertNumberToWords(int number) {
-        if (number == 0) { return "không"; }
+        if (number == 0) {
+            return "không";
+        }
 
         String prefix = "";
         String current = "";
@@ -328,7 +355,7 @@ public class TabContentController implements Initializable {
 
         do {
             int n = number % 1000;
-            if (n != 0){
+            if (n != 0) {
                 String s = convertLessThanOneThousand(n);
                 current = s + " " + thousands[place] + " " + current;
             }
@@ -358,7 +385,6 @@ public class TabContentController implements Initializable {
     }
 
 
-
     private void showInvoiceAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Hóa Đơn");
@@ -368,6 +394,7 @@ public class TabContentController implements Initializable {
     }
 
     private String employeeUsername;
+    private String employeeFirstname;
 
     public void clearCustomerNameField() {
         customerNameFiled.setText("");
@@ -378,7 +405,7 @@ public class TabContentController implements Initializable {
     }
 
     public void setEmployeeUsername() {
-        String username=this.getEmployeeUsername();
+        String username = this.getEmployeeUsername();
         setEmployeeNameFromUsername(username);
     }
 
@@ -393,6 +420,7 @@ public class TabContentController implements Initializable {
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
                 employeeName.setText(firstName + " " + lastName);
+                employeeFirstname = firstName;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -469,6 +497,9 @@ public class TabContentController implements Initializable {
 
 
             Bill bill = new Bill(customer.getPhone(), employeeId, totalAmount, billDetails);
+//            TODO: fix employeeUserName
+            bill.setUserFName(employeeUsername);
+            bill.setCustomerName(customer.getName());
             saveBillToDatabase(bill);
 
             double pricePerBill = totalAmount;
@@ -516,6 +547,7 @@ public class TabContentController implements Initializable {
     }
 
     private Map<Integer, Integer> spinnerValues = new HashMap<>();
+
     private void saveSpinnerValues() {
         for (Product product : productList) {
             spinnerValues.put(product.getId(), product.getQuantity());
@@ -550,15 +582,20 @@ public class TabContentController implements Initializable {
 
             private final Button deleteButton = new Button("Xóa");
 
-            @Override protected void updateItem(Button item, boolean empty) {
+            @Override
+            protected void updateItem(Button item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) { setGraphic(null);
-                    setText(null); } else { deleteButton.setOnAction(event -> {
-                    Product product = getTableView().getItems().get(getIndex());
-                    productList.remove(product);
-                    updateTotalAmount();
-                });
-                    setGraphic(deleteButton); setText(null);
+                if (empty) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    deleteButton.setOnAction(event -> {
+                        Product product = getTableView().getItems().get(getIndex());
+                        productList.remove(product);
+                        updateTotalAmount();
+                    });
+                    setGraphic(deleteButton);
+                    setText(null);
                 }
             }
         });
@@ -718,9 +755,14 @@ public class TabContentController implements Initializable {
             boolean productExists = false;
             for (Product existingProduct : productList) {
                 if (existingProduct.getName().equalsIgnoreCase(productName)) {
-                    productExists = true; break; } } if (productExists) {
+                    productExists = true;
+                    break;
+                }
+            }
+            if (productExists) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("Cảnh báo"); alert.setHeaderText(null);
+                alert.setTitle("Cảnh báo");
+                alert.setHeaderText(null);
                 alert.setContentText("Bạn đã thêm sản phẩm này");
                 alert.showAndWait();
             } else {
@@ -734,13 +776,15 @@ public class TabContentController implements Initializable {
                             alert.setHeaderText(null);
                             alert.setContentText("Sản phẩm này đã hết hàng");
                             alert.showAndWait();
-                        } else { product.setQuantity(1);
+                        } else {
+                            product.setQuantity(1);
                             productList.add(product);
                             productTableView.setItems(productList);
                             suggestionListView.setVisible(false);
                             updateTotalAmount();
                             System.out.println("Product added: " + product.getName());
-                        } break;
+                        }
+                        break;
                     }
                 }
             }
@@ -873,7 +917,8 @@ public class TabContentController implements Initializable {
 
     @FXML
     void showCustomerForm(ActionEvent event) {
-        try { FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/CustomerForm.fxml"));
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/CustomerForm.fxml"));
             Parent root = loader.load();
             CustomerFormController controller = loader.getController();
             controller.setTabContentController(this);
@@ -895,9 +940,12 @@ public class TabContentController implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle("Thông tin khách hàng");
             stage.setScene(new Scene(root));
-            stage.show(); } catch (Exception e) { e.printStackTrace();
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
     public void showChangePassForm() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/java/supermarket/changePasswordForm.fxml"));
@@ -956,12 +1004,14 @@ public class TabContentController implements Initializable {
     }
 
 
-    double x; double y;
+    double x;
+    double y;
 
-    public void logout(){
+    public void logout() {
         try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Đăng xuất?"); alert.setHeaderText(null);
+            alert.setTitle("Đăng xuất?");
+            alert.setHeaderText(null);
             alert.setContentText("Bạn có chắc chắn muốn đăng xuất?");
             Optional<ButtonType> option = alert.showAndWait();
             if (option.get().equals(ButtonType.OK)) {
@@ -977,29 +1027,50 @@ public class TabContentController implements Initializable {
                 root.setOnMouseDragged((MouseEvent event) -> {
                     stage.setX(event.getScreenX() - x);
                     stage.setY(event.getScreenY() - y);
-                    stage.setOpacity(.8); });
+                    stage.setOpacity(.8);
+                });
                 root.setOnMouseReleased((MouseEvent event) -> {
-                    stage.setOpacity(1); }); stage.setScene(scene);
-                stage.show(); } else return;
+                    stage.setOpacity(1);
+                });
+                stage.setScene(scene);
+                stage.show();
+            } else return;
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     public void setEmployeeName(String firstName, String lastName) {
         employeeName.setText(firstName + " " + lastName);
     }
 
     private int employeeId;
     private String password;
+    private String firstName;
 
-    public void setEmployeeData(int id, String username,String password) {
+    public void setEmployeeData(int id, String firstName, String username, String password) {
+        this.employeeId = id;
+        this.firstName = firstName;
+        this.employeeUsername = username;
+        this.password = password;
+    }
+
+    public void setEmployeeData(int id, String username, String password) {
         this.employeeId = id;
         this.employeeUsername = username;
         this.password = password;
     }
 
+    public void setEmployeeFirstname(String employeeFirstname) {
+        this.employeeFirstname = employeeFirstname;
+    }
+
     public String getEmployeeUsername() {
         return employeeUsername;
+    }
+
+    public String getEmployeeFirstname() {
+        return employeeFirstname;
     }
 
 }

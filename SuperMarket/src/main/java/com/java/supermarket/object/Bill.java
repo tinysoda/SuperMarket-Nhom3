@@ -6,7 +6,9 @@ import java.util.List;
 public class Bill {
     private int id;
     private String customerPhone;
+    private String customerName;
     private int userId;
+    private String userFName;
     private double totalAmount;
     private Timestamp createdAt;
     private List<BillDetail> billDetails;
@@ -17,6 +19,25 @@ public class Bill {
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.billDetails = billDetails;
+    }
+
+    public Bill() {
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getUserFName() {
+        return userFName;
+    }
+
+    public void setUserFName(String userFName) {
+        this.userFName = userFName;
     }
 
     public int getId() { return id; }

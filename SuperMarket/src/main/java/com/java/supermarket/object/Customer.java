@@ -11,6 +11,10 @@ public class Customer {
         this.points = points;
     }
 
+    public Customer() {
+    }
+    
+
     public String getName() {
         return name;
     }

@@ -110,7 +110,7 @@
                   </AnchorPane>
                </children>
             </AnchorPane>
-            <HBox fx:id="adminStaffManForm" layoutX="24.0" layoutY="24.0" prefHeight="482.0" prefWidth="891.0" spacing="14.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="14.0">
+            <HBox fx:id="adminStaffManForm" layoutX="24.0" layoutY="24.0" prefHeight="482.0" prefWidth="891.0" spacing="14.0" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="14.0">
                <children>
                   <AnchorPane prefHeight="522.0" prefWidth="292.0" stylesheets="@styles/Dashboard.css">
                      <styleClass>
@@ -253,26 +253,29 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" visible="false" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+            <AnchorPane fx:id="adminBillManForm" layoutX="14.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" stylesheets="@styles/Dashboard.css" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                <children>
                   <TableView fx:id="adminBillTable" layoutX="2.4" layoutY="7.0" prefHeight="226.0" prefWidth="893.0" AnchorPane.bottomAnchor="255.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="40.0">
                      <columns>
                         <TableColumn fx:id="col_bill_bill_id" editable="false" prefWidth="96.00004243850708" sortable="false" style="-fx-wrap-text: true" text="Mã hoá đơn" />
                         <TableColumn fx:id="col_billing_staff_id" editable="false" prefWidth="95.19999694824219" sortable="false" style="-fx-wrap-text: true" text="Mã nhân viên" />
+                        <TableColumn fx:id="col_billing_staff_username" editable="false" prefWidth="95.19999694824219" sortable="false" style="-fx-wrap-text: true" text="Nhân viên" />
                         <TableColumn fx:id="col_bill_customer_phone" prefWidth="140.00003051757812" text="SĐT Khách hàng" />
-                        <TableColumn fx:id="col_bill_total_amount" prefWidth="172.79995727539062" text="Tổng tiền" />
-                        <TableColumn fx:id="col_bill_created_at" prefWidth="389.6000061035156" text="Ngày tạo" />
+                        <TableColumn fx:id="col_bill_customer_name" prefWidth="140.00003051757812" text="Tên khách hàng" />
+                        <TableColumn fx:id="col_bill_total_amount" prefWidth="129.0" text="Tổng tiền" />
+                        <TableColumn fx:id="col_bill_created_at" prefWidth="191.0" text="Ngày tạo" />
                      </columns>
                   </TableView>
                   <TextField fx:id="adminBillLookUpTF" layoutX="8.0" layoutY="5.0" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm hoá đơn" styleClass="textfield" stylesheets="@styles/Dashboard.css" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="5.0" />
                   <FontAwesomeIconView glyphName="SEARCH" layoutX="170.0" layoutY="26.0" size="15" />
-                  <TableView fx:id="adminBillProTable" layoutX="1.0" layoutY="286.0" prefHeight="219.0" prefWidth="894.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="286.0">
+                  <TableView fx:id="adminBillProTable" layoutX="2.0" layoutY="287.0" prefHeight="219.0" prefWidth="894.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="287.0">
                      <columns>
                         <TableColumn fx:id="col_bill_pro_id" prefWidth="105.6000165939331" text="Mã sản phẩm" />
-                        <TableColumn fx:id="col_bill_pro_name" prefWidth="169.5999984741211" text="Tên sản phẩm" />
-                        <TableColumn fx:id="col_bill_pro_price" prefWidth="167.20001220703125" text="Giá bán" />
-                        <TableColumn fx:id="col_bill_pro_quantity" prefWidth="208.79989624023438" text="Số lượng" />
-                        <TableColumn fx:id="col_bill_pro_total" prefWidth="240.79986572265625" text="Thành tiền" />
+                        <TableColumn fx:id="col_bill_pro_name" prefWidth="216.0" text="Tên sản phẩm" />
+                        <TableColumn fx:id="col_bill_pro_price" prefWidth="127.0" text="Giá bán" />
+                        <TableColumn fx:id="col_bill_pro_quantity" prefWidth="112.0" text="Số lượng" />
+                        <TableColumn fx:id="col_bill_pro_total" prefWidth="207.0" text="Thành tiền" />
+                        <TableColumn fx:id="col_bill_detail_print" prefWidth="122.0" />
                      </columns>
                   </TableView>
                </children>
