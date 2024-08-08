@@ -110,7 +110,7 @@ public class EmployeeDashboardController implements Initializable {
             int employeeId = this.getEmployeeId();
             tabContentController.setEmployeeData(employeeId, username, this.password);
 
-            Tab newTab = new Tab("Tab " + tabCount++);
+            Tab newTab = new Tab("Hoá đơn " + tabCount++);
             newTab.setContent(tabContent);
             newTab.setOnCloseRequest(event -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

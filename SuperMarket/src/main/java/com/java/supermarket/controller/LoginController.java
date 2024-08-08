@@ -53,7 +53,8 @@ public class LoginController {
     public int userId;
 
     public void Login() {
-        String loginQuery = "SELECT id, username, password FROM user WHERE username=?";
+        String loginQuery = "SELECT id, username, password FROM user WHERE BINARY username = ?";
+
         Alert alert;
         String username = login_username.getText();
         String password = login_password.getText();
