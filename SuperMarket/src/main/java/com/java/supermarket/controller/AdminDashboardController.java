@@ -18,6 +18,9 @@ import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
@@ -31,6 +34,8 @@ import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.awt.*;
+import java.io.File;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -84,6 +89,10 @@ public class AdminDashboardController implements Initializable {
     private TableColumn<BillDetail, Integer>  col_bill_pro_quantity;
     @FXML
     private TableColumn<BillDetail, Double>  col_bill_pro_total;
+
+    @FXML
+    private TableColumn<BillDetail, Void> col_bill_detail_print;
+
 
     @FXML
     private TableView<Bill> adminBillTable;
@@ -289,10 +298,6 @@ public class AdminDashboardController implements Initializable {
     @FXML
     private TableColumn<Category, String> col_category_name;
 
-
-    @FXML
-    private TableColumn<?, ?> col_total_amount;
-
     private Double x;
     private Double y;
 
@@ -480,7 +485,6 @@ public class AdminDashboardController implements Initializable {
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-//                bill = new Bill(null, 0, 0, null);
                 bill = new Bill();
                 bill.setId(rs.getInt("id"));
                 bill.setUserId(rs.getInt("user_id"));
@@ -554,11 +558,71 @@ public class AdminDashboardController implements Initializable {
                     return new SimpleDoubleProperty(0.0).asObject();
                 }
             });
+
+            col_bill_detail_print.setCellFactory(col -> new TableCell<BillDetail, Void>() {
+                private final Button printButton = new Button("BILL");
+
+                {
+                    // Action when the button is clicked
+                    printButton.setOnAction(event -> {
+                        // Get the selected Bill from the adminBillTable
+                        Bill selectedBill = adminBillTable.getSelectionModel().getSelectedItem();
+                        if (selectedBill != null) {
+                            // Display the bill ID in the console
+                            System.out.println("Selected Bill ID for printing: " + selectedBill.getId());
+
+                            // Open the bill PDF using the selected bill ID
+                            openBillPDF(selectedBill.getId());
+                        } else {
+                            System.out.println("No bill selected, cannot print.");
+                        }
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(printButton);
+                    }
+                }
+            });
+
             adminBillProTable.setItems(billDetailList);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void openBillPDF(int billId) {
+        try {
+            // Construct the file path for the bill PDF
+            String filePath = "bills/bill_" + billId + ".pdf";
+
+            // Open the PDF file with the system's default PDF viewer
+            File pdfFile = new File(filePath);
+            if (pdfFile.exists()) {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(pdfFile);
+                } else {
+                    System.out.println("Awt Desktop is not supported!");
+                }
+            } else {
+                System.out.println("File does not exist!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to open the bill PDF.");
+            alert.showAndWait();
+        }
+    }
+
     public void adminBillSelect() {
         Bill bill = adminBillTable.getSelectionModel().getSelectedItem();
         if (bill != null) {
@@ -1551,32 +1615,52 @@ public class AdminDashboardController implements Initializable {
         }
     }
 
+
     public void updateIncomePieChart() {
-        String sql = "SELECT c.name, SUM(b.total_amount) AS category_income " +
+        String totalIncomeSql = "SELECT SUM(total_amount) AS total_income FROM bill";
+        String categoryIncomeSql = "SELECT c.name AS category_name, SUM(b.total_amount) AS category_income " +
                 "FROM bill b " +
-                "JOIN product p ON b.id = p.id " +
+                "JOIN billdetail bd ON b.id = bd.bill_id " +
+                "JOIN product p ON bd.product_id = p.id " +
                 "JOIN category c ON p.category_id = c.id " +
                 "GROUP BY c.name";
+
+        double totalIncome = 0;
         try (Connection con = DBUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             PreparedStatement totalIncomePs = con.prepareStatement(totalIncomeSql);
+             PreparedStatement categoryIncomePs = con.prepareStatement(categoryIncomeSql);
+             ResultSet totalIncomeRs = totalIncomePs.executeQuery();
+             ResultSet categoryIncomeRs = categoryIncomePs.executeQuery()) {
+
+            // Tính tổng doanh thu
+            if (totalIncomeRs.next()) {
+                totalIncome = totalIncomeRs.getDouble("total_income");
+            }
 
             ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-            while (rs.next()) {
-                String category = rs.getString("name");
-                double categoryIncome = rs.getDouble("category_income");
-                pieChartData.add(new PieChart.Data(category, categoryIncome));
+
+            // Thêm dữ liệu vào PieChart và tính toán phần trăm
+            while (categoryIncomeRs.next()) {
+                String category = categoryIncomeRs.getString("category_name");
+                double categoryIncome = categoryIncomeRs.getDouble("category_income");
+                double percentage = (categoryIncome / totalIncome) * 100;
+                pieChartData.add(new PieChart.Data(category + " (" + String.format("%.2f%%", percentage) + ")", categoryIncome));
             }
 
             adminIncomePieChart.setData(pieChartData);
 
-            // Optionally set a title for the chart
+            // Cài đặt tiêu đề và các thuộc tính khác
             adminIncomePieChart.setTitle("Income by Category");
+            adminIncomePieChart.setLegendVisible(true); // Hiển thị chú thích
+            adminIncomePieChart.setLabelsVisible(true); // Hiển thị nhãn trên các mảnh của Pie Chart
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+
+
 
     private String formatCurrency(double amount) {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));

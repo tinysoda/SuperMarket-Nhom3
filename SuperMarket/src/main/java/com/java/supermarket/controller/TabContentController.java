@@ -134,10 +134,8 @@ public class TabContentController implements Initializable {
             alert.showAndWait();
             return;
         }
-
         String initialText = "Dùng điểm giảm giá";
         String toggleText = "Không dùng điểm giảm giá";
-
         try {
             double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
             int customerPoints = customer.getPoints();
@@ -150,6 +148,7 @@ public class TabContentController implements Initializable {
                 totalAmountLabel.setText(formatCurrency(newTotalAmount));
                 discountApplied = true;
                 usePointDiscount.setText(toggleText);
+                updateChangeAmount();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thành công");
                 alert.setHeaderText(null);
@@ -161,6 +160,7 @@ public class TabContentController implements Initializable {
                 discountApplied = false;
                 discountAmount = 0.0;
                 usePointDiscount.setText(initialText);
+                updateChangeAmount();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Thông báo");
                 alert.setHeaderText(null);
@@ -497,7 +497,6 @@ public class TabContentController implements Initializable {
 
 
             Bill bill = new Bill(customer.getPhone(), employeeId, totalAmount, billDetails);
-//            TODO: fix employeeUserName
             bill.setUserFName(employeeUsername);
             bill.setCustomerName(customer.getName());
             saveBillToDatabase(bill);
@@ -593,6 +592,7 @@ public class TabContentController implements Initializable {
                         Product product = getTableView().getItems().get(getIndex());
                         productList.remove(product);
                         updateTotalAmount();
+                        updateChangeAmount();
                     });
                     setGraphic(deleteButton);
                     setText(null);
@@ -656,7 +656,9 @@ public class TabContentController implements Initializable {
 
         amountGivenField.textProperty().addListener((observable, oldValue, newValue) -> {
             formatAmountGivenField(newValue);
-            updateTotalAmount();
+            if (!discountApplied) {
+                updateTotalAmount();
+            }
         });
 
         amountGivenField.addEventFilter(KeyEvent.KEY_TYPED, event -> {
@@ -877,9 +879,20 @@ public class TabContentController implements Initializable {
     }
 
     private void updateTotalAmount() {
-        double totalAmount = productList.stream().mapToDouble(product -> product.getPrice() * product.getQuantity()).sum();
-        totalAmountLabel.setText(formatCurrency(totalAmount));
-        calculateChange();
+        try {
+            double totalAmount = productList.stream()
+                    .mapToDouble(Product::getTotal)
+                    .sum();
+
+            if (discountApplied) {
+                totalAmount -= discountAmount;
+            }
+            updateChangeAmount();
+
+            totalAmountLabel.setText(formatCurrency(totalAmount));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

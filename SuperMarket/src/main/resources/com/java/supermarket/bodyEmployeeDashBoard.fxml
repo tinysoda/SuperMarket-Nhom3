@@ -75,11 +75,6 @@
                             <Font size="20.0" />
                         </font>
                     </Label>
-                    <Label fx:id="customerPointField" layoutX="376.0" layoutY="215.0" prefHeight="18.0" prefWidth="76.0">
-                        <font>
-                            <Font name="Arial Bold" size="16.0" />
-                        </font>
-                    </Label>
                     <Button fx:id="QRBtn" layoutX="12.0" layoutY="210.0" mnemonicParsing="false" onAction="#toggleQRVisibility" prefHeight="31.0" prefWidth="116.0" styleClass="discountBtn" text="Quét mã QR">
                         <font>
                             <Font name="Arial" size="16.0" />

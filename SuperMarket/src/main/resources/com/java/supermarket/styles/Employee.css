@@ -187,7 +187,7 @@ ListView{
 
 .tab-pane .tab {
     -fx-background-color: #bcfd7e;
-    -fx-pref-width: 70px;
+    -fx-pref-width: 105px;
     -fx-pref-height: 35px;
     -fx-font-size: 14px;
     -fx-padding: 10px;
@@ -203,7 +203,7 @@ ListView{
     -fx-background-color: #fafbd8 !important;
     -fx-background-color: transparent;
     -fx-text-fill: green;
-    -fx-font-size: 18px; /* Điều chỉnh kích thước chữ nếu cần */
+    -fx-font-size: 18px;
 }
 
 .tab-plus:hover {
