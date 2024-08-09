@@ -396,10 +396,6 @@ public class TabContentController implements Initializable {
     private String employeeUsername;
     private String employeeFirstname;
 
-    public void clearCustomerNameField() {
-        customerNameFiled.setText("");
-    }
-
     public void setCustomerName(String name) {
         customerNameFiled.setText(name);
     }
@@ -939,7 +935,6 @@ public class TabContentController implements Initializable {
             controller.getPhoneField().setOnKeyReleased(e -> {
                 String phone = controller.getPhoneField().getText();
                 if (!phone.isEmpty()) {
-                    Customer customer = controller.getCustomerByPhone(phone);
                     if (customer != null) {
                         Platform.runLater(() -> {
                             controller.getNameField().setText(customer.getName());

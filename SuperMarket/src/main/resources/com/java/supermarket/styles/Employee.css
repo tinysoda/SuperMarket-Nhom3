@@ -141,11 +141,29 @@
 }
 
 .customerForm{
-    -fx-background-color: #4ce88f;
+    -fx-background-color: #4ce3e8;
+}
+.updateBtn{
+    -fx-background-color: rgba(26, 133, 255, 0.75);
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
 }
 
 .saveCustomerFormBtn {
-    -fx-background-color: #228B22;
+    -fx-background-color: #0057aa;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}
+.clearBtn{
+    -fx-background-color: #ff3ba0;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-text-fill: #fff;
@@ -155,7 +173,7 @@
 }
 
 .saveCustomerFormBtn:hover {
-    -fx-background-color: #3bff3b;
+    -fx-background-color: #8bf1ff;
 }
 
 .colDelete .button{
