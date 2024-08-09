@@ -86,12 +86,6 @@ public class LoginController {
                     if (encryptedEnteredPassword.equals(storedPassword)) {
                         login_button.getScene().getWindow().hide();
 
-                        alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setTitle("Info");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Đăng nhập thành công");
-                        alert.showAndWait();
-
                         FXMLLoader loader = new FXMLLoader();
                         Parent root;
                         if (loggedInUsername.equals("admin")) {

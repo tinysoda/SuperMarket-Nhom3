@@ -15,16 +15,11 @@ import java.util.*;
 import java.io.IOException;
 
 public class EmployeeDashboardController implements Initializable {
-    @FXML
-    private BorderPane employeeForm;
-    @FXML
-    private AnchorPane headerEmployeeController;
-    @FXML
-    private Button staffCloseBtn;
-    @FXML
-    private Button staffMinimizeBtn;
-    @FXML
-    private TabPane billTabPane;
+    @FXML private BorderPane employeeForm;
+    @FXML private AnchorPane headerEmployeeController;
+    @FXML private Button staffCloseBtn;
+    @FXML private Button staffMinimizeBtn;
+    @FXML private TabPane billTabPane;
 
     private String employeeUsername;
     private int employeeId;
@@ -81,7 +76,6 @@ public class EmployeeDashboardController implements Initializable {
     }
 
     private void initializeEmployeeDashboard() {
-        // Ensure the "+" tab is always the last tab and does not trigger when selected
         Tab addTab = new Tab("+");
         addTab.setClosable(false);
         addTab.getStyleClass().add("tab-plus");
@@ -136,7 +130,4 @@ public class EmployeeDashboardController implements Initializable {
         }
     }
 
-    private TabContentController getTabContentController(Tab tab) {
-        return (TabContentController) tab.getContent().getUserData();
-    }
 }

@@ -27,17 +27,29 @@ public class CustomerFormController {
     @FXML private ListView<String> customerListView;
     @FXML private TextField searchCutsomerField;
     @FXML private Button updateCustomerInfor;
-    @FXML private Button clearBtn;
 
     public void setTabContentController(TabContentController controller) {
         this.tabContentController = controller;
+        controller.setCustomerFormController(this);
     }
     public void setCustomer(Customer customer) {
         if (customer != null) {
             nameField.setText(customer.getName());
             phoneField.setText(customer.getPhone());
             pointsField.setText(String.valueOf(customer.getPoints()));
+            nameField.setEditable(false);
+            phoneField.setEditable(false);
+        } else {
+            clearFields();
         }
+    }
+
+    public void clearFields() {
+        nameField.clear();
+        phoneField.clear();
+        pointsField.clear();
+        nameField.setEditable(true);
+        phoneField.setEditable(true);
     }
 
     @FXML
@@ -92,20 +104,7 @@ public class CustomerFormController {
         });
 
         updateCustomerInfor.setOnAction(event -> handleUpdateCustomerInfo());
-        clearBtn.setOnAction(event -> handleClearFields());
-    }
 
-    private void handleClearFields() {
-        nameField.clear();
-        phoneField.clear();
-        pointsField.clear();
-
-        if (tabContentController != null) {
-            tabContentController.setCustomerName("");
-        }
-        nameField.setEditable(true);
-        phoneField.setEditable(true);
-        pointsField.setEditable(false);
     }
 
     private ObservableList<String> searchCustomerByPhone(String phone) {
@@ -153,25 +152,8 @@ public class CustomerFormController {
 
     @FXML
     private void handleUpdateCustomerInfo() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Chỉnh sửa thông tin khách hàng");
-        alert.setHeaderText(null);
-        alert.setContentText("Chọn trường bạn muốn chỉnh sửa: Name, Phone, Points");
-
-        ButtonType buttonName = new ButtonType("Name");
-        ButtonType buttonPhone = new ButtonType("Phone");
-        ButtonType buttonCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(buttonName, buttonPhone, buttonCancel);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent()) {
-            if (result.get() == buttonName) {
-                nameField.setEditable(true);
-            } else if (result.get() == buttonPhone) {
-                phoneField.setEditable(true);
-            }
-        }
+        nameField.setEditable(true);
+        phoneField.setEditable(true);
     }
 
 
@@ -186,7 +168,8 @@ public class CustomerFormController {
     private void handleSave() {
         String name = nameField.getText();
         String phone = phoneField.getText();
-        int points;
+        int points = pointsField.getText().isEmpty() ? 0 : Integer.parseInt(pointsField.getText());
+
 
         if (pointsField.getText().isEmpty()) {
             points = 0;
