@@ -2,8 +2,6 @@ package com.java.supermarket.controller;
 import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.Customer;
 import com.java.supermarket.object.CustomerState;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -54,7 +52,6 @@ public class CustomerFormController {
             pointsField.setEditable(false);
         }
 
-        // Listener for searchCustomerField
         searchCutsomerField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 ObservableList<String> customerSuggestions = searchCustomerByPhone(newValue);
@@ -70,13 +67,14 @@ public class CustomerFormController {
 
         customerListView.setOnMouseClicked(event -> {
             String selectedCustomer = customerListView.getSelectionModel().getSelectedItem();
-            if (selectedCustomer != null && !selectedCustomer.equals("Chưa có khách hàng có số điện thoại này")) {
+            if (selectedCustomer != null && !selectedCustomer.equals("Chưa có khách hàng đó")) {
                 populateCustomerFields(selectedCustomer);
-
-                // Lấy tên khách hàng và cập nhật vào TabContentController
                 String[] parts = selectedCustomer.split(" - ");
-                if (parts.length > 0) {
-                    tabContentController.setCustomerName(parts[0]);  // Cập nhật customerNameFiled với tên khách hàng
+                if (parts.length == 3) {
+                    // Tạo đối tượng Customer và cập nhật TabContentController
+                    Customer selectedCustomerObj = new Customer(parts[0], parts[1], Integer.parseInt(parts[2].replace(" points", "")));
+                    tabContentController.saveCustomer(selectedCustomerObj);  // Cập nhật đối tượng Customer trong TabContentController
+                    tabContentController.setCustomerName(selectedCustomerObj.getName());  // Cập nhật tên khách hàng trên giao diện
                 }
             }
             customerListView.setVisible(false);
@@ -102,13 +100,12 @@ public class CustomerFormController {
         phoneField.clear();
         pointsField.clear();
 
-        // Xóa nội dung trong customerNameFiled của TabContentController
         if (tabContentController != null) {
-            tabContentController.setCustomerName(""); // Xóa nội dung của customerNameFiled
+            tabContentController.setCustomerName("");
         }
         nameField.setEditable(true);
         phoneField.setEditable(true);
-        pointsField.setEditable(true);
+        pointsField.setEditable(false);
     }
 
     private ObservableList<String> searchCustomerByPhone(String phone) {
@@ -139,7 +136,6 @@ public class CustomerFormController {
             String phone = parts[1];
             int points = Integer.parseInt(parts[2].replace(" points", ""));
 
-            // Lưu thông tin vào CustomerState
             CustomerState.setName(name);
             CustomerState.setPhone(phone);
             CustomerState.setPoints(points);
@@ -164,10 +160,9 @@ public class CustomerFormController {
 
         ButtonType buttonName = new ButtonType("Name");
         ButtonType buttonPhone = new ButtonType("Phone");
-        ButtonType buttonPoints = new ButtonType("Points");
         ButtonType buttonCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        alert.getButtonTypes().setAll(buttonName, buttonPhone, buttonPoints, buttonCancel);
+        alert.getButtonTypes().setAll(buttonName, buttonPhone, buttonCancel);
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent()) {
@@ -175,8 +170,6 @@ public class CustomerFormController {
                 nameField.setEditable(true);
             } else if (result.get() == buttonPhone) {
                 phoneField.setEditable(true);
-            } else if (result.get() == buttonPoints) {
-                pointsField.setEditable(true);
             }
         }
     }
@@ -196,7 +189,7 @@ public class CustomerFormController {
         int points;
 
         if (pointsField.getText().isEmpty()) {
-            points = 0; // Set default points to 0 if the points field is empty
+            points = 0;
         } else {
             points = Integer.parseInt(pointsField.getText());
         }
@@ -225,7 +218,7 @@ public class CustomerFormController {
             preparedStatement.setString(1, phone);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            return resultSet.next(); // Returns true if a record is found
+            return resultSet.next();
         } catch (Exception e) {
             e.printStackTrace();
             return false;

@@ -153,6 +153,11 @@
     -fx-font-weight: bold;
 }
 
+.updateBtn:hover{
+    -fx-background-color: rgb(67, 36, 255);
+
+}
+
 .saveCustomerFormBtn {
     -fx-background-color: #0057aa;
     -fx-background-radius: 8px;
@@ -162,14 +167,21 @@
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
 }
+
+.saveCustomerFormBtn:hover{
+    -fx-background-color: rgba(62, 153, 255, 0.73);
+}
 .clearBtn{
-    -fx-background-color: #ff3ba0;
+    -fx-background-color: #b340ff;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-text-fill: #fff;
     -fx-font-size: 14px;
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
+}
+.clearBtn:hover{
+    -fx-background-color: #b67bff;
 }
 
 .saveCustomerFormBtn:hover {
@@ -195,6 +207,18 @@ ListView{
     -fx-font-size: 17px;
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
+}
+.customerListView{
+    -fx-background-color:#8AE308;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+    -fx-font-weight: bold;
+}
+
+.searchCutsomerField{
+    -fx-border-radius: 20px;
+    -fx-border-color: linear-gradient(to bottom right, #0fbbff, #1c6dff);
+    -fx-border-width: 2px;
 }
 
 .bill_field{

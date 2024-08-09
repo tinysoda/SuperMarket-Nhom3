@@ -88,8 +88,6 @@ public class TabContentController implements Initializable {
     @FXML
     private Label totalAmountLabel;
     @FXML
-    private Label staffCustomerPointLabel;
-    @FXML
     private Button saveOrderButton;
     @FXML
     private TextField amountGivenField;
@@ -101,8 +99,6 @@ public class TabContentController implements Initializable {
     private Button staffLogoutBtn;
     @FXML
     private Button changePassBtn;
-    @FXML
-    private Label customerPointField;
 
     private ObservableList<Product> productList;
     private Customer customer;

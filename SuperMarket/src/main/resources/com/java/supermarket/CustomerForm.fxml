@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="201.0" prefWidth="628.0" styleClass="customerForm" stylesheets="@styles/Employee.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.CustomerFormController">
+<AnchorPane prefHeight="201.0" prefWidth="752.0" styleClass="customerForm" stylesheets="@styles/Employee.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.java.supermarket.controller.CustomerFormController">
    <children>
         <Label layoutX="82.0" layoutY="14.0" text="Thông tin khách hàng">
          <font>
@@ -30,11 +30,11 @@
             <Font name="Tahoma Bold" size="15.0" />
          </font></Label>
           <TextField fx:id="pointsField" layoutX="157.0" layoutY="107.0" />
-        <Button fx:id="saveCustomerForm" layoutX="207.0" layoutY="152.0" onAction="#handleSave" prefHeight="26.0" prefWidth="99.0" styleClass="saveCustomerFormBtn" stylesheets="@styles/Employee.css" text="Lưu" />
+        <Button fx:id="saveCustomerForm" layoutX="326.0" layoutY="153.0" onAction="#handleSave" prefHeight="26.0" prefWidth="99.0" styleClass="saveCustomerFormBtn" stylesheets="@styles/Employee.css" text="Lưu" />
       <FontAwesomeIconView glyphName="USER" layoutX="26.0" layoutY="38.0" size="35" />
-      <TextField fx:id="searchCutsomerField" layoutX="344.0" layoutY="12.0" prefHeight="26.0" prefWidth="239.0" promptText="Tìm kiếm thông tin khách hàng" />
-      <ListView fx:id="customerListView" layoutX="344.0" layoutY="40.0" prefHeight="86.0" prefWidth="239.0" visible="false" />
-      <Button fx:id="updateCustomerInfor" layoutX="344.0" layoutY="152.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="86.0" styleClass="updateBtn" stylesheets="@styles/Employee.css" text="Update" />
-      <Button fx:id="clearBtn" layoutX="464.0" layoutY="153.0" mnemonicParsing="false" styleClass="clearBtn" stylesheets="@styles/Employee.css" text="Clear" />
+      <TextField fx:id="searchCutsomerField" layoutX="344.0" layoutY="12.0" prefHeight="26.0" prefWidth="398.0" promptText="Tìm kiếm thông tin khách hàng" styleClass="searchCutsomerField" stylesheets="@styles/Employee.css" />
+      <ListView fx:id="customerListView" layoutX="344.0" layoutY="40.0" prefHeight="86.0" prefWidth="397.0" styleClass="customerListView" stylesheets="@styles/Employee.css" visible="false" />
+      <Button fx:id="updateCustomerInfor" layoutX="188.0" layoutY="153.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="86.0" styleClass="updateBtn" stylesheets="@styles/Employee.css" text="Update" />
+      <Button fx:id="clearBtn" layoutX="482.0" layoutY="153.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="99.0" styleClass="clearBtn" stylesheets="@styles/Employee.css" text="Clear" />
    </children>
 </AnchorPane>
