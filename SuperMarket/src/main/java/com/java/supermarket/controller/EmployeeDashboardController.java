@@ -77,8 +77,7 @@ public class EmployeeDashboardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // This method is intentionally left blank to ensure no initialization logic runs here
-        // The real initialization happens in setEmployeeData method
+
     }
 
     private void initializeEmployeeDashboard() {

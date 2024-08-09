@@ -214,6 +214,9 @@ ListView{
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
 }
+.totalAmountLabel .changeAmountLabel{
+    -fx-padding: 0 0 0 10;
+}
 
 .searchCutsomerField{
     -fx-border-radius: 20px;

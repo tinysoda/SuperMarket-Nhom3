@@ -65,7 +65,7 @@
                             <Font size="18.0" />
                         </font>
                     </TextField>
-                    <Label fx:id="totalAmountLabel" layoutX="208.0" layoutY="61.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;">
+                    <Label fx:id="totalAmountLabel" layoutX="208.0" layoutY="61.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;" styleClass="totalAmountLabel" stylesheets="@styles/Employee.css">
                         <font>
                             <Font size="18.0" />
                         </font>
