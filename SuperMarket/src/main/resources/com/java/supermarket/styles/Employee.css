@@ -214,7 +214,10 @@ ListView{
     -fx-font-family: "Arial";
     -fx-font-weight: bold;
 }
-.totalAmountLabel .changeAmountLabel{
+.totalAmountLabel{
+    -fx-padding: 0 0 0 10;
+}
+.changeAmountLabel{
     -fx-padding: 0 0 0 10;
 }
 

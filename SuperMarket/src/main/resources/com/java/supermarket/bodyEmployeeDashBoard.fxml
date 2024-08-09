@@ -70,7 +70,7 @@
                             <Font size="18.0" />
                         </font>
                     </Label>
-                    <Label fx:id="changeAmountLabel" layoutX="208.0" layoutY="162.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;">
+                    <Label fx:id="changeAmountLabel" layoutX="208.0" layoutY="162.0" prefHeight="27.0" prefWidth="206.0" style="-fx-background-color: #fff;" styleClass="changeAmountLabel" stylesheets="@styles/Employee.css">
                         <font>
                             <Font size="18.0" />
                         </font>
