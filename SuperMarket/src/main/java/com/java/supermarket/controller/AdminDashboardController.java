@@ -2,6 +2,8 @@ package com.java.supermarket.controller;
 
 import com.java.supermarket.DBUtils;
 import com.java.supermarket.object.*;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -560,9 +562,17 @@ public class AdminDashboardController implements Initializable {
             });
 
             col_bill_detail_print.setCellFactory(col -> new TableCell<BillDetail, Void>() {
-                private final Button printButton = new Button("BILL");
+                private final Button printButton = new Button("In hoá đơn");
 
                 {
+                    printButton.getStyleClass().add("print-button");
+                    FontAwesomeIconView printIcon = new FontAwesomeIconView(FontAwesomeIcon.PRINT);
+                    printIcon.getStyleClass().add("print-icon");
+                    printIcon.setSize("1.5em");  // Adjust size as needed
+                    printButton.setGraphicTextGap(8);
+                    printButton.setGraphic(printIcon);
+                    printButton.setText("In hoá đơn");
+                    printButton.setContentDisplay(ContentDisplay.LEFT);
                     // Action when the button is clicked
                     printButton.setOnAction(event -> {
                         // Get the selected Bill from the adminBillTable

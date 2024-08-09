@@ -274,8 +274,8 @@
                         <TableColumn fx:id="col_bill_pro_name" prefWidth="216.0" text="Tên sản phẩm" />
                         <TableColumn fx:id="col_bill_pro_price" prefWidth="127.0" text="Giá bán" />
                         <TableColumn fx:id="col_bill_pro_quantity" prefWidth="112.0" text="Số lượng" />
-                        <TableColumn fx:id="col_bill_pro_total" prefWidth="207.0" text="Thành tiền" />
-                        <TableColumn fx:id="col_bill_detail_print" prefWidth="122.0" />
+                        <TableColumn fx:id="col_bill_pro_total" prefWidth="184.0" text="Thành tiền" />
+                        <TableColumn fx:id="col_bill_detail_print" prefWidth="145.0" />
                      </columns>
                   </TableView>
                </children>
