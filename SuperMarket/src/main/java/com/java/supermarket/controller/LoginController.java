@@ -53,7 +53,7 @@ public class LoginController {
     public int userId;
 
     public void Login() {
-        String loginQuery = "SELECT id, username, password FROM user WHERE BINARY username = ?";
+        String loginQuery = "SELECT id, username, password, role FROM user WHERE BINARY username = ?";
 
         Alert alert;
         String username = login_username.getText();
@@ -78,6 +78,7 @@ public class LoginController {
                     int userId = rs.getInt("id");
                     String loggedInUsername = rs.getString("username");
                     String storedPassword = rs.getString("password");
+                    String userRole = rs.getString("role");
 
                     // Encrypt the entered password
                     String encryptedEnteredPassword = encryptPassword(password);
@@ -88,17 +89,17 @@ public class LoginController {
 
                         FXMLLoader loader = new FXMLLoader();
                         Parent root;
-                        if (loggedInUsername.equals("admin")) {
+                        if (userRole.equalsIgnoreCase("manager")) {
                             loader.setLocation(getClass().getResource("/com/java/supermarket/adminDashboard.fxml"));
                         } else {
                             loader.setLocation(getClass().getResource("/com/java/supermarket/employeeDashboard.fxml"));
                         }
                         root = loader.load();
 
-                        if (!loggedInUsername.equals("admin")) {
+                        if (!userRole.equalsIgnoreCase("manager")) {
                             EmployeeDashboardController controller = loader.getController();
                             controller.setEmployeeData(userId, loggedInUsername, storedPassword);
-                            UserSession.getInstance().setUserData(userId, loggedInUsername, storedPassword);
+                            UserSession.getInstance().setUserData(userId, loggedInUsername, storedPassword, userRole);
                         }
 
                         Stage stage = new Stage();

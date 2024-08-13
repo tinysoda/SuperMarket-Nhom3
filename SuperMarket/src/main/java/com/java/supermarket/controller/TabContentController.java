@@ -500,7 +500,7 @@ public class TabContentController implements Initializable {
     private void showInvoiceAlert() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Hóa Đơn");
-        alert.setHeaderText("Hóa Đơn Bán Hàng");
+        alert.setHeaderText(null);
         alert.setContentText("Tạo hóa đơn thành công");
         alert.showAndWait();
     }
