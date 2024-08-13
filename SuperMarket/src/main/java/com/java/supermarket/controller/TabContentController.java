@@ -850,17 +850,45 @@ public class TabContentController implements Initializable {
 
     @FXML
     private void handleDeleteCustomer() {
-        this.customer = null;
-        customerNameFiled.setText("");
-        deleteCustomerBtn.setVisible(false);
-        updateCustomerBtn.setVisible(false);
-        customerPointField.setVisible(false);
-        customerPoint.setVisible(false);
-        // Clear the fields in CustomerFormController
-        if (customerFormController != null) {
-            customerFormController.clearFields();
+        if (customer != null) {
+            // Nếu đã áp dụng điểm giảm giá
+            if (discountApplied) {
+                // Cộng lại số tiền đã giảm vào totalAmountLabel
+                try {
+                    double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
+                    double originalTotalAmount = totalAmount + discountAmount;
+                    totalAmountLabel.setText(formatCurrency(originalTotalAmount));
+
+                    // Đặt lại các biến liên quan đến giảm giá
+                    discountApplied = false;
+                    discountAmount = 0.0;
+
+                    // Cập nhật lại nhãn
+                    customerPoint.setText(String.valueOf(customer.getPoints()));
+                    customerPointField.setText("Điểm tích lũy của khách hàng: ");
+                    usePointDiscount.setText("Dùng điểm giảm giá");
+
+                    updateChangeAmount();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Có lỗi xảy ra khi hủy giảm giá.");
+                    alert.showAndWait();
+                }
+            }
+
+            // Xóa khách hàng
+            customer = null;
+            deleteCustomerBtn.setVisible(false);
+            updateCustomerBtn.setVisible(false);
+            customerPointField.setVisible(false);
+            customerPoint.setVisible(false);
+            customerNameFiled.setText(" ");
         }
     }
+
     public void setCustomerFormController(CustomerFormController customerFormController) {
         this.customerFormController = customerFormController;
     }

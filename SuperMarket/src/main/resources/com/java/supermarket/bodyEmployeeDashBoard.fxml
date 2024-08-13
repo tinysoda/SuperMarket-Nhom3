@@ -28,54 +28,54 @@
                     <String fx:value="bill_field" />
                 </styleClass>
                 <children>
-                    <Label fx:id="employeeName" layoutX="538.0" layoutY="14.0" prefHeight="23.0" prefWidth="178.0">
+                    <Label fx:id="employeeName" layoutX="553.0" layoutY="13.0" prefHeight="23.0" prefWidth="178.0">
                         <font>
-                            <Font name="Arial Bold" size="16.0" />
+                            <Font name="Arial Bold" size="20.0" />
                         </font>
                     </Label>
                     <Label fx:id="customerNameFiled" layoutX="215.0" layoutY="14.0" prefHeight="23.0" prefWidth="221.0">
                         <font>
-                            <Font name="Arial Bold" size="16.0" />
+                            <Font name="Arial Bold" size="18.0" />
                         </font>
                     </Label>
                     <Label layoutX="31.0" layoutY="106.0" text="Tiền khách đưa:">
                         <font>
-                            <Font name="Arial" size="20.0" />
+                            <Font name="Arial" size="23.0" />
                         </font>
                     </Label>
-                    <Label layoutX="86.0" layoutY="63.0" text="Tổng tiền:">
+                    <Label layoutX="94.0" layoutY="61.0" text="Tổng tiền:">
                         <font>
-                            <Font name="Arial" size="20.0" />
+                            <Font name="Arial" size="23.0" />
                         </font>
                     </Label>
-                    <Label layoutX="76.0" layoutY="152.0" text="Tiền trả lại:">
+                    <Label layoutX="80.0" layoutY="150.0" text="Tiền trả lại:">
                         <font>
-                            <Font name="Arial" size="20.0" />
+                            <Font name="Arial" size="23.0" />
                         </font>
                     </Label>
                     <TextField fx:id="amountGivenField" layoutX="207.0" layoutY="98.0" onKeyReleased="#calculateChange" prefHeight="40.0" prefWidth="488.0">
                         <font>
-                            <Font size="18.0" />
+                            <Font name="System Bold" size="20.0" />
                         </font>
                     </TextField>
                     <Label fx:id="totalAmountLabel" layoutX="208.0" layoutY="61.0" prefHeight="27.0" prefWidth="488.0" style="-fx-background-color: #fff;" styleClass="totalAmountLabel" stylesheets="@styles/Employee.css">
                         <font>
-                            <Font size="18.0" />
+                            <Font name="System Bold" size="20.0" />
                         </font>
                     </Label>
                     <Label fx:id="changeAmountLabel" layoutX="208.0" layoutY="150.0" prefHeight="27.0" prefWidth="488.0" style="-fx-background-color: #fff;" styleClass="changeAmountLabel" stylesheets="@styles/Employee.css">
                         <font>
-                            <Font size="18.0" />
+                            <Font name="System Bold" size="20.0" />
                         </font>
                     </Label>
                   <Label layoutX="451.0" layoutY="15.0" text="Thu ngân: ">
                       <font>
-                          <Font name="Arial Bold" size="16.0" />
+                          <Font name="Arial Bold" size="20.0" />
                       </font>
                   </Label>
                   <Button fx:id="customerInfoButton" layoutX="46.0" layoutY="11.0" mnemonicParsing="false" onAction="#showCustomerForm" prefHeight="27.0" prefWidth="122.0" styleClass="customerFormBtn" text="Khách hàng">
                       <font>
-                          <Font name="Arial Bold" size="16.0" />
+                          <Font name="Arial Bold" size="18.0" />
                       </font>
                   </Button>
                <Button fx:id="deleteCustomerBtn" layoutX="169.0" layoutY="10.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="38.0">
@@ -88,19 +88,19 @@
                      <FontAwesomeIconView fill="WHITE" size="18" text="" />
                   </graphic>
                </Button>
-               <Label fx:id="customerPointField" layoutX="14.0" layoutY="182.0" prefHeight="40.0" prefWidth="282.0" text="Điểm tích lũy của khách hàng:">
+               <Label fx:id="customerPointField" layoutX="14.0" layoutY="182.0" prefHeight="40.0" prefWidth="315.0" text="Điểm tích lũy của khách hàng:">
                   <font>
-                     <Font name="Arial" size="20.0" />
+                     <Font name="Arial" size="23.0" />
                   </font>
                </Label>
-               <Label fx:id="customerPoint" layoutX="291.0" layoutY="190.0" prefHeight="23.0" prefWidth="240.0">
+               <Label fx:id="customerPoint" layoutX="331.0" layoutY="190.0" prefHeight="23.0" prefWidth="240.0">
                   <font>
-                     <Font name="Arial" size="20.0" />
+                     <Font name="Arial Bold" size="20.0" />
                   </font>
                </Label>
                     <Button fx:id="usePointDiscount" layoutX="368.0" layoutY="228.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="326.0" styleClass="discountBtn" text="DÙNG ĐIỂM TÍCH LŨY">
                         <font>
-                            <Font name="Arial" size="16.0" />
+                            <Font name="Arial" size="18.0" />
                         </font>
                     </Button>
                 </children>
@@ -111,7 +111,7 @@
             </AnchorPane>
             <TextField fx:id="productSearchField" layoutX="18.0" layoutY="9.0" prefHeight="63.0" prefWidth="498.0" promptText="Tìm kiếm sản phẩm" styleClass="search_field">
                 <font>
-                    <Font name="Arial" size="15.0" />
+                    <Font name="Arial" size="18.0" />
                 </font>
             </TextField>
             <ListView fx:id="suggestionListView" layoutX="18.0" layoutY="75.0" prefHeight="230.0" prefWidth="498.0" visible="false" />
