@@ -277,11 +277,11 @@
                         <TableColumn fx:id="col_bill_pro_total" prefWidth="227.0" text="Thành tiền" />
                      </columns>
                   </TableView>
-                  <Button fx:id="printButton" layoutX="798.0" layoutY="345.0" mnemonicParsing="false" prefHeight="130.0" prefWidth="87.0" styleClass="print-button" />
-                  <FontAwesomeIconView fill="WHITE" glyphName="PRINT" layoutX="830.0" layoutY="443.0" size="25" />
+                  <Button fx:id="btnPrintBill" layoutX="798.0" layoutY="345.0" mnemonicParsing="false" onAction="#adminPrintBill" prefHeight="130.0" prefWidth="87.0" styleClass="print-button" />
+                  <FontAwesomeIconView fill="WHITE" glyphName="PRINT" layoutX="825.0" layoutY="447.0" size="35" />
                   <Label layoutX="805.0" layoutY="379.0" text="In hoá đơn" textFill="WHITE">
                      <font>
-                        <Font name="Tahoma" size="15.0" />
+                        <Font name="Tahoma Bold" size="13.0" />
                      </font>
                   </Label>
                </children>
