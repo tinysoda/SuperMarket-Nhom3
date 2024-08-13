@@ -140,7 +140,7 @@ public class TabContentController implements Initializable {
                 usePointDiscount.setText(initialText);
 
                 customerPoint.setText(String.valueOf(customerPoints));
-                customerPointField.setText("Điểm tích lũy của khách hàng");
+                customerPointField.setText("Điểm tích lũy của khách hàng: ");
 
                 updateChangeAmount();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
