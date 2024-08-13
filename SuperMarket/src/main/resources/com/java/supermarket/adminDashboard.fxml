@@ -268,16 +268,22 @@
                   </TableView>
                   <TextField fx:id="adminBillLookUpTF" layoutX="8.0" layoutY="5.0" prefHeight="33.0" prefWidth="188.0" promptText="Tìm kiếm hoá đơn" styleClass="textfield" stylesheets="@styles/Dashboard.css" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="5.0" />
                   <FontAwesomeIconView glyphName="SEARCH" layoutX="170.0" layoutY="26.0" size="15" />
-                  <TableView fx:id="adminBillProTable" layoutX="2.0" layoutY="287.0" prefHeight="219.0" prefWidth="894.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="287.0">
+                  <TableView fx:id="adminBillProTable" layoutX="2.0" layoutY="287.0" prefHeight="221.0" prefWidth="782.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="115.0" AnchorPane.topAnchor="287.0">
                      <columns>
                         <TableColumn fx:id="col_bill_pro_id" prefWidth="105.6000165939331" text="Mã sản phẩm" />
                         <TableColumn fx:id="col_bill_pro_name" prefWidth="216.0" text="Tên sản phẩm" />
                         <TableColumn fx:id="col_bill_pro_price" prefWidth="127.0" text="Giá bán" />
                         <TableColumn fx:id="col_bill_pro_quantity" prefWidth="112.0" text="Số lượng" />
-                        <TableColumn fx:id="col_bill_pro_total" prefWidth="184.0" text="Thành tiền" />
-                        <TableColumn fx:id="col_bill_detail_print" prefWidth="145.0" />
+                        <TableColumn fx:id="col_bill_pro_total" prefWidth="227.0" text="Thành tiền" />
                      </columns>
                   </TableView>
+                  <Button fx:id="printButton" layoutX="798.0" layoutY="345.0" mnemonicParsing="false" prefHeight="130.0" prefWidth="87.0" styleClass="print-button" />
+                  <FontAwesomeIconView fill="WHITE" glyphName="PRINT" layoutX="830.0" layoutY="443.0" size="25" />
+                  <Label layoutX="805.0" layoutY="379.0" text="In hoá đơn" textFill="WHITE">
+                     <font>
+                        <Font name="Tahoma" size="15.0" />
+                     </font>
+                  </Label>
                </children>
                <styleClass>
                   <String fx:value="white-bg" />

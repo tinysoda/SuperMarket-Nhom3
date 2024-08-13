@@ -172,12 +172,14 @@
     -fx-background-color: #1669bd;
 }
 .print-button{
-    -fx-background-color: #ED1D24;
+    -fx-background-color: #1669bd;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
     -fx-text-fill: #fff;
     -fx-font-size: 14px;
     -fx-font-family: "Arial";
+    -fx-content-display:top ;
+    /*-fx-padding: 5 5 15 5;*/
 }
 .print-icon{
     -fx-fill: white;
