@@ -88,12 +88,12 @@
                      <FontAwesomeIconView fill="WHITE" size="18" text="" />
                   </graphic>
                </Button>
-               <Label fx:id="customerPointField" layoutX="14.0" layoutY="182.0" prefHeight="40.0" prefWidth="282.0" text="Điểm khách hàng:">
+               <Label fx:id="customerPointField" layoutX="14.0" layoutY="182.0" prefHeight="40.0" prefWidth="282.0" text="Điểm tích lũy của khách hàng:">
                   <font>
                      <Font name="Arial" size="20.0" />
                   </font>
                </Label>
-               <Label fx:id="customerPoint" layoutX="206.0" layoutY="190.0" prefHeight="23.0" prefWidth="240.0">
+               <Label fx:id="customerPoint" layoutX="291.0" layoutY="190.0" prefHeight="23.0" prefWidth="240.0">
                   <font>
                      <Font name="Arial" size="20.0" />
                   </font>
@@ -124,7 +124,7 @@
                     <TableColumn fx:id="colDelete" prefWidth="201.5999755859375" styleClass="colDelete" />
                 </columns>
             </TableView>
-            <Button fx:id="saveOrderButton" layoutX="490.0" layoutY="629.0" mnemonicParsing="false" onAction="#saveOrder" prefHeight="40.0" prefWidth="430.0" styleClass="saveOrderButton" stylesheets="@styles/Employee.css" text="THANH TOÁN">
+            <Button fx:id="saveOrderButton" layoutX="556.0" layoutY="635.0" mnemonicParsing="false" onAction="#saveOrder" prefHeight="40.0" prefWidth="430.0" styleClass="saveOrderButton" stylesheets="@styles/Employee.css" text="THANH TOÁN">
                 <font>
                     <Font name="Arial Bold" size="16.0" />
                 </font>
