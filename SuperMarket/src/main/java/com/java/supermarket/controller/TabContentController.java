@@ -112,6 +112,7 @@ public class TabContentController implements Initializable {
         try {
             double totalAmount = NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).parse(totalAmountLabel.getText()).doubleValue();
             int customerPoints = customer.getPoints();
+            //Áp dụng giảm giá:
             if (!discountApplied) {
                 discountAmount = customerPoints;
                 if (discountAmount > totalAmount) {
@@ -132,6 +133,7 @@ public class TabContentController implements Initializable {
                 alert.setHeaderText(null);
                 alert.setContentText("Đã áp dụng điểm giảm giá thành công!");
                 alert.showAndWait();
+                //Hủy bỏ giảm giá:
             } else {
                 double originalTotalAmount = totalAmount + discountAmount;
                 totalAmountLabel.setText(formatCurrency(originalTotalAmount));
@@ -172,6 +174,7 @@ public class TabContentController implements Initializable {
         }
     }
 
+    //Điểm khách hàng nhận được sau khi mua hàng
     private void updateCustomerPoints(String customerPhone, int pointsEarned) {
         try {
             Connection connection = DBUtils.getConnection();
@@ -255,10 +258,6 @@ public class TabContentController implements Initializable {
                 return;
             }
 
-            System.out.println("Employee Username: " + employeeUsername);
-            System.out.println("Employee ID: " + employeeId);
-
-
             Bill bill = new Bill(customer.getPhone(), employeeId, totalAmount, billDetails);
             bill.setUserFName(employeeUsername);
             bill.setCustomerName(customer.getName());
@@ -284,7 +283,7 @@ public class TabContentController implements Initializable {
             productList.clear();
             productTableView.refresh();
             totalAmountLabel.setText(formatCurrency(0));
-            amountGivenField.setText("0");
+            amountGivenField.setText(" ");
             changeAmountLabel.setText(formatCurrency(0));
             customerNameFiled.setText(" ");
             usePointDiscount.setText("Dùng điểm giảm giá");
@@ -355,6 +354,20 @@ public class TabContentController implements Initializable {
         }
         return product;
     }
+
+    private void updateProductStock(int productId, int newStock) {
+        try {
+            Connection connection = DBUtils.getConnection();
+            String query = "UPDATE product SET quantity = ? WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, newStock);
+            preparedStatement.setInt(2, productId);
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     //SAVE BILL END
 
     //PRINT BILL TO PDF START
@@ -363,12 +376,15 @@ public class TabContentController implements Initializable {
         String fontPath = "src/main/resources/fonts/ARIAL.TTF";
         String logoPath = "src/main/resources/com/java/supermarket/images/bigclogo.png";
 
+        //Tạo đối tượng thư mục
         File dir = new File("bills");
         if (!dir.exists()) {
+            //tạo mới thư mục
             dir.mkdirs();
         }
 
         try (PdfWriter writer = new PdfWriter(filePath); PdfDocument pdf = new PdfDocument(writer); Document document = new Document(pdf)) {
+            //sử dụng phông chữ Arial với mã hóa UTF-8
             PdfFont font = PdfFontFactory.createFont(fontPath, "Identity-H", true);
             document.setFont(font);
 
@@ -393,6 +409,7 @@ public class TabContentController implements Initializable {
             document.add(new Paragraph("Tên người thanh toán: " + employeeName.getText()).setFont(font));
             document.add(new Paragraph("Tên khách hàng: " + customer.getName()).setFont(font));
 
+            //Tạo bảng với 4 cột (STT, tên sản phẩm, số lượng, giá tiền) với chiều rộng được tính theo phần trăm.
             Table table = new Table(UnitValue.createPercentArray(new float[]{1, 3, 2, 2})).useAllAvailableWidth();
             table.addHeaderCell(new Cell().add(new Paragraph("STT").setFont(font)));
             table.addHeaderCell(new Cell().add(new Paragraph("Tên sản phẩm").setFont(font)));
@@ -433,27 +450,52 @@ public class TabContentController implements Initializable {
     }
 
     //Convert money to word start
-    private static final String[] units = {"", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"};
+    private static final String[] units = {"không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"};
     private static final String[] teens = {"mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín"};
     private static final String[] tens = {"", "", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"};
     private static final String[] thousands = {"", "nghìn", "triệu", "tỷ"};
 
+    //chuyển đổi một số nguyên có giá trị từ 1 đến 999 thành dạng chữ
     private String convertLessThanOneThousand(int number) {
-        String current;
+        String current = "";
 
-        if (number % 100 < 20 && number % 100 > 9) {
-            current = teens[number % 10];
-            number /= 100;
-        } else {
-            current = units[number % 10];
-            number /= 10;
-
-            current = tens[number % 10] + " " + current;
-            number /= 10;
+        // Xử lý hàng trăm
+        if (number >= 100) {
+            current += units[number / 100] + " trăm";
+            number %= 100;
         }
-        if (number == 0) return current.trim();
-        return units[number] + " trăm " + current.trim();
+
+        // Xử lý hàng chục
+        if (number >= 20) {
+            current += " " + tens[number / 10];
+            int lastDigit = number % 10;
+            if (lastDigit == 5) {
+                current += " lăm"; // Số tận cùng là 5 và hàng chục > 0
+            } else if (lastDigit == 4 && number / 10 > 1) {
+                current += " tư"; // Số tận cùng là 4 và hàng chục >= 2
+            } else if (lastDigit != 0) {
+                current += " " + units[lastDigit];
+            }
+        } else if (number >= 10) {
+            int lastDigit = number % 10;
+            if (number == 10) {
+                current += " mười";
+            } else if (number == 15) {
+                current += " mười lăm"; // Đặc biệt xử lý số 15
+            } else {
+                current += " " + teens[lastDigit];
+            }
+        } else if (number > 0) {
+            if (!current.isEmpty()) {
+                current += " linh " + units[number];
+            } else {
+                current += units[number];
+            }
+        }
+
+        return current.trim();
     }
+
 
     public String convertNumberToWords(int number) {
         if (number == 0) {
@@ -583,19 +625,6 @@ public class TabContentController implements Initializable {
             e.printStackTrace();
         }
         return stock;
-    }
-
-    private void updateProductStock(int productId, int newStock) {
-        try {
-            Connection connection = DBUtils.getConnection();
-            String query = "UPDATE product SET quantity = ? WHERE id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, newStock);
-            preparedStatement.setInt(2, productId);
-            preparedStatement.executeUpdate();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void saveSpinnerValues() {

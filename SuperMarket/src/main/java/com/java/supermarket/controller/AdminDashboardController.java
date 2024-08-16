@@ -42,11 +42,10 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.List;
 
 
 public class AdminDashboardController implements Initializable {
@@ -1637,53 +1636,94 @@ public class AdminDashboardController implements Initializable {
                 e.printStackTrace();
             }
         }
+    private Map<String, Double> otherCategoryDetails = new HashMap<>(); // Lưu chi tiết các mục nhỏ
+    private Alert otherCategoryAlert; // Để lưu trữ alert hiển thị cho mục "Other"
+    private double totalIncome = 0; // Khai báo biến totalIncome ở cấp lớp
 
+    public void updateIncomePieChart() {
+        String totalIncomeSql = "SELECT SUM(bd.quantity * p.price) AS total_income FROM billdetail bd JOIN product p ON bd.product_id = p.id";
+        String categoryIncomeSql = "SELECT c.name AS category_name, SUM(bd.quantity * p.price) AS category_income " +
+                "FROM billdetail bd " +
+                "JOIN product p ON bd.product_id = p.id " +
+                "JOIN category c ON p.category_id = c.id " +
+                "GROUP BY c.name ORDER BY category_income DESC";
 
-        public void updateIncomePieChart () {
-            String totalIncomeSql = "SELECT SUM(total_amount) AS total_income FROM bill";
-            String categoryIncomeSql = "SELECT c.name AS category_name, SUM(b.total_amount) AS category_income " +
-                    "FROM bill b " +
-                    "JOIN billdetail bd ON b.id = bd.bill_id " +
-                    "JOIN product p ON bd.product_id = p.id " +
-                    "JOIN category c ON p.category_id = c.id " +
-                    "GROUP BY c.name";
+        double otherIncome = 0;
 
-            double totalIncome = 0;
-            try (Connection con = DBUtils.getConnection();
-                 PreparedStatement totalIncomePs = con.prepareStatement(totalIncomeSql);
-                 PreparedStatement categoryIncomePs = con.prepareStatement(categoryIncomeSql);
-                 ResultSet totalIncomeRs = totalIncomePs.executeQuery();
-                 ResultSet categoryIncomeRs = categoryIncomePs.executeQuery()) {
+        try (Connection con = DBUtils.getConnection();
+             PreparedStatement totalIncomePs = con.prepareStatement(totalIncomeSql);
+             PreparedStatement categoryIncomePs = con.prepareStatement(categoryIncomeSql);
+             ResultSet totalIncomeRs = totalIncomePs.executeQuery();
+             ResultSet categoryIncomeRs = categoryIncomePs.executeQuery()) {
 
-                // Tính tổng doanh thu
-                if (totalIncomeRs.next()) {
-                    totalIncome = totalIncomeRs.getDouble("total_income");
-                }
-
-                ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-
-                // Thêm dữ liệu vào PieChart và tính toán phần trăm
-                while (categoryIncomeRs.next()) {
-                    String category = categoryIncomeRs.getString("category_name");
-                    double categoryIncome = categoryIncomeRs.getDouble("category_income");
-                    double percentage = (categoryIncome / totalIncome) * 100;
-                    pieChartData.add(new PieChart.Data(category + " (" + String.format("%.2f%%", percentage) + ")", categoryIncome));
-                }
-
-                adminIncomePieChart.setData(pieChartData);
-
-                // Cài đặt tiêu đề và các thuộc tính khác
-                adminIncomePieChart.setTitle("Income by Category");
-                adminIncomePieChart.setLegendVisible(true); // Hiển thị chú thích
-                adminIncomePieChart.setLabelsVisible(true); // Hiển thị nhãn trên các mảnh của Pie Chart
-
-            } catch (SQLException e) {
-                e.printStackTrace();
+            // Tính tổng doanh thu
+            if (totalIncomeRs.next()) {
+                totalIncome = totalIncomeRs.getDouble("total_income");
             }
+
+            ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
+            int count = 0;
+
+            // Thêm dữ liệu vào PieChart và tính toán phần trăm
+            while (categoryIncomeRs.next()) {
+                String category = categoryIncomeRs.getString("category_name");
+                double categoryIncome = categoryIncomeRs.getDouble("category_income");
+                double percentage = (categoryIncome / totalIncome) * 100;
+
+                if (count < 5) {  // Chỉ hiển thị top 5 danh mục
+                    pieChartData.add(new PieChart.Data(category + " (" + String.format("%.2f%%", percentage) + ")", categoryIncome));
+                } else {
+                    otherIncome += categoryIncome;
+                    otherCategoryDetails.put(category, categoryIncome); // Lưu chi tiết vào "Other"
+                }
+                count++;
+            }
+
+            // Thêm mục "Other" nếu có các danh mục ngoài top 5
+            if (otherIncome > 0) {
+                double otherPercentage = (otherIncome / totalIncome) * 100;
+                PieChart.Data otherData = new PieChart.Data("Other (" + String.format("%.2f%%", otherPercentage) + ")", otherIncome);
+
+                otherData.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                    if (newNode != null) {
+                        newNode.setOnMouseClicked(event -> showOtherCategoriesDetails()); // Hiển thị chi tiết khi nhấp chuột
+                    }
+                });
+
+                pieChartData.add(otherData);
+            }
+
+            adminIncomePieChart.setData(pieChartData);
+
+            // Cài đặt tiêu đề và các thuộc tính khác
+            adminIncomePieChart.setTitle("Income by Category");
+            adminIncomePieChart.setLegendVisible(true); // Hiển thị chú thích
+            adminIncomePieChart.setLabelsVisible(true); // Hiển thị nhãn trên các mảnh của Pie Chart
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Hàm hiển thị chi tiết các mục trong "Other"
+    private void showOtherCategoriesDetails() {
+        StringBuilder details = new StringBuilder("Danh sách mục trong 'Other':\n");
+
+        for (Map.Entry<String, Double> entry : otherCategoryDetails.entrySet()) {
+            // Tính phần trăm của từng mục nhỏ dựa trên tổng doanh thu
+            double percentage = (entry.getValue() / totalIncome) * 100;
+            details.append(entry.getKey()).append(": ").append(String.format("%.2f%%", percentage)).append("\n");
         }
 
+        otherCategoryAlert = new Alert(Alert.AlertType.INFORMATION);
+        otherCategoryAlert.setTitle("Chi tiết mục 'Other'");
+        otherCategoryAlert.setHeaderText(null);
+        otherCategoryAlert.setContentText(details.toString());
+        otherCategoryAlert.show();
+    }
 
-        private String formatCurrency ( double amount){
+
+    private String formatCurrency ( double amount){
             NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
             return currencyFormat.format(amount);
         }

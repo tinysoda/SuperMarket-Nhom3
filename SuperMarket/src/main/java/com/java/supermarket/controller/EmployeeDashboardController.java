@@ -57,9 +57,11 @@ public class EmployeeDashboardController implements Initializable {
         try {
             Connection connection = DBUtils.getConnection();
             String query = "SELECT first_name, last_name FROM user WHERE BINARY username = ?";
+            //PreparedStatement thực thi câu lệnh SQL, giúp ngăn chặn các cuộc tấn công SQL Injection và cho phép thiết lập các tham số động.
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
+            //resultSet.next(): Di chuyển con trỏ đến hàng đầu tiên của kết quả truy vấn.
             if (resultSet.next()) {
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
@@ -120,6 +122,7 @@ public class EmployeeDashboardController implements Initializable {
                 }
             });
 
+            //thêm tab mới vào trước tab "+".
             int index = billTabPane.getTabs().size() - 1;
             billTabPane.getTabs().add(index, newTab);
             billTabPane.getSelectionModel().select(newTab);
